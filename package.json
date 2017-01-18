@@ -1,0 +1,22 @@
+{
+  "name": "@neoncity/causefe",
+  "version": "0.0.0",
+  "description": "The main frontend, where causes are managed and viewed.",
+  "author": "NeonCity team",
+  "scripts": {
+  },
+  "respository": {
+    "type": "git",
+    "url": "git+https://github.com/neoncity/causefe.git"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "homepage": "https://github.com/neoncity/causefe#readme",
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}
