@@ -18,5 +18,6 @@
   "dependencies": {
   },
   "devDependencies": {
+    "@neoncity/togemfury": "^0.0.2"
   }
 }
