@@ -4,6 +4,7 @@
   "description": "The main frontend, where causes are managed and viewed.",
   "author": "NeonCity team",
   "scripts": {
+    "build": "webpack"
   },
   "respository": {
     "type": "git",
@@ -15,9 +16,13 @@
   "files": [
     "src"
   ],
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@neoncity/togemfury": "^0.0.2"
+    "@neoncity/togemfury": "^0.0.2",
+    "@types/node": "^7.0.0",
+    "ts-loader": "^1.3.3",
+    "typescript": "^2.1.5",
+    "webpack": "^1.14.0",
+    "webpack-fail-plugin": "^1.0.5"
   }
 }
