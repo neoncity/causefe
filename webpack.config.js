@@ -1,11 +1,10 @@
+const CopyPlugin = require('copy-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const failPlugin = require('webpack-fail-plugin');
 const path = require('path');
 const webpack = require('webpack');
 
 const commonConfig = {
-    plugins: [
-        failPlugin,
-    ],
     devtool: 'source-map'
 };
 
@@ -40,13 +39,16 @@ const serverConfig = Object.assign({}, commonConfig, {
 	    loader: 'json'
 	}],
     },
+    plugins: [
+        failPlugin,
+    ],
     resolve: {
         extensions: ['', '.js', '.ts'],
         root: [
             path.resolve(__dirname, 'src', 'server'),
             path.resolve(__dirname, 'tests')
         ]
-    },
+    }
 });
 
 const clientConfig = Object.assign({}, commonConfig, {
@@ -56,6 +58,7 @@ const clientConfig = Object.assign({}, commonConfig, {
     },
     output: {
         path: path.resolve(__dirname, 'out', 'client'),
+	publicPath: '/out/client/',
         filename: '[name].js'
     },
     module: {
@@ -70,24 +73,36 @@ const clientConfig = Object.assign({}, commonConfig, {
                 silent: true
             }
         }, {
-	    test: /\.(json)$/,
+	    test: /\.(less|css)$/,
 	    include: [
 		path.resolve(__dirname, 'src', 'client'),
 		path.resolve(__dirname, 'node_modules')
 	    ],
-	    loader: 'json'
+	    loader: ExtractTextPlugin.extract('style', 'css?sourceMap!less')
+	}, {
+	    test: /\.html$/,
+	    include: [path.resolve(__dirname, 'src', 'client', 'static')],
+	    loader: 'file?name=[name].[ext]'
+	}, {
+	    test: /favicon.ico$/,
+	    include: [path.resolve(__dirname, 'src', 'client', 'static')],
+	    loader: 'file?name=[name].[ext]'
 	}],
-    },
-    resolve: {
-        extensions: ['', '.js', '.ts'],
-        root: [
-            path.resolve(__dirname, 'src', 'client')
-        ]
     },
     plugins: [
         failPlugin,
+	new CopyPlugin([
+	    {from: './src/client/static/index.html'},
+	    {from: './src/client/static/favicon.ico'}
+	]),
+	new ExtractTextPlugin('app.css')
     ],
-    devtool: 'source-map'
+    resolve: {
+        extensions: ['', '.js', '.ts', '.css', '.less'],
+        root: [
+            path.resolve(__dirname, 'src', 'client')
+        ]
+    }
 });
 
 module.exports = [serverConfig, clientConfig];
