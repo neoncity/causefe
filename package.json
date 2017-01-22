@@ -18,7 +18,8 @@
   "private": true,
   "homepage": "https://github.com/neoncity/causefe#readme",
   "filesPack": {
-    "out/src": "e:.",
+    "out/client": "c:client",
+    "out/server": "c:server",
     "webpack.config.js": "c:webpack.config.js",
     "package.json": "c:package.json",
     "tsconfig.json": "c:tsconfig.json"
