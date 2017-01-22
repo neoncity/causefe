@@ -1,6 +1,6 @@
 {
   "name": "@neoncity/causefe",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "The main frontend, where causes are managed and viewed.",
   "author": "NeonCity team",
   "scripts": {
@@ -13,19 +13,27 @@
   "license": "UNLICENSED",
   "private": true,
   "homepage": "https://github.com/neoncity/causefe#readme",
-  "files": [
-      "out",
-      "src",
-      "webpack.config.js"
-  ],
-  "dependencies": {},
+  "filesPack": {
+    "out/src": "e:.",
+    "webpack.config.js": "c:webpack.config.js",
+    "package.json": "c:package.json",
+    "tsconfig.json": "c:tsconfig.json"
+  },
+  "dependencies": {
+    "@types/es6-promise": "0.0.32",
+    "es6-promise": "^4.0.5",
+    "express": "^4.14.0"
+  },
   "devDependencies": {
-    "@neoncity/togemfury": "^0.0.2",
+    "@neoncity/common-js": "^0.0.11",
+    "@neoncity/togemfury": "^0.0.9",
+    "@types/express": "^4.0.35",
     "@types/node": "^7.0.0",
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.26.1",
     "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.9.0",
+    "json-loader": "^0.5.4",
     "less": "^2.7.2",
     "less-loader": "^2.2.3",
     "style-loader": "^0.13.1",
