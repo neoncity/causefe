@@ -7,11 +7,6 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "strictNullChecks": true,
-        "sourceMap": true,
-        "declaration": true,
-        "outDir": "./out/server"
-    },
-    "include": [
-        "./src/server/**/*"
-    ]
+        "sourceMap": true
+    }
 }

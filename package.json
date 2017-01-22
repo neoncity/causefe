@@ -1,13 +1,13 @@
 {
   "name": "@neoncity/causefe",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "The main frontend, where causes are managed and viewed.",
   "author": "NeonCity team",
   "scripts": {
-    "build": "webpack",
-    "pretest": "webpack",
-    "test": "mocha out/server/tests.js",
-    "test-with-coverage": "webpack && istanbul cover --config ./.istanbul.yml ./node_modules/mocha/bin/_mocha -- out/server/tests.js && remap-istanbul -i ./out/coverage/coverage-final.json -o ./out/coverage/coverage-remapped.json && coverage-filter -i ./out/coverage/coverage-remapped.json -o ./out/coverage/coverage-filtered.json",
+    "build": "tsc && webpack",
+    "pretest": "npm run build",
+    "test": "mocha $(find out -name '*-test.js')",
+    "test-with-coverage": "npm run build && istanbul cover --config ./.istanbul.yml ./node_modules/mocha/bin/_mocha -- $(find out -name '*-test.js') && remap-istanbul -i ./out/coverage/coverage-final.json -o ./out/coverage/coverage-remapped.json && coverage-filter -i ./out/coverage/coverage-remapped.json -o ./out/coverage/coverage-filtered.json",
     "push-coverage-to-codecov": "codecov -f ./out/coverage/coverage-filtered.json"
   },
   "respository": {
@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@neoncity/common-js": "^0.0.11",
-    "@neoncity/coverage-filter": "^0.0.5",
+    "@neoncity/coverage-filter": "^0.0.7",
     "@neoncity/togemfury": "^0.0.9",
     "@types/chai": "^3.4.34",
     "@types/express": "^4.0.35",
