@@ -30,3 +30,8 @@ deploy:
 - provider: script
   skip_cleanup: true
   script: $(npm bin)/togemfury --user ${GEMFURY_USER} --api_key ${GEMFURY_API_KEY}
+- provider: heroku
+  skip_cleanup: true
+  app: causefe-staging-neoncity
+  api_key:
+    secure: "Q8lIh8g/Bu3Vl0ED2MNVD1oUsrRVlwettbq/M48evpusK0lWP3uY89DoY0hN1G+uQnt/70uw8jL0ulo0Clp342UHjqSa82YzvIWDu3s3gRL17KiMCsBicrSYqoZf+UKvz4p8K8UZQFP6b8tVEFO/tDpiVilBIJ1oq1piKko9wvVCCkAppm1HZBCrvNF91Q0VCe2Hw6P0tODnWjEpWWHK1NyZUuNF9IkplzZkaiovbTnp0ODbJG5I1JqWWNTpoJhlGHNufsgToR3piiU8uR+eM02LwKFPtlg7ds7VTrrS/FM9YTX6T5G+Rp72NnVSzGbc/3dz3FXyzb58XFAlEffS88dd1IdExsHFIf+78zSx7C5jDtN501rV9z54L3BtwqIII+B8AXUniIsCyjNVJFoA8j+fp6n6khDCjKMX2dek9MJ01dR4d0wCmIB8+0prq/zrCGWfZjhLg3TeDgMhxASmRhwSZqAy/BP4wVa0RLKcRkE4xry0tVqhytMN6/v6jHswToA3gxbVdN7lxCnJGp39/hBhHOgFwvKBnLQbUIN8dKaB9aIlf666W0SmQlavA68Re/17B5dOvO71BKPull7kGwfHEU9WVqi39ZKmipuYyjkTXZ1xhE4anbpFqVOrk/g/qm+xVlItV6i6mRMge3sZvGdn7l9qjsjdpcazMeNaOXU="
