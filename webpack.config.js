@@ -7,7 +7,7 @@ const webpack = require('webpack');
 module.exports = {
     target: 'web',
     entry: {
-	client: './src/client/index.ts'
+	client: './src/client/index.tsx'
     },
     output: {
         path: path.resolve(__dirname, 'out', 'client'),
@@ -16,7 +16,7 @@ module.exports = {
     },
     module: {
         loaders: [{
-            test: /\.ts$/,
+            test: /\.tsx?$/,
             include: [
                 path.resolve(__dirname, 'src', 'client')
             ],
@@ -51,7 +51,7 @@ module.exports = {
 	new ExtractTextPlugin('client.css')
     ],
     resolve: {
-        extensions: ['', '.js', '.ts', '.css', '.less'],
+        extensions: ['', '.js', '.ts', '.tsx', '.css', '.less'],
         root: [
             path.resolve(__dirname, 'src', 'client')
         ]
