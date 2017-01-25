@@ -21,7 +21,7 @@ async function main() {
         });
 
         app.use(middleware);
-        app.get('/', (_: express.Request, res: express.Response) => {
+        app.get('*', (_: express.Request, res: express.Response) => {
             res.write((middleware as any).fileSystem.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html')));
             res.end();
         });
@@ -29,7 +29,7 @@ async function main() {
         const indexFile = fs.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html'));
         
         app.use('/out/client', express.static(path.join(process.cwd(), 'out', 'client')));
-        app.get('/', (_: express.Request, res: express.Response) => {
+        app.get('*', (_: express.Request, res: express.Response) => {
             res.write(indexFile);
             res.end();
         });
