@@ -40,6 +40,7 @@ ENV ENV LOCAL
 ENV ADDRESS 0.0.0.0
 ENV PORT 10000
 ENV IDENTITY_SERVICE_HOST neoncity-identity:10000
+ENV SECRETS_PATH /neoncity/var/secrets.json
 
 RUN chown -R neoncity:neoncity /neoncity
 VOLUME ["/neoncity/pack/src"]

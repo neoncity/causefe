@@ -1,4 +1,4 @@
-export const AUTH0_CLIENT_ID: string = 'fill-in-here';
-export const AUTH0_DOMAIN: string = 'fill-in-here';
-export const AUTH0_CALLBACK_URI: string = 'fill-in-here';
-export const IDENTITY_SERVICE_HOST: string = 'identity-serivice';
+export const AUTH0_CLIENT_ID: string = '{{{ AUTH0_CLIENT_ID }}}';
+export const AUTH0_DOMAIN: string = '{{{ AUTH0_DOMAIN }}}';
+export const AUTH0_CALLBACK_URI: string = '{{{ AUTH0_CALLBACK_URI }}}';
+export const IDENTITY_SERVICE_HOST: string = '{{{ IDENTITY_SERVICE_HOST }}}';

@@ -8,7 +8,6 @@
         "noUnusedParameters": true,
         "strictNullChecks": true,
         "sourceMap": true,
-	"jsx": "react",
-	"allowSyntheticDefaultImports": true
+	"jsx": "react"
     }
 }

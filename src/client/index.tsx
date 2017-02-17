@@ -1,4 +1,4 @@
-import Auth0 from 'auth0-js'
+import Auth0Lock from 'auth0-lock'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
@@ -14,23 +14,27 @@ import { store } from './store'
 
 // Start services here. Will move to a better place later.
 
-const auth0: Auth0Static = new Auth0({
-    clientID: config.AUTH0_CLIENT_ID,
-    domain: config.AUTH0_DOMAIN,
-    callbackURL: config.AUTH0_CALLBACK_URI
-});
 
-let authResult: Auth0DecodedHash|null = null;
-if (window !== undefined) {
-    authResult = auth0.parseHash(window.location.hash);
-}
 
-let accessToken = null;
-if (authResult && authResult.access_token && authResult.idToken) {
-    accessToken = authResult.access_token;
-    _saveAccessToken(accessToken);
-} else {
-    accessToken = _loadAccessToken();
+const accessToken: string|null = _loadAccessToken();
+
+if (accessToken == null) {
+    const auth0: Auth0LockStatic = new Auth0Lock(
+        config.AUTH0_CLIENT_ID,
+        config.AUTH0_DOMAIN
+    );
+
+    auth0.on('authenticated', (authResult) => {
+        auth0.getUserInfo(authResult.accessToken, (error, _) => {
+	    if (error) {
+	        console.log(error);
+            }
+
+	    _saveAccessToken(authResult.accessToken);
+	});
+    });
+
+    auth0.show();
 }
 
 const authInfoMarshaller = new (MarshalFrom(AuthInfo))();
@@ -51,7 +55,7 @@ function _saveAccessToken(accessToken: string) {
     localStorage.setItem('neoncity/access_token', accessToken);
 }
 
-function _loadAccessToken() {
+function _loadAccessToken(): string|null {
     return localStorage.getItem('neoncity/access_token');
 }
 
