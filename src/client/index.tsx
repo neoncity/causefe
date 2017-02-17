@@ -1,11 +1,59 @@
+import Auth0 from 'auth0-js'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { Router, Route, IndexRoute, Link, browserHistory } from 'react-router'
 
+import { MarshalFrom } from '@neoncity/common-js/marshall'
+import { AuthInfo, IdentityResponse, IdentityService } from '@neoncity/identity-sdk-js'
+
+import * as config from './config'
 import './index.less'
 import { store } from './store'
 
+
+// Start services here. Will move to a better place later.
+
+const auth0: Auth0Static = new Auth0({
+    clientID: config.AUTH0_CLIENT_ID,
+    domain: config.AUTH0_DOMAIN,
+    callbackURL: config.AUTH0_CALLBACK_URI
+});
+
+let authResult: Auth0DecodedHash|null = null;
+if (window !== undefined) {
+    authResult = auth0.parseHash(window.location.hash);
+}
+
+let accessToken = null;
+if (authResult && authResult.access_token && authResult.idToken) {
+    accessToken = authResult.access_token;
+    _saveAccessToken(accessToken);
+} else {
+    accessToken = _loadAccessToken();
+}
+
+const authInfoMarshaller = new (MarshalFrom(AuthInfo))();
+const identityResponseMarshaller = new (MarshalFrom(IdentityResponse))();
+
+const identityService: IdentityService|null =
+    accessToken != null
+    ? new IdentityService(
+         accessToken,
+	 config.IDENTITY_SERVICE_HOST,
+	 authInfoMarshaller,
+	 identityResponseMarshaller)
+    : null;
+
+
+
+function _saveAccessToken(accessToken: string) {
+    localStorage.setItem('neoncity/access_token', accessToken);
+}
+
+function _loadAccessToken() {
+    return localStorage.getItem('neoncity/access_token');
+}
 
 interface AppFrameProps {
     children: React.ReactNode;
@@ -38,13 +86,13 @@ interface IdentityFrameProps {
 
 class IdentityFrame extends React.Component<IdentityFrameProps, undefined> {
     componentDidMount() {
-        // Step 1: get token from local storage
-
-        // If there isn't an identity service  and required is false, then just mark this in state as such
-
-        // If there isn't an identity service and required is true, go to login
-
-        // If there is an identity service, retrieve the user from it and do the logical thing
+        if (identityService == null &&  !this.props.required) {
+	    // Mark the state as such
+	} else if (identityService == null && this.props.required) {
+	    // Go to login
+	} else {
+	    // Retrieve the user
+	}
     }
     
     render() {
