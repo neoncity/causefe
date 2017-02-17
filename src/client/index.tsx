@@ -31,6 +31,28 @@ class AppFrame extends React.Component<AppFrameProps, undefined> {
 }
 
 
+interface IdentityFrameProps {
+    required: boolean;
+}
+
+
+class IdentityFrame extends React.Component<IdentityFrameProps, undefined> {
+    componentDidMount() {
+        // Step 1: get token from local storage
+
+        // If there isn't an identity service  and required is false, then just mark this in state as such
+
+        // If there isn't an identity service and required is true, go to login
+
+        // If there is an identity service, retrieve the user from it and do the logical thing
+    }
+    
+    render() {
+        return (<div>{this.props.children}</div>);
+    }
+}
+
+
 interface HomeViewParams {
     causeSlug: string;
 }
@@ -94,12 +116,17 @@ ReactDOM.render(
     <Provider store={store}>
         <Router history={browserHistory}>
             <Route path="/" component={AppFrame}>
-	        <IndexRoute component={HomeView} />
-	        <Route path="c/:causeSlug" component={CauseView} />
-		<Route path="admin" component={AdminView} />
-		<Route path="console" component={ConsoleView} />
-	    </Route>
-	</Router>
+                <Route path="/" component={() => (<IdentityFrame required={false} />)}>
+                    <IndexRoute component={HomeView} />
+                    <Route path="c/:causeSlug" component={CauseView} />
+                </Route>
+
+                <Route path="/" component={() => (<IdentityFrame required={true} />)}>
+                    <Route path="admin" component={AdminView} />
+                    <Route path="console" component={ConsoleView} />
+                </Route>
+            </Route>
+        </Router>
     </Provider>,
     document.getElementById('app')
 );
