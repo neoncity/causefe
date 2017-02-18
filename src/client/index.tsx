@@ -1,10 +1,12 @@
 import Auth0Lock from 'auth0-lock'
+import * as queryString from 'query-string'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { Router, Route, IndexRoute, Link, browserHistory } from 'react-router'
 
-import { MarshalFrom } from '@neoncity/common-js/marshall'
+import * as m from '@neoncity/common-js/marshall'
+import { MarshalFrom, MarshalWith } from '@neoncity/common-js/marshall'
 import { AuthInfo, IdentityResponse, IdentityService } from '@neoncity/identity-sdk-js'
 
 import * as config from './config'
@@ -14,41 +16,65 @@ import { store } from './store'
 
 // Start services here. Will move to a better place later.
 
+// Generate in a better way. Perhaps something something HMAC to make sure it's one of ours.
+class PostLoginInfo {
+    @MarshalWith(m.StringMarshaller)
+    path: string;
 
-
-const accessToken: string|null = _loadAccessToken();
-
-if (accessToken == null) {
-    const auth0: Auth0LockStatic = new Auth0Lock(
-        config.AUTH0_CLIENT_ID,
-        config.AUTH0_DOMAIN
-    );
-
-    auth0.on('authenticated', (authResult) => {
-        auth0.getUserInfo(authResult.accessToken, (error, _) => {
-	    if (error) {
-	        console.log(error);
-            }
-
-	    _saveAccessToken(authResult.accessToken);
-	});
-    });
-
-    auth0.show();
+    constructor(path: string) {
+        this.path = path;
+    }
 }
 
 const authInfoMarshaller = new (MarshalFrom(AuthInfo))();
 const identityResponseMarshaller = new (MarshalFrom(IdentityResponse))();
+const postLoginInfoMarshaller = new (MarshalFrom(PostLoginInfo))();
 
-const identityService: IdentityService|null =
-    accessToken != null
-    ? new IdentityService(
-         accessToken,
-	 config.IDENTITY_SERVICE_HOST,
-	 authInfoMarshaller,
-	 identityResponseMarshaller)
-    : null;
+const accessToken: string|null = _loadAccessToken();
+let identityService: IdentityService|null;
 
+const currentLocation = browserHistory.getCurrentLocation();
+
+if (accessToken != null) {
+    identityService = new IdentityService(
+        accessToken,
+	config.IDENTITY_SERVICE_HOST,
+	authInfoMarshaller,
+	identityResponseMarshaller);
+} else if (currentLocation.pathname == '/real/login') {
+    const queryParsed = queryString.parse((currentLocation as any).hash);
+    _saveAccessToken(queryParsed['access_token'] as string);
+
+    identityService = new IdentityService(
+        queryParsed['access_token'] as string,
+	config.IDENTITY_SERVICE_HOST,
+	authInfoMarshaller,
+	identityResponseMarshaller);
+
+    const postLoginInfo = postLoginInfoMarshaller.extract(JSON.parse(decodeURIComponent(queryParsed['state'] as string)));
+    browserHistory.push(postLoginInfo.path);
+} else if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
+    const postLoginInfo = new PostLoginInfo(currentLocation.pathname);
+    const postLoginInfoSer = encodeURIComponent(JSON.stringify(postLoginInfoMarshaller.pack(postLoginInfo)));
+    
+    const auth0: Auth0LockStatic = new Auth0Lock(
+        config.AUTH0_CLIENT_ID,
+        config.AUTH0_DOMAIN, {
+            auth: {
+                redirect: true,
+                redirectUrl: config.AUTH0_CALLBACK_URI,
+                responseType: 'token',
+                params: {
+                    state: postLoginInfoSer
+                }
+            }
+        }
+    );
+
+    auth0.show();
+} else {
+    identityService = null;
+}
 
 
 function _saveAccessToken(accessToken: string) {

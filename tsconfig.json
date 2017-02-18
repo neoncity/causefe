@@ -9,7 +9,8 @@
         "strictNullChecks": true,
         "sourceMap": true,
         "declaration": true,
-        "outDir": "./out/server"
+        "outDir": "./out/server",
+        "experimentalDecorators": true
     },
     "include": [
         "./src/server/**/*"

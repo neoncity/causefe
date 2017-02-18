@@ -40,10 +40,14 @@ ENV ENV LOCAL
 ENV ADDRESS 0.0.0.0
 ENV PORT 10000
 ENV IDENTITY_SERVICE_HOST neoncity-identity:10000
+ENV AUTH0_CLIENT_ID null
+ENV AUTH0_DOMAIN null
+ENV AUTH0_CALLBACK_URI null
 ENV SECRETS_PATH /neoncity/var/secrets.json
 
-RUN chown -R neoncity:neoncity /neoncity
+RUN chown -R neoncity:neoncity /neoncity/pack/out
 VOLUME ["/neoncity/pack/src"]
+VOLUME ["/neoncity/pack/node_modules"]
 VOLUME ["/neoncity/var/secrets.json"]
 WORKDIR /neoncity/pack
 EXPOSE 10000
