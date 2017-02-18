@@ -35,6 +35,24 @@ let identityService: IdentityService|null;
 
 const currentLocation = browserHistory.getCurrentLocation();
 
+const postLoginInfo = new PostLoginInfo(currentLocation.pathname);
+const postLoginInfoSer = encodeURIComponent(JSON.stringify(postLoginInfoMarshaller.pack(postLoginInfo)));
+
+const auth0: Auth0LockStatic = new Auth0Lock(
+    config.AUTH0_CLIENT_ID,
+    config.AUTH0_DOMAIN, {
+        closable: false,
+        auth: {
+            redirect: true,
+            redirectUrl: config.AUTH0_CALLBACK_URI,
+            responseType: 'token',
+            params: {
+                state: postLoginInfoSer
+            }
+        }
+    }
+);
+
 if (accessToken != null) {
     identityService = new IdentityService(
         accessToken,
@@ -54,23 +72,6 @@ if (accessToken != null) {
     const postLoginInfo = postLoginInfoMarshaller.extract(JSON.parse(decodeURIComponent(queryParsed['state'] as string)));
     browserHistory.push(postLoginInfo.path);
 } else if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
-    const postLoginInfo = new PostLoginInfo(currentLocation.pathname);
-    const postLoginInfoSer = encodeURIComponent(JSON.stringify(postLoginInfoMarshaller.pack(postLoginInfo)));
-    
-    const auth0: Auth0LockStatic = new Auth0Lock(
-        config.AUTH0_CLIENT_ID,
-        config.AUTH0_DOMAIN, {
-            auth: {
-                redirect: true,
-                redirectUrl: config.AUTH0_CALLBACK_URI,
-                responseType: 'token',
-                params: {
-                    state: postLoginInfoSer
-                }
-            }
-        }
-    );
-
     auth0.show();
 } else {
     identityService = null;
@@ -110,23 +111,22 @@ class AppFrame extends React.Component<AppFrameProps, undefined> {
 
 
 interface IdentityFrameProps {
-    required: boolean;
 }
 
 
 class IdentityFrame extends React.Component<IdentityFrameProps, undefined> {
     componentDidMount() {
-        if (identityService == null &&  !this.props.required) {
-	    // Mark the state as such
-	} else if (identityService == null && this.props.required) {
-	    // Go to login
-	} else {
-	    // Retrieve the user
-	}
+        if (identityService == null) {
+            auth0.show();
+        }
     }
     
     render() {
-        return (<div>{this.props.children}</div>);
+        if (identityService != null) {
+            return (<div>{this.props.children}</div>);
+        } else {
+            return (<div>Should be logged in</div>);
+        }
     }
 }
 
@@ -194,12 +194,10 @@ ReactDOM.render(
     <Provider store={store}>
         <Router history={browserHistory}>
             <Route path="/" component={AppFrame}>
-                <Route path="/" component={() => (<IdentityFrame required={false} />)}>
-                    <IndexRoute component={HomeView} />
-                    <Route path="c/:causeSlug" component={CauseView} />
-                </Route>
+                <IndexRoute component={HomeView} />
+                <Route path="c/:causeSlug" component={CauseView} />
 
-                <Route path="/" component={() => (<IdentityFrame required={true} />)}>
+                <Route path="/" component={IdentityFrame}>
                     <Route path="admin" component={AdminView} />
                     <Route path="console" component={ConsoleView} />
                 </Route>
