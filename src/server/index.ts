@@ -21,7 +21,7 @@ async function main() {
 	    serverSideRender: false
         });
 
-	app.get('/out/client/client.js', (_: express.Request, res: express.Response) => {
+	app.get('/real/client/client.js', (_: express.Request, res: express.Response) => {
 	    const jsIndexTemplate = (middleware as any).fileSystem.readFileSync(path.join(process.cwd(), 'out', 'client', 'client.js'), 'utf-8');
 	    const jsIndex = Mustache.render(jsIndexTemplate, config);
 	    res.write(jsIndex);
@@ -37,7 +37,7 @@ async function main() {
 	const jsIndex = Mustache.render(jsIndexTemplate, config);
         const htmlIndex = fs.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html'), 'utf-8');
 
-	app.get('/out/client/client.js', (_: express.Request, res: express.Response) => {
+	app.get('/real/client/client.js', (_: express.Request, res: express.Response) => {
             res.write(jsIndex);
             res.end();
         });

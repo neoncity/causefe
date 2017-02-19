@@ -11,7 +11,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'out', 'client'),
-	publicPath: '/out/client/',
+	publicPath: '/real/client/',
         filename: '[name].js'
     },
     module: {
