@@ -27,8 +27,8 @@ RUN groupadd neoncity && \
 
 # Install package requirements.
 
-COPY package.json /neoncity/pack/package.json
-RUN cd /neoncity/pack && npm install --registry=https://npm-proxy.fury.io/${GEMFURY_API_KEY}/${GEMFURY_USER}/ --progress=false
+# COPY package.json /neoncity/pack/package.json
+# RUN cd /neoncity/pack && npm install --registry=https://npm-proxy.fury.io/${GEMFURY_API_KEY}/${GEMFURY_USER}/ --progress=false
 
 # Copy source code.
 

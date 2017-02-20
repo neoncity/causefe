@@ -41,7 +41,7 @@ async function main() {
             res.write(jsIndex);
             res.end();
         });
-        app.use('/out/client', express.static(path.join(process.cwd(), 'out', 'client')));
+        app.use('/real/client', express.static(path.join(process.cwd(), 'out', 'client')));
         app.get('*', (_: express.Request, res: express.Response) => {
             res.write(htmlIndex);
             res.end();

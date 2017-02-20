@@ -6,8 +6,8 @@ import { Provider } from 'react-redux'
 import { Router, Route, IndexRoute, Link, browserHistory } from 'react-router'
 
 import * as m from '@neoncity/common-js/marshall'
-import { MarshalFrom, MarshalWith } from '@neoncity/common-js/marshall'
-import { AuthInfo, IdentityResponse, IdentityService } from '@neoncity/identity-sdk-js'
+import { ExtractError, MarshalFrom, MarshalWith } from '@neoncity/common-js/marshall'
+import { Auth0AccessTokenMarshaller, IdentityService, newIdentityService } from '@neoncity/identity-sdk-js'
 
 import * as config from './config'
 import './index.less'
@@ -17,8 +17,8 @@ import { store } from './store'
 // Start services here. Will move to a better place later.
 
 // Generate in a better way. Perhaps something something HMAC to make sure it's one of ours.
-class PostLoginInfo {
-    @MarshalWith(m.StringMarshaller)
+class PostLoginRedirectInfo {
+    @MarshalWith(m.AbsolutePathMarshaller)
     path: string;
 
     constructor(path: string) {
@@ -26,17 +26,44 @@ class PostLoginInfo {
     }
 }
 
-const authInfoMarshaller = new (MarshalFrom(AuthInfo))();
-const identityResponseMarshaller = new (MarshalFrom(IdentityResponse))();
-const postLoginInfoMarshaller = new (MarshalFrom(PostLoginInfo))();
+class PostLoginRedirectInfoMarshaller extends m.BaseStringMarshaller<PostLoginRedirectInfo> {
+    private static readonly _objectMarshaller = new (MarshalFrom(PostLoginRedirectInfo))();
+
+    build(a: string): PostLoginRedirectInfo {
+	try {
+	    const redirectInfoSer = decodeURIComponent(a);
+	    const redirectInfoRaw = JSON.parse(redirectInfoSer);
+	    return PostLoginRedirectInfoMarshaller._objectMarshaller.extract(redirectInfoRaw);
+	} catch (e) {
+	    throw new ExtractError(`Could not build redirect info "${e.toString()}"`);
+	}
+    }
+
+    unbuild(redirectInfo: PostLoginRedirectInfo) {
+	const redirectInfoRaw = PostLoginRedirectInfoMarshaller._objectMarshaller.pack(redirectInfo);
+	const redirectInfoSer = JSON.stringify(redirectInfoRaw);
+	return encodeURIComponent(redirectInfoSer);
+    }
+}
+
+class Auth0RedirectInfo {
+    @MarshalWith(Auth0AccessTokenMarshaller)
+    access_token: string;
+    
+    @MarshalWith(PostLoginRedirectInfoMarshaller)
+    state: PostLoginRedirectInfo;
+}
+
+const postLoginRedirectInfoMarshaller = new PostLoginRedirectInfoMarshaller();
+const auth0RedirectInfoMarshaller = new (MarshalFrom(Auth0RedirectInfo))();
 
 const accessToken: string|null = _loadAccessToken();
 let identityService: IdentityService|null;
 
 const currentLocation = browserHistory.getCurrentLocation();
 
-const postLoginInfo = new PostLoginInfo(currentLocation.pathname);
-const postLoginInfoSer = encodeURIComponent(JSON.stringify(postLoginInfoMarshaller.pack(postLoginInfo)));
+const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
+const postLoginInfoSer = postLoginRedirectInfoMarshaller.pack(postLoginInfo);
 
 const auth0: Auth0LockStatic = new Auth0Lock(
     config.AUTH0_CLIENT_ID,
@@ -54,23 +81,14 @@ const auth0: Auth0LockStatic = new Auth0Lock(
 );
 
 if (accessToken != null) {
-    identityService = new IdentityService(
-        accessToken,
-	config.IDENTITY_SERVICE_HOST,
-	authInfoMarshaller,
-	identityResponseMarshaller);
+    identityService = newIdentityService(accessToken, config.IDENTITY_SERVICE_HOST);
 } else if (currentLocation.pathname == '/real/login') {
     const queryParsed = queryString.parse((currentLocation as any).hash);
-    _saveAccessToken(queryParsed['access_token'] as string);
+    const auth0RedirectInfo = auth0RedirectInfoMarshaller.extract(queryParsed);
+    _saveAccessToken(auth0RedirectInfo.access_token);
 
-    identityService = new IdentityService(
-        queryParsed['access_token'] as string,
-	config.IDENTITY_SERVICE_HOST,
-	authInfoMarshaller,
-	identityResponseMarshaller);
-
-    const postLoginInfo = postLoginInfoMarshaller.extract(JSON.parse(decodeURIComponent(queryParsed['state'] as string)));
-    browserHistory.push(postLoginInfo.path);
+    identityService = newIdentityService(auth0RedirectInfo.access_token, config.IDENTITY_SERVICE_HOST);
+    browserHistory.push(auth0RedirectInfo.state.path);
 } else if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
     auth0.show();
 } else {
