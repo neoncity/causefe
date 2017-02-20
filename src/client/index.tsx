@@ -16,9 +16,23 @@ import { store } from './store'
 
 // Start services here. Will move to a better place later.
 
+
+class AllowedRoutesMarshaller extends m.AbsolutePathMarshaller {
+    filter(path: string): string {
+	if (!(path == '/'
+	      || path.indexOf('/c/') == 0
+	      || path.indexOf('/admin') == 0
+	      || path.indexOf('/console') == 0)) {
+	    throw new ExtractError('Expected one of our paths');
+	}
+
+	return path;
+    }
+}
+
 // Generate in a better way. Perhaps something something HMAC to make sure it's one of ours.
 class PostLoginRedirectInfo {
-    @MarshalWith(m.AbsolutePathMarshaller)
+    @MarshalWith(AllowedRoutesMarshaller)
     path: string;
 
     constructor(path: string) {
@@ -83,7 +97,7 @@ const auth0: Auth0LockStatic = new Auth0Lock(
 if (accessToken != null) {
     identityService = newIdentityService(accessToken, config.IDENTITY_SERVICE_HOST);
 } else if (currentLocation.pathname == '/real/login') {
-    const queryParsed = queryString.parse((currentLocation as any).hash);
+    const queryParsed = (Object as any).assign({}, queryString.parse((currentLocation as any).hash));
     const auth0RedirectInfo = auth0RedirectInfoMarshaller.extract(queryParsed);
     _saveAccessToken(auth0RedirectInfo.access_token);
 
