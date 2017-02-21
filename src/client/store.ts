@@ -1,4 +1,6 @@
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers } from 'redux'
+
+import { User } from '@neoncity/identity-sdk-js'
 
 
 export enum OpState {
@@ -10,35 +12,34 @@ export enum OpState {
 
 
 interface IdentityInit {
-    type: 'IDENTITY_INIT';
+    type: OpState.Init;
 }
 interface IdentityLoading {
-    type: 'IDENTITY_LOADING';
+    type: OpState.Loading;
 }
 interface IdentityReady {
-    type: 'IDENTITY_READY';
-    accessToken: string;
-    user: any;
+    type: OpState.Ready;
+    user: User;
 }
 interface IdentityFailed {
-    type: 'IDENTITY_FAILED';
+    type: OpState.Failed;
     errorMessage: string;
 }
 
-type IdentityState = IdentityInit | IdentityLoading | IdentityReady | IdentityFailed;
+export type IdentityState = IdentityInit | IdentityLoading | IdentityReady | IdentityFailed;
 
 
 const identityInitialState: IdentityState = {
-    type: 'IDENTITY_INIT'
+    type: OpState.Init
 };
 
 
 function identity(state=identityInitialState, action: IdentityState): IdentityState {
     switch (action.type) {
-    case 'IDENTITY_INIT':
-    case 'IDENTITY_LOADING':
-    case 'IDENTITY_READY':
-    case 'IDENTITY_FAILED':
+    case OpState.Init:
+    case OpState.Loading:
+    case OpState.Ready:
+    case OpState.Failed:
 	return action;
     default:
 	return state;

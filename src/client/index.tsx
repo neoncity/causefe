@@ -2,16 +2,16 @@ import Auth0Lock from 'auth0-lock'
 import * as queryString from 'query-string'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { Provider } from 'react-redux'
+import { Provider, connect } from 'react-redux'
 import { Router, Route, IndexRoute, Link, browserHistory } from 'react-router'
 
 import * as m from '@neoncity/common-js/marshall'
 import { ExtractError, MarshalFrom, MarshalWith } from '@neoncity/common-js/marshall'
-import { Auth0AccessTokenMarshaller, IdentityService, newIdentityService } from '@neoncity/identity-sdk-js'
+import { Auth0AccessTokenMarshaller, IdentityService, newIdentityService, User } from '@neoncity/identity-sdk-js'
 
 import * as config from './config'
 import './index.less'
-import { store } from './store'
+import { OpState, IdentityState, store } from './store'
 
 
 // Start services here. Will move to a better place later.
@@ -119,12 +119,32 @@ function _loadAccessToken(): string|null {
 }
 
 interface AppFrameProps {
+    user: User|null;
+    onIdentityLoading: () => void;
+    onIdentityReady: (user: User) => void;
+    onIdentityFailed: (errorMessage: string) => void;
     children: React.ReactNode;
 }
 
 
-class AppFrame extends React.Component<AppFrameProps, undefined> {
+class _AppFrame extends React.Component<AppFrameProps, undefined> {
+    async componentDidMount() {
+        if (identityService == null) {
+	    return;
+        }
+
+	this.props.onIdentityLoading();
+
+	try {
+	    const user = await identityService.getOrCreateUser();
+	    this.props.onIdentityReady(user);
+	} catch (e) {
+	    this.props.onIdentityFailed('Could not load user');
+	}
+    }
+    
     render() {
+	const userIdSection = this.props.user != null ? <p>User id: {this.props.user.id}</p> : <p></p>;
         return (
 	    <div>
 		<div>This is the app frame</div>
@@ -134,6 +154,7 @@ class AppFrame extends React.Component<AppFrameProps, undefined> {
 		  <Link to="/c/cause-2">Cause 2</Link>
 		  <Link to="/admin">Admin</Link>
 		  <Link to="/console">Console</Link>
+                  {userIdSection}
 		</div>
 		{this.props.children}
             </div>
@@ -141,24 +162,44 @@ class AppFrame extends React.Component<AppFrameProps, undefined> {
     }
 }
 
+function mapStateToProps(state: any) {
+    return {
+	user: typeof state.identity.user != 'undefined' ? state.identity.user : null
+    };
+}
+
+
+function mapDispatchToProps(dispatch: (newState: IdentityState) => void) {
+    return {
+	onIdentityLoading: () => dispatch({type: OpState.Loading}),
+	onIdentityReady: (user: User) => dispatch({type: OpState.Ready, user: user}),
+	onIdentityFailed: (errorMessage: string) => dispatch({type: OpState.Failed, errorMessage: errorMessage})
+    };
+}
+
+
+const AppFrame = connect(
+    mapStateToProps,
+    mapDispatchToProps)(_AppFrame);
+
 
 interface IdentityFrameProps {
 }
 
 
 class IdentityFrame extends React.Component<IdentityFrameProps, undefined> {
-    componentDidMount() {
+    async componentDidMount() {
         if (identityService == null) {
             auth0.show();
         }
     }
     
     render() {
-        if (identityService != null) {
-            return (<div>{this.props.children}</div>);
-        } else {
-            return (<div>Should be logged in</div>);
-        }
+        if (identityService == null) {
+	    return (<div>Should be logged in</div>);
+	} else {
+	    return (<div>{this.props.children}</div>);
+	}
     }
 }
 
@@ -197,6 +238,7 @@ class CauseView extends React.Component<CauseViewProps, undefined> {
 
 
 interface AdminViewProps {
+    user: User;
 }
 
 
@@ -210,6 +252,7 @@ class AdminView extends React.Component<AdminViewProps, undefined> {
 
 
 interface ConsoleViewProps {
+    user: User;
 }
 
 
