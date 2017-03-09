@@ -8,7 +8,7 @@
     "serve-dev": "tsc --watch & nodemon out/server/index.js",
     "serve-prod": "node out/server/index.js",
     "pretest": "npm run build",
-    "test": "npm run build && istanbul cover --config ./.istanbul.yml ./node_modules/mocha/bin/_mocha -- $(find out -name '*-test.js') && remap-istanbul -i ./out/coverage/coverage-final.json -o ./out/coverage/coverage-remapped.json && coverage-filter -i ./out/coverage/coverage-remapped.json -o ./out/coverage/coverage-filtered.json",
+    "test": "npm run build && istanbul cover --config ./.istanbul.yml ./node_modules/mocha/bin/_mocha -- $(find out -name '*server*-test.js') && remap-istanbul -i ./out/coverage/coverage-final.json -o ./out/coverage/coverage-remapped.json && coverage-filter -i ./out/coverage/coverage-remapped.json -o ./out/coverage/coverage-filtered.json",
     "push-coverage-to-codecov": "codecov -f ./out/coverage/coverage-filtered.json"
   },
   "respository": {
