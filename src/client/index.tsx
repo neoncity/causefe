@@ -1,12 +1,12 @@
 import Auth0Lock from 'auth0-lock'
 import * as queryString from 'query-string'
+import * as r from 'raynor'
+import { ExtractError, MarshalFrom, MarshalWith } from 'raynor'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { Provider, connect } from 'react-redux'
 import { Router, Route, IndexRoute, Link, browserHistory } from 'react-router'
 
-import * as m from '@neoncity/common-js/marshall'
-import { ExtractError, MarshalFrom, MarshalWith } from '@neoncity/common-js/marshall'
 import { Auth0AccessTokenMarshaller, IdentityService, newIdentityService, User } from '@neoncity/identity-sdk-js'
 
 import * as config from './config'
@@ -17,7 +17,7 @@ import { OpState, IdentityState, store } from './store'
 // Start services here. Will move to a better place later.
 
 
-class AllowedRoutesMarshaller extends m.AbsolutePathMarshaller {
+class AllowedRoutesMarshaller extends r.AbsolutePathMarshaller {
     filter(path: string): string {
 	if (!(path == '/'
 	      || path.indexOf('/c/') == 0
@@ -40,7 +40,7 @@ class PostLoginRedirectInfo {
     }
 }
 
-class PostLoginRedirectInfoMarshaller extends m.BaseStringMarshaller<PostLoginRedirectInfo> {
+class PostLoginRedirectInfoMarshaller extends r.BaseStringMarshaller<PostLoginRedirectInfo> {
     private static readonly _objectMarshaller = new (MarshalFrom(PostLoginRedirectInfo))();
 
     build(a: string): PostLoginRedirectInfo {
