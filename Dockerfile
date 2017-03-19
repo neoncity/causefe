@@ -17,7 +17,8 @@ RUN apt-get update -y && \
 # Setup directory structure.
 
 RUN mkdir /neoncity
-RUN mkdir /neoncity/pack
+RUN mkdir /neoncity/build
+RUN mkdir /neoncity/out
 RUN mkdir /neoncity/var
 
 # Setup users and groups.
@@ -27,12 +28,12 @@ RUN groupadd neoncity && \
 
 # Install package requirements.
 
-# COPY package.json /neoncity/pack/package.json
-# RUN cd /neoncity/pack && npm install --registry=https://npm-proxy.fury.io/${GEMFURY_API_KEY}/${GEMFURY_USER}/ --progress=false
+# COPY package.json /neoncity/package.json
+# RUN cd /neoncity && npm install --registry=https://npm-proxy.fury.io/${GEMFURY_API_KEY}/${GEMFURY_USER}/ --progress=false
 
 # Copy source code.
 
-COPY . /neoncity/pack
+COPY . /neoncity
 
 # Setup the runtime environment for the application.
 
@@ -45,11 +46,13 @@ ENV AUTH0_DOMAIN null
 ENV AUTH0_CALLBACK_URI null
 ENV SECRETS_PATH /neoncity/var/secrets.json
 
-RUN chown -R neoncity:neoncity /neoncity/pack/out
-VOLUME ["/neoncity/pack/src"]
-VOLUME ["/neoncity/pack/node_modules"]
+RUN chown -R neoncity:neoncity /neoncity/build
+RUN chown -R neoncity:neoncity /neoncity/out
+RUN chown -R neoncity:neoncity /neoncity/var
+VOLUME ["/neoncity/src"]
+VOLUME ["/neoncity/node_modules"]
 VOLUME ["/neoncity/var/secrets.json"]
-WORKDIR /neoncity/pack
+WORKDIR /neoncity
 EXPOSE 10000
 USER neoncity
 ENTRYPOINT ["npm", "run", "serve-dev"]
