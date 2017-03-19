@@ -144,7 +144,7 @@ class _AppFrame extends React.Component<AppFrameProps, undefined> {
     }
     
     render() {
-	const userIdSection = this.props.user != null ? <p>User id: {this.props.user.id}</p> : <p></p>;
+	const userIdSection = this.props.user != null ? <p>User: {this.props.user.name}</p> : <p></p>;
         return (
 	    <div>
 		<div>This is the app frame</div>
