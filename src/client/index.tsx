@@ -7,7 +7,7 @@ import * as ReactDOM from 'react-dom'
 import { Provider, connect } from 'react-redux'
 import { Router, Route, IndexRoute, Link, browserHistory } from 'react-router'
 
-import { Auth0AccessTokenMarshaller, IdentityService, newIdentityService, User } from '@neoncity/identity-sdk-js'
+import { Auth0AccessTokenMarshaller, IdentityClient, newIdentityClient, User } from '@neoncity/identity-sdk-js'
 
 import * as config from './config'
 import './index.less'
@@ -71,8 +71,8 @@ class Auth0RedirectInfo {
 const postLoginRedirectInfoMarshaller = new PostLoginRedirectInfoMarshaller();
 const auth0RedirectInfoMarshaller = new (MarshalFrom(Auth0RedirectInfo))();
 
-const accessToken: string|null = _loadAccessToken();
-let identityService: IdentityService|null;
+let rawAccessToken: string|null = _loadAccessToken();
+let identityClient: IdentityClient|null;
 
 const currentLocation = browserHistory.getCurrentLocation();
 
@@ -94,19 +94,23 @@ const auth0: Auth0LockStatic = new Auth0Lock(
     }
 );
 
-if (accessToken != null) {
-    identityService = newIdentityService(accessToken, config.IDENTITY_SERVICE_HOST);
+let accessToken: string = 'INVALID';
+
+if (rawAccessToken != null) {
+    identityClient = newIdentityClient(config.IDENTITY_SERVICE_HOST);
+    accessToken = rawAccessToken;
 } else if (currentLocation.pathname == '/real/login') {
     const queryParsed = (Object as any).assign({}, queryString.parse((currentLocation as any).hash));
     const auth0RedirectInfo = auth0RedirectInfoMarshaller.extract(queryParsed);
     _saveAccessToken(auth0RedirectInfo.access_token);
-
-    identityService = newIdentityService(auth0RedirectInfo.access_token, config.IDENTITY_SERVICE_HOST);
+    accessToken = auth0RedirectInfo.access_token;
+    
+    identityClient = newIdentityClient(config.IDENTITY_SERVICE_HOST);
     browserHistory.push(auth0RedirectInfo.state.path);
 } else if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
     auth0.show();
 } else {
-    identityService = null;
+    identityClient = null;
 }
 
 
@@ -129,14 +133,14 @@ interface AppFrameProps {
 
 class _AppFrame extends React.Component<AppFrameProps, undefined> {
     async componentDidMount() {
-        if (identityService == null) {
+        if (identityClient == null) {
 	    return;
         }
 
 	this.props.onIdentityLoading();
 
 	try {
-	    const user = await identityService.getOrCreateUser();
+	    const user = await identityClient.getOrCreateUser(accessToken);
 	    this.props.onIdentityReady(user);
 	} catch (e) {
 	    this.props.onIdentityFailed('Could not load user');
@@ -189,13 +193,13 @@ interface IdentityFrameProps {
 
 class IdentityFrame extends React.Component<IdentityFrameProps, undefined> {
     async componentDidMount() {
-        if (identityService == null) {
+        if (identityClient == null) {
             auth0.show();
         }
     }
     
     render() {
-        if (identityService == null) {
+        if (identityClient == null) {
 	    return (<div>Should be logged in</div>);
 	} else {
 	    return (<div>{this.props.children}</div>);
