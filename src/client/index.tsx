@@ -118,8 +118,14 @@ function _saveAccessToken(accessToken: string) {
     localStorage.setItem('neoncity/access_token', accessToken);
 }
 
+
 function _loadAccessToken(): string|null {
     return localStorage.getItem('neoncity/access_token');
+}
+
+
+function _clearAccessToken() {
+    return localStorage.removeItem('neoncity/access_token');
 }
 
 interface AppFrameProps {
@@ -143,6 +149,29 @@ class _AppFrame extends React.Component<AppFrameProps, undefined> {
 	    const user = await identityClient.getOrCreateUser(accessToken);
 	    this.props.onIdentityReady(user);
 	} catch (e) {
+	    if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
+		const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
+		const postLoginInfoSer = postLoginRedirectInfoMarshaller.pack(postLoginInfo);
+
+		const auth0: Auth0LockStatic = new Auth0Lock(
+		    config.AUTH0_CLIENT_ID,
+		    config.AUTH0_DOMAIN, {
+			closable: false,
+			auth: {
+			    redirect: true,
+			    redirectUrl: config.AUTH0_CALLBACK_URI,
+			    responseType: 'token',
+			    params: {
+				state: postLoginInfoSer
+			    }
+			}
+		    }
+		);
+
+		_clearAccessToken();
+	        auth0.show();
+            }
+	    
 	    this.props.onIdentityFailed('Could not load user');
 	}
     }
