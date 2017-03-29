@@ -1,6 +1,6 @@
 {
   "name": "@neoncity/causefe",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "The main frontend, where causes are managed and viewed.",
   "author": "NeonCity team",
   "scripts": {
@@ -27,7 +27,8 @@
   },
   "dependencies": {
     "@neoncity/common-js": "=1.0.0",
-    "@neoncity/identity-sdk-js": "=1.0.0",
+    "@neoncity/core-sdk-js": "=2.0.2",
+    "@neoncity/identity-sdk-js": "=1.2.2",
     "auth0-lock": "=10.11.0",
     "es6-promise": "=4.0.5",
     "express": "=4.14.0",

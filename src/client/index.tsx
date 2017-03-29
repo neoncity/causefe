@@ -7,11 +7,12 @@ import * as ReactDOM from 'react-dom'
 import { Provider, connect } from 'react-redux'
 import { Router, Route, IndexRoute, Link, browserHistory } from 'react-router'
 
+import { CorePublicClient, newCorePublicClient, PublicCause } from '@neoncity/core-sdk-js'
 import { Auth0AccessTokenMarshaller, IdentityClient, newIdentityClient, User } from '@neoncity/identity-sdk-js'
 
 import * as config from './config'
 import './index.less'
-import { OpState, IdentityState, store } from './store'
+import { OpState, IdentityState, PublicCausesState, StatePart, store } from './store'
 
 
 // Start services here. Will move to a better place later.
@@ -73,6 +74,7 @@ const auth0RedirectInfoMarshaller = new (MarshalFrom(Auth0RedirectInfo))();
 
 let rawAccessToken: string|null = _loadAccessToken();
 let identityClient: IdentityClient|null;
+const corePublicClient: CorePublicClient = newCorePublicClient(config.CORE_SERVICE_HOST);
 
 const currentLocation = browserHistory.getCurrentLocation();
 
@@ -216,25 +218,25 @@ class _AppFrame extends React.Component<AppFrameProps, undefined> {
     }
 }
 
-function mapStateToProps(state: any) {
+function appFrameMapStateToProps(state: any) {
     return {
 	user: typeof state.identity.user != 'undefined' ? state.identity.user : null
     };
 }
 
 
-function mapDispatchToProps(dispatch: (newState: IdentityState) => void) {
+function appFrameMapDispatchToProps(dispatch: (newState: IdentityState) => void) {
     return {
-	onIdentityLoading: () => dispatch({type: OpState.Loading}),
-	onIdentityReady: (user: User) => dispatch({type: OpState.Ready, user: user}),
-	onIdentityFailed: (errorMessage: string) => dispatch({type: OpState.Failed, errorMessage: errorMessage})
+	onIdentityLoading: () => dispatch({part: StatePart.Identity, type: OpState.Loading}),
+	onIdentityReady: (user: User) => dispatch({part: StatePart.Identity, type: OpState.Ready, user: user}),
+	onIdentityFailed: (errorMessage: string) => dispatch({part: StatePart.Identity, type: OpState.Failed, errorMessage: errorMessage})
     };
 }
 
 
 const AppFrame = connect(
-    mapStateToProps,
-    mapDispatchToProps)(_AppFrame);
+    appFrameMapStateToProps,
+    appFrameMapDispatchToProps)(_AppFrame);
 
 
 interface IdentityFrameProps {
@@ -258,27 +260,74 @@ class IdentityFrame extends React.Component<IdentityFrameProps, undefined> {
 }
 
 
-interface HomeViewParams {
-    causeSlug: string;
-}
-
-
 interface HomeViewProps {
-    params: HomeViewParams;
+    isLoading: boolean;
+    isReady: boolean;
+    isFailed: boolean;
+    publicCauses: PublicCause[]|null;
+    errorMessage: string|null;
+    onPublicCausesLoading: () => void;
+    onPublicCausesReady: (publicCauses: PublicCause[]) => void;
+    onPublicCausesFailed: (errorMessage: string) => void;
 }
 
 
-class HomeView extends React.Component<HomeViewProps, undefined> {
+class _HomeView extends React.Component<HomeViewProps, undefined> {
+    async componentDidMount() {
+	this.props.onPublicCausesLoading();
+
+	try {
+	    const publicCauses = await corePublicClient.getCauses(accessToken);
+	    this.props.onPublicCausesReady(publicCauses);
+	} catch (e) {
+	    this.props.onPublicCausesFailed('Could not load public causes');
+	}
+    }
+    
     render() {
-        return (
-	    <div>This is the home view</div>
-	);
+	if (this.props.isLoading) {
+	    return (<div>Loading ...</div>);
+	} else if (this.props.isFailed) {
+	    return (<div>Failed {this.props.errorMessage}</div>);
+	} else {
+	    return (<div>Loaded {(this.props.publicCauses as PublicCause[]).length} causes</div>);
+	}
     }
 }
 
 
+function homeViewMapStateToProps(state: any) {
+    return {
+	isLoading: state.publicCauses.type == OpState.Init || state.publicCauses.type == OpState.Loading,
+	isReady: state.publicCauses.type == OpState.Ready,
+	isFailed: state.publicCauses.type == OpState.Failed,
+	publicCauses: state.publicCauses.type == OpState.Ready ? state.publicCauses.publicCauses : null,
+	errorMessage: state.publicCauses.type == OpState.Failed ? state.publicCauses.errorMessage : null,
+    };
+}
+
+
+function homeViewMapDispatchToProps(dispatch: (newState: PublicCausesState) => void) {
+    return {
+	onPublicCausesLoading: () => dispatch({part: StatePart.PublicCauses, type: OpState.Loading}),
+	onPublicCausesReady: (publicCauses: PublicCause[]) => dispatch({part: StatePart.PublicCauses, type: OpState.Ready, publicCauses: publicCauses}),
+	onPublicCausesFailed: (errorMessage: string) => dispatch({part: StatePart.PublicCauses, type: OpState.Failed, errorMessage: errorMessage})
+    };
+}
+
+
+const HomeView = connect(
+    homeViewMapStateToProps,
+    homeViewMapDispatchToProps)(_HomeView);
+
+
+interface CauseViewParams {
+    causeSlug: string;
+}
+
+
 interface CauseViewProps {
-    params: any
+    params: CauseViewParams
 }
 
 
