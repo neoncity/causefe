@@ -260,6 +260,25 @@ class IdentityFrame extends React.Component<IdentityFrameProps, undefined> {
 }
 
 
+interface PublicCauseWidgetProps {
+    cause: PublicCause;
+}
+
+
+class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, undefined> {
+    render() {
+	return (
+            <div>
+	        <h2><Link to="/c/cause-1">{this.props.cause.title}</Link></h2>
+		<p>{this.props.cause.description}</p>
+		<p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency}</p>
+		<p>{this.props.cause.deadline.toString()}</p>
+	    </div>
+	);
+    }
+}
+
+
 interface HomeViewProps {
     isLoading: boolean;
     isReady: boolean;
@@ -280,6 +299,7 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
 	    const publicCauses = await corePublicClient.getCauses(accessToken);
 	    this.props.onPublicCausesReady(publicCauses);
 	} catch (e) {
+	console.log(e);
 	    this.props.onPublicCausesFailed('Could not load public causes');
 	}
     }
@@ -290,7 +310,9 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
 	} else if (this.props.isFailed) {
 	    return (<div>Failed {this.props.errorMessage}</div>);
 	} else {
-	    return (<div>Loaded {(this.props.publicCauses as PublicCause[]).length} causes</div>);
+	    const causes = (this.props.publicCauses as PublicCause[]).map(c => <PublicCauseWidget key={c.id} cause={c} />);
+	    
+	    return (<div>{causes}</div>);
 	}
     }
 }
