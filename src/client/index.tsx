@@ -190,8 +190,6 @@ class _AppFrame extends React.Component<AppFrameProps, undefined> {
                     <div>This is the app frame</div>
                     <div>
                         <Link to="/">Home</Link>
-                        <Link to="/c/cause-1">Cause 1</Link>
-                        <Link to="/c/cause-2">Cause 2</Link>
                         <a href="/admin">Admin</a>
                         <a href="/console">Console</a>
                         {userIdSection}
@@ -205,8 +203,6 @@ class _AppFrame extends React.Component<AppFrameProps, undefined> {
                     <div>This is the app frame</div>
                     <div>
                         <Link to="/">Home</Link>
-                        <Link to="/c/cause-1">Cause 1</Link>
-                        <Link to="/c/cause-2">Cause 2</Link>
                         <Link to="/admin">Admin</Link>
                         <Link to="/console">Console</Link>
                         {userIdSection}
@@ -269,7 +265,7 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, undefine
     render() {
 	return (
             <div>
-	        <h2><Link to="/c/cause-1">{this.props.cause.title}</Link></h2>
+	        <h2><Link to={`/c/${this.props.cause.id}/${this.props.cause.slug}`}>{this.props.cause.title}</Link></h2>
 		<p>{this.props.cause.description}</p>
 		<p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency}</p>
 		<p>{this.props.cause.deadline.toString()}</p>
@@ -344,6 +340,7 @@ const HomeView = connect(
 
 
 interface CauseViewParams {
+    causeId: string;
     causeSlug: string;
 }
 
@@ -356,7 +353,7 @@ interface CauseViewProps {
 class CauseView extends React.Component<CauseViewProps, undefined> {
     render() {
         return (
-	    <div>This is the cause view for {this.props.params.causeSlug}</div>
+	    <div>This is the cause view for {this.props.params.causeId} / {this.props.params.causeSlug}</div>
 	);
     }
 }
@@ -395,7 +392,7 @@ ReactDOM.render(
         <Router history={browserHistory}>
             <Route path="/" component={AppFrame}>
                 <IndexRoute component={HomeView} />
-                <Route path="c/:causeSlug" component={CauseView} />
+                <Route path="c/:causeId/:causeSlug" component={CauseView} />
 
                 <Route path="/" component={IdentityFrame}>
                     <Route path="admin" component={AdminView} />
