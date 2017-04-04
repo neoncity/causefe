@@ -12,7 +12,7 @@ import { Auth0AccessTokenMarshaller, IdentityClient, newIdentityClient, User } f
 
 import * as config from './config'
 import './index.less'
-import { OpState, IdentityState, PublicCausesState, StatePart, store } from './store'
+import { OpState, IdentityState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
 
 
 // Start services here. Will move to a better place later.
@@ -279,10 +279,10 @@ interface HomeViewProps {
     isLoading: boolean;
     isReady: boolean;
     isFailed: boolean;
-    publicCauses: PublicCause[]|null;
+    causes: PublicCause[]|null;
     errorMessage: string|null;
     onPublicCausesLoading: () => void;
-    onPublicCausesReady: (publicCauses: PublicCause[]) => void;
+    onPublicCausesReady: (causes: PublicCause[]) => void;
     onPublicCausesFailed: (errorMessage: string) => void;
 }
 
@@ -292,10 +292,9 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
 	this.props.onPublicCausesLoading();
 
 	try {
-	    const publicCauses = await corePublicClient.getCauses(accessToken);
-	    this.props.onPublicCausesReady(publicCauses);
+	    const causes = await corePublicClient.getCauses(accessToken);
+	    this.props.onPublicCausesReady(causes);
 	} catch (e) {
-	console.log(e);
 	    this.props.onPublicCausesFailed('Could not load public causes');
 	}
     }
@@ -306,7 +305,7 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
 	} else if (this.props.isFailed) {
 	    return (<div>Failed {this.props.errorMessage}</div>);
 	} else {
-	    const causes = (this.props.publicCauses as PublicCause[]).map(c => <PublicCauseWidget key={c.id} cause={c} />);
+	    const causes = (this.props.causes as PublicCause[]).map(c => <PublicCauseWidget key={c.id} cause={c} />);
 	    
 	    return (<div>{causes}</div>);
 	}
@@ -319,7 +318,7 @@ function homeViewMapStateToProps(state: any) {
 	isLoading: state.publicCauses.type == OpState.Init || state.publicCauses.type == OpState.Loading,
 	isReady: state.publicCauses.type == OpState.Ready,
 	isFailed: state.publicCauses.type == OpState.Failed,
-	publicCauses: state.publicCauses.type == OpState.Ready ? state.publicCauses.publicCauses : null,
+	causes: state.publicCauses.type == OpState.Ready ? state.publicCauses.causes : null,
 	errorMessage: state.publicCauses.type == OpState.Failed ? state.publicCauses.errorMessage : null,
     };
 }
@@ -328,7 +327,7 @@ function homeViewMapStateToProps(state: any) {
 function homeViewMapDispatchToProps(dispatch: (newState: PublicCausesState) => void) {
     return {
 	onPublicCausesLoading: () => dispatch({part: StatePart.PublicCauses, type: OpState.Loading}),
-	onPublicCausesReady: (publicCauses: PublicCause[]) => dispatch({part: StatePart.PublicCauses, type: OpState.Ready, publicCauses: publicCauses}),
+	onPublicCausesReady: (causes: PublicCause[]) => dispatch({part: StatePart.PublicCauses, type: OpState.Ready, causes: causes}),
 	onPublicCausesFailed: (errorMessage: string) => dispatch({part: StatePart.PublicCauses, type: OpState.Failed, errorMessage: errorMessage})
     };
 }
@@ -346,17 +345,66 @@ interface CauseViewParams {
 
 
 interface CauseViewProps {
-    params: CauseViewParams
+    isLoading: boolean;
+    isReady: boolean;
+    isFailed: boolean;
+    params: CauseViewParams;
+    cause: PublicCause|null;
+    errorMessage: string|null;
+    onPublicCauseDetailLoading: () => void;
+    onPublicCauseDetailReady: (cause: PublicCause) => void;
+    onPublicCauseDetailFailed: (errorMessage: string) => void;
 }
 
 
-class CauseView extends React.Component<CauseViewProps, undefined> {
+class _CauseView extends React.Component<CauseViewProps, undefined> {
+    async componentDidMount() {
+	this.props.onPublicCauseDetailLoading();
+
+	try {
+	    const causeId = parseInt(this.props.params.causeId);
+	    const cause = await corePublicClient.getCause(accessToken, causeId);
+	    this.props.onPublicCauseDetailReady(cause);
+	} catch (e) {
+	    this.props.onPublicCauseDetailFailed('Could not load public cause detail');
+	}
+    }
+    
     render() {
-        return (
-	    <div>This is the cause view for {this.props.params.causeId} / {this.props.params.causeSlug}</div>
-	);
+	if (this.props.isLoading) {
+	    return (<div>Loading ...</div>);
+	} else if (this.props.isFailed) {
+	    return (<div>Failed {this.props.errorMessage}</div>);
+	} else {
+	    return <PublicCauseWidget cause={this.props.cause as PublicCause} />;
+	}
     }
 }
+
+
+function causeViewMapStateToProps(state: any) {
+    return {
+	isLoading: state.publicCauseDetail.type == OpState.Init || state.publicCauseDetail.type == OpState.Loading,
+	isReady: state.publicCauseDetail.type == OpState.Ready,
+	isFailed: state.publicCauseDetail.type == OpState.Failed,
+	cause: state.publicCauseDetail.type == OpState.Ready ? state.publicCauseDetail.cause : null,
+	errorMessage: state.publicCauseDetail.type == OpState.Failed ? state.publicCauseDetail.errorMessage : null,
+    };
+}
+
+
+function causeViewMapDispatchToProps(dispatch: (newState: PublicCauseDetailState) => void) {
+    return {
+	onPublicCauseDetailLoading: () => dispatch({part: StatePart.PublicCauseDetail, type: OpState.Loading}),
+	onPublicCauseDetailReady: (cause: PublicCause) => dispatch({part: StatePart.PublicCauseDetail, type: OpState.Ready, cause: cause}),
+	onPublicCauseDetailFailed: (errorMessage: string) => dispatch({part: StatePart.PublicCauseDetail, type: OpState.Failed, errorMessage: errorMessage})
+    };
+}
+
+
+const CauseView = connect(
+    causeViewMapStateToProps,
+    causeViewMapDispatchToProps)(_CauseView);
 
 
 interface AdminViewProps {

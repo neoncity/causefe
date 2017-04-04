@@ -6,7 +6,8 @@ import { User } from '@neoncity/identity-sdk-js'
 
 export enum StatePart {
     Identity = 0,
-    PublicCauses = 1
+    PublicCauses = 1,
+    PublicCauseDetail = 2
 }
 
 
@@ -74,7 +75,7 @@ interface PublicCausesLoading {
 interface PublicCausesReady {
     part: StatePart.PublicCauses;
     type: OpState.Ready;
-    publicCauses: PublicCause[];
+    causes: PublicCause[];
 }
 interface PublicCausesFailed {
     part: StatePart.PublicCauses;
@@ -107,9 +108,54 @@ function publicCauses(state=publicCausesInitialState, action: PublicCausesState)
 }
 
 
+interface PublicCauseDetailInit {
+    part: StatePart.PublicCauseDetail;
+    type: OpState.Init;
+}
+interface PublicCauseDetailLoading {
+    part: StatePart.PublicCauseDetail;
+    type: OpState.Loading;
+}
+interface PublicCauseDetailReady {
+    part: StatePart.PublicCauseDetail;
+    type: OpState.Ready;
+    cause: PublicCause;
+}
+interface PublicCauseDetailFailed {
+    part: StatePart.PublicCauseDetail;
+    type: OpState.Failed;
+    errorMessage: string;
+}
+
+export type PublicCauseDetailState = PublicCauseDetailInit | PublicCauseDetailLoading | PublicCauseDetailReady | PublicCauseDetailFailed;
+
+const publicCauseDetailInitialState: PublicCauseDetailState = {
+    part: StatePart.PublicCauseDetail,
+    type: OpState.Init
+};
+
+
+function publicCauseDetail(state=publicCauseDetailInitialState, action: PublicCauseDetailState): PublicCauseDetailState {
+    if (action.part != StatePart.PublicCauseDetail) {
+	return state;
+    }
+    
+    switch (action.type) {
+    case OpState.Init:
+    case OpState.Loading:
+    case OpState.Ready:
+    case OpState.Failed:
+	return action;
+    default:
+	return state;
+    }
+}
+
+
 const reducers = combineReducers({
     identity: identity,
-    publicCauses: publicCauses
+    publicCauses: publicCauses,
+    publicCauseDetail: publicCauseDetail
 });
 
 
