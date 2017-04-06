@@ -5,9 +5,9 @@ import { ExtractError, MarshalFrom, MarshalWith } from 'raynor'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { Provider, connect } from 'react-redux'
-import { Router, Route, IndexRoute, Link, browserHistory } from 'react-router'
+import { Router, Route, IndexRoute, IndexRedirect, Link, browserHistory } from 'react-router'
 
-import { CorePublicClient, newCorePublicClient, PublicCause } from '@neoncity/core-sdk-js'
+import { CorePublicClient, newCorePublicClient, PrivateCause, PublicCause } from '@neoncity/core-sdk-js'
 import { Auth0AccessTokenMarshaller, IdentityClient, newIdentityClient, User } from '@neoncity/identity-sdk-js'
 
 import * as config from './config'
@@ -407,16 +407,77 @@ const CauseView = connect(
     causeViewMapDispatchToProps)(_CauseView);
 
 
-interface AdminViewProps {
+interface AdminFrameProps {
     user: User;
+    children: React.ReactNode;
 }
 
 
-class AdminView extends React.Component<AdminViewProps, undefined> {
+class AdminFrame extends React.Component<AdminFrameProps, undefined> {
     render() {
         return (
-	    <div>This is the admin view</div>
+            <div>
+                <div>This is the admin view</div>
+                <Link to="/admin/updates">Updates</Link>
+                <Link to="/admin/my-cause">My Cause</Link>
+                <Link to="/admin/my-actions">My Actions</Link>
+                <Link to="/admin/account">Account</Link>
+                {this.props.children}
+            </div>
         );
+    }
+}
+
+
+interface AdminUpdatesProps {
+}
+
+
+class AdminUpdatesView extends React.Component<AdminUpdatesProps, undefined> {
+    render() {
+        return (<div>This is the updates section</div>);
+    }
+}
+
+
+interface AdminMyCauseProps {
+    isLoading: boolean;
+    isReady: boolean;
+    isFailed: boolean;
+    hasCause: boolean;
+    cause: PrivateCause|null;
+    errorMessage: string|null;
+    onPrivateCauseLoading: () => void;
+    onPrivateCauseReady: (hasCause: boolean, cause: PrivateCause) => void;
+    onPrivateCasseFailed: (errorMessage: string) => void;
+}
+
+
+class AdminMyCauseView extends React.Component<AdminMyCauseProps, undefined> {
+    render() {
+        return (<div>This is the my cause section</div>);
+    }
+}
+
+
+interface AdminMyActionsProps {
+}
+
+
+class AdminMyActionsView extends React.Component<AdminMyActionsProps, undefined> {
+    render() {
+        return (<div>This is the my actions section</div>);
+    }
+}
+
+
+interface AdminAccountProps {
+}
+
+
+class AdminAccountView extends React.Component<AdminAccountProps, undefined> {
+    render() {
+        return (<div>This is the account section</div>);
     }
 }
 
@@ -443,7 +504,13 @@ ReactDOM.render(
                 <Route path="c/:causeId/:causeSlug" component={CauseView} />
 
                 <Route path="/" component={IdentityFrame}>
-                    <Route path="admin" component={AdminView} />
+                    <Route path="admin" component={AdminFrame}>
+		        <IndexRedirect to="updates" />
+			<Route path="updates" component={AdminUpdatesView} />
+			<Route path="my-cause" component={AdminMyCauseView} />
+			<Route path="my-actions" component={AdminMyActionsView} />
+			<Route path="account" component={AdminAccountView} />
+                    </Route>
                     <Route path="console" component={ConsoleView} />
                 </Route>
             </Route>
