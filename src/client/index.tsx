@@ -7,7 +7,7 @@ import * as ReactDOM from 'react-dom'
 import { Provider, connect } from 'react-redux'
 import { Router, Route, IndexRoute, IndexRedirect, Link, browserHistory } from 'react-router'
 
-import { CorePrivateClient, CorePublicClient, newCorePrivateClient, newCorePublicClient, PrivateCause, PublicCause, UserActionsOverview } from '@neoncity/core-sdk-js'
+import { Cause, CorePrivateClient, CorePublicClient, DonationForUser, ShareForUser, newCorePrivateClient, newCorePublicClient, PrivateCause, PublicCause, UserActionsOverview } from '@neoncity/core-sdk-js'
 import { Auth0AccessTokenMarshaller, IdentityClient, newIdentityClient, User } from '@neoncity/identity-sdk-js'
 
 import * as config from './config'
@@ -266,11 +266,47 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, undefine
     render() {
 	return (
             <div>
-	        <h2><Link to={`/c/${this.props.cause.id}/${this.props.cause.slug}`}>{this.props.cause.title}</Link></h2>
+	        <h2><Link to={_causeLink(this.props.cause)}>{this.props.cause.title}</Link></h2>
 		<p>{this.props.cause.description}</p>
 		<p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency}</p>
 		<p>{this.props.cause.deadline.toString()}</p>
 	    </div>
+	);
+    }
+}
+
+
+interface DonationForUserProps {
+    donationForUser: DonationForUser;
+}
+
+
+class DonationForUserWidget extends React.Component<DonationForUserProps, undefined> {
+    render() {
+	const donation = this.props.donationForUser;
+	const cause = this.props.donationForUser.forCause;
+	const timeCreated = donation.timeCreated.toString();
+	
+	return (
+		<p>To <Link to={_causeLink(cause)}>{cause.title}</Link> donated {donation.amount.amount} {donation.amount.currency} on {timeCreated}</p>
+	);
+    }
+}
+
+
+interface ShareForUserProps {
+    shareForUser: ShareForUser;
+}
+
+
+class ShareForUserWidget extends React.Component<ShareForUserProps, undefined> {
+    render() {
+	const share = this.props.shareForUser;
+	const cause = this.props.shareForUser.forCause;
+	const timeCreated = share.timeCreated.toString();
+	
+	return (
+		<p>To <Link to={`/c/${cause.id}/${cause.slug}`}>{cause.title}</Link> shared on {timeCreated}</p>
 	);
     }
 }
@@ -481,6 +517,7 @@ class _AdminMyActionsView extends React.Component<AdminMyActionsProps, undefined
 	    const userActionsOverview = await corePrivateClient.getActionsOverview(accessToken);
 	    this.props.onUserActionsOverviewReady(userActionsOverview);
 	} catch (e) {
+	    console.log(e);
 	    this.props.onUserActionsOverviewFailed('Could not load user actions overview');
 	}
     }
@@ -491,7 +528,25 @@ class _AdminMyActionsView extends React.Component<AdminMyActionsProps, undefined
 	} else if (this.props.isFailed) {
 	    return (<div>Failed {this.props.errorMessage}</div>);
 	} else {
-            return (<div>This is the my {(this.props.userActionsOverview as UserActionsOverview).donations.length} / {(this.props.userActionsOverview as UserActionsOverview).shares.length} actions section</div>);
+	    const donationWidgets = (this.props.userActionsOverview as UserActionsOverview)
+		  .donations
+		  .slice(0) // clone
+		  .sort((a, b) => b.timeCreated.getTime() - a.timeCreated.getTime())
+		  .map((d) => <DonationForUserWidget key={d.id} donationForUser={d} />);
+	    const shareWidgets = (this.props.userActionsOverview as UserActionsOverview)
+		  .shares
+		  .slice(0) // clone
+		  .sort((a, b) => b.timeCreated.getTime() - a.timeCreated.getTime())
+		  .map((d) => <ShareForUserWidget key={d.id} shareForUser={d} />);	    
+
+	    return (
+                <div>
+		    <h6>Donations</h6>
+		    {donationWidgets}
+		    <h6>Shares</h6>
+		    {shareWidgets}
+		</div>
+	    );
 	}
     }
 }
@@ -544,6 +599,11 @@ class ConsoleView extends React.Component<ConsoleViewProps, undefined> {
 	    <div>This is the console view</div>
 	);
     }
+}
+
+
+function _causeLink(cause: Cause): string {
+    return `/c/${cause.id}/${cause.slug}`;
 }
 
 
