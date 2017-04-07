@@ -7,12 +7,12 @@ import * as ReactDOM from 'react-dom'
 import { Provider, connect } from 'react-redux'
 import { Router, Route, IndexRoute, IndexRedirect, Link, browserHistory } from 'react-router'
 
-import { CorePublicClient, newCorePublicClient, PrivateCause, PublicCause } from '@neoncity/core-sdk-js'
+import { CorePrivateClient, CorePublicClient, newCorePrivateClient, newCorePublicClient, PrivateCause, PublicCause, UserActionsOverview } from '@neoncity/core-sdk-js'
 import { Auth0AccessTokenMarshaller, IdentityClient, newIdentityClient, User } from '@neoncity/identity-sdk-js'
 
 import * as config from './config'
 import './index.less'
-import { OpState, IdentityState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
+import { AdminMyActionsState, OpState, IdentityState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
 
 
 // Start services here. Will move to a better place later.
@@ -75,6 +75,7 @@ const auth0RedirectInfoMarshaller = new (MarshalFrom(Auth0RedirectInfo))();
 let rawAccessToken: string|null = _loadAccessToken();
 let identityClient: IdentityClient|null;
 const corePublicClient: CorePublicClient = newCorePublicClient(config.CORE_SERVICE_HOST);
+const corePrivateClient: CorePrivateClient = newCorePrivateClient(config.CORE_SERVICE_HOST);
 
 const currentLocation = browserHistory.getCurrentLocation();
 
@@ -461,14 +462,64 @@ class AdminMyCauseView extends React.Component<AdminMyCauseProps, undefined> {
 
 
 interface AdminMyActionsProps {
+    isLoading: boolean;
+    isReady: boolean;
+    isFailed: boolean;
+    userActionsOverview: UserActionsOverview|null;
+    errorMessage: string|null;
+    onUserActionsOverviewLoading: () => void;
+    onUserActionsOverviewReady: (userActionsOverview: UserActionsOverview) => void;
+    onUserActionsOverviewFailed: (errorMessage: string) => void;
 }
 
 
-class AdminMyActionsView extends React.Component<AdminMyActionsProps, undefined> {
+class _AdminMyActionsView extends React.Component<AdminMyActionsProps, undefined> {
+    async componentDidMount() {
+	this.props.onUserActionsOverviewLoading();
+
+	try {
+	    const userActionsOverview = await corePrivateClient.getActionsOverview(accessToken);
+	    this.props.onUserActionsOverviewReady(userActionsOverview);
+	} catch (e) {
+	    this.props.onUserActionsOverviewFailed('Could not load user actions overview');
+	}
+    }
+    
     render() {
-        return (<div>This is the my actions section</div>);
+	if (this.props.isLoading) {
+	    return (<div>Loading ...</div>);
+	} else if (this.props.isFailed) {
+	    return (<div>Failed {this.props.errorMessage}</div>);
+	} else {
+            return (<div>This is the my {(this.props.userActionsOverview as UserActionsOverview).donations.length} / {(this.props.userActionsOverview as UserActionsOverview).shares.length} actions section</div>);
+	}
     }
 }
+
+
+function adminMyActionsMapStateToProps(state: any) {
+    return {
+	isLoading: state.adminMyActions.type == OpState.Init || state.adminMyActions.type == OpState.Loading,
+	isReady: state.adminMyActions.type == OpState.Ready,
+	isFailed: state.adminMyActions.type == OpState.Failed,
+	userActionsOverview: state.adminMyActions.type == OpState.Ready ? state.adminMyActions.userActionsOverview : null,
+	errorMessage: state.adminMyActions.type == OpState.Failed ? state.adminMyActions.errorMessage : null
+    };
+}
+
+
+function adminMyActionsMapDispatchToProps(dispatch: (newState: AdminMyActionsState) => void) {
+    return {
+	onUserActionsOverviewLoading: () => dispatch({part: StatePart.AdminMyActions, type: OpState.Loading}),
+	onUserActionsOverviewReady: (userActionsOverview: UserActionsOverview) => dispatch({part: StatePart.AdminMyActions, type: OpState.Ready, userActionsOverview: userActionsOverview}),
+	onUserActionsOverviewFailed: (errorMessage: string) => dispatch({part: StatePart.AdminMyActions, type: OpState.Failed, errorMessage: errorMessage})
+    };
+}
+
+
+const AdminMyActionsView = connect(
+    adminMyActionsMapStateToProps,
+    adminMyActionsMapDispatchToProps)(_AdminMyActionsView);
 
 
 interface AdminAccountProps {

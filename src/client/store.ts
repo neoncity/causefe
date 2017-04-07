@@ -1,13 +1,14 @@
 import { createStore, combineReducers } from 'redux'
 
-import { PublicCause } from '@neoncity/core-sdk-js'
+import { PublicCause, UserActionsOverview } from '@neoncity/core-sdk-js'
 import { User } from '@neoncity/identity-sdk-js'
 
 
 export enum StatePart {
     Identity = 0,
     PublicCauses = 1,
-    PublicCauseDetail = 2
+    PublicCauseDetail = 2,
+    AdminMyActions = 3
 }
 
 
@@ -152,10 +153,55 @@ function publicCauseDetail(state=publicCauseDetailInitialState, action: PublicCa
 }
 
 
+interface AdminMyActionsInit {
+    part: StatePart.AdminMyActions;
+    type: OpState.Init;
+}
+interface AdminMyActionsLoading {
+    part: StatePart.AdminMyActions;
+    type: OpState.Loading;
+}
+interface AdminMyActionsReady {
+    part: StatePart.AdminMyActions;
+    type: OpState.Ready;
+    userActionsOverview: UserActionsOverview;
+}
+interface AdminMyActionsFailed {
+    part: StatePart.AdminMyActions;
+    type: OpState.Failed;
+    errorMessage: string;
+}
+
+export type AdminMyActionsState = AdminMyActionsInit | AdminMyActionsLoading | AdminMyActionsReady | AdminMyActionsFailed;
+
+const adminMyActionsInitialState: AdminMyActionsState = {
+    part: StatePart.AdminMyActions,
+    type: OpState.Init
+};
+
+
+function adminMyActions(state=adminMyActionsInitialState, action: AdminMyActionsState): AdminMyActionsState {
+    if (action.part != StatePart.AdminMyActions) {
+	return state;
+    }
+    
+    switch (action.type) {
+    case OpState.Init:
+    case OpState.Loading:
+    case OpState.Ready:
+    case OpState.Failed:
+	return action;
+    default:
+	return state;
+    }
+}
+
+
 const reducers = combineReducers({
     identity: identity,
     publicCauses: publicCauses,
-    publicCauseDetail: publicCauseDetail
+    publicCauseDetail: publicCauseDetail,
+    adminMyActions: adminMyActions
 });
 
 
