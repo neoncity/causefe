@@ -566,7 +566,16 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 			  <p>{this.state.slug}</p>
 			  <label htmlFor="admin-my-cause-description">Description</label>
 			  <input id="admin-my-cause-description" type="text" value={this.state.description} onChange={this._handleDescriptionChange.bind(this)} placeholder="Cause description..." />
-			  <ReactDatePicker selected={this.state.deadline} onChange={this._handleDeadlineChange.bind(this)} />
+			  <div><ReactDatePicker selected={this.state.deadline} onChange={this._handleDeadlineChange.bind(this)} /></div>
+                          <label htmlFor="admin-my-cause-goal-amount">Goal amount</label>
+                          <input id="admin-my-cause-goal-amount" type="number" value={this.state.goalAmount} onChange={this._handleGoalAmountChange.bind(this)} placeholder="100" />
+                          <label htmlFor="admin-my-cause-goal-currency">Goal currency</label>
+                          <div>
+                          <select id="admin-my-cause-goal-currency" value={this.state.goalCurrency} onChange={this._handleGoalCurrencyChange.bind(this)}>
+                          <option value="RON">RON</option>
+                          <option value="EUR">EUR</option>
+                          </select>
+                          </div>
 			  </form>
 			  </div>
 			 );
@@ -621,6 +630,14 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 
     private _handleDeadlineChange(newDeadline: theMoment.Moment) {
 	this.setState({modifiedGeneral: true, deadline: newDeadline});
+    }
+
+    private _handleGoalAmountChange(e: React.FormEvent<HTMLInputElement>) {
+	this.setState({modifiedGeneral: true, goalAmount: parseInt(e.currentTarget.value)});
+    }
+
+    private _handleGoalCurrencyChange(e: React.FormEvent<HTMLInputElement>) {
+	this.setState({modifiedGeneral: true, goalCurrency: e.currentTarget.value});
     }
 }
 
