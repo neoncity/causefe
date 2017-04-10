@@ -12,7 +12,7 @@ import { Auth0AccessTokenMarshaller, IdentityClient, newIdentityClient, User } f
 
 import * as config from './config'
 import './index.less'
-import { AdminMyActionsState, OpState, IdentityState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
+import { AdminMyActionsState, AdminMyCauseState, OpState, IdentityState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
 
 
 // Start services here. Will move to a better place later.
@@ -491,16 +491,67 @@ interface AdminMyCauseProps {
     cause: PrivateCause|null;
     errorMessage: string|null;
     onPrivateCauseLoading: () => void;
-    onPrivateCauseReady: (hasCause: boolean, cause: PrivateCause) => void;
-    onPrivateCasseFailed: (errorMessage: string) => void;
+    onPrivateCauseReady: (hasCause: boolean, cause: PrivateCause|null) => void;
+    onPrivateCauseFailed: (errorMessage: string) => void;
 }
 
 
-class AdminMyCauseView extends React.Component<AdminMyCauseProps, undefined> {
+class _AdminMyCauseView extends React.Component<AdminMyCauseProps, undefined> {
+    async componentDidMount() {
+        this.props.onPrivateCauseLoading();
+
+        try {
+            const privateCause = await corePrivateClient.getCause(accessToken);
+            this.props.onPrivateCauseReady(true, privateCause);
+        } catch (e) {
+            if (e.name == 'NoCauseForUserError') {
+                this.props.onPrivateCauseReady(false, null);
+            } else {
+                this.props.onPrivateCauseFailed('Could not load cause for user');
+            }
+        }
+    }
+    
     render() {
-        return (<div>This is the my cause section</div>);
+	if (this.props.isLoading) {
+	    return (<div>Loading ...</div>);
+	} else if (this.props.isFailed) {
+	    return (<div>Failed {this.props.errorMessage}</div>);
+	} else if (!this.props.hasCause) {
+            return (<div>There is no cause</div>);
+        } else {
+            const cause = this.props.cause as PrivateCause;
+            
+            return (<div>{cause.title}</div>);
+        }
     }
 }
+
+
+function adminMyCauseMapStateToProps(state: any) {
+    return {
+	isLoading: state.adminMyCause.type == OpState.Init || state.adminMyCause.type == OpState.Loading,
+	isReady: state.adminMyCause.type == OpState.Ready,
+	isFailed: state.adminMyCause.type == OpState.Failed,
+        hasCause: state.adminMyCause.type == OpState.Ready ? state.adminMyCause.hasCause : false,
+        cause: state.adminMyCause.type == OpState.Ready ? state.adminMyCause.cause : null,
+	errorMessage: state.adminMyCause.type == OpState.Failed ? state.adminMyCause.errorMessage : null
+    };
+}
+
+
+function adminMyCauseMapDispatchToProps(dispatch: (newState: AdminMyCauseState) => void) {
+    return {
+	onPrivateCauseLoading: () => dispatch({part: StatePart.AdminMyCause, type: OpState.Loading}),
+	onPrivateCauseReady: (hasCause: boolean, cause: PrivateCause) => dispatch({part: StatePart.AdminMyCause, type: OpState.Ready, hasCause: hasCause, cause: cause}),
+	onPrivateCauseFailed: (errorMessage: string) => dispatch({part: StatePart.AdminMyCause, type: OpState.Failed, errorMessage: errorMessage})
+    };
+}
+
+
+const AdminMyCauseView = connect(
+    adminMyCauseMapStateToProps,
+    adminMyCauseMapDispatchToProps)(_AdminMyCauseView);
 
 
 interface AdminMyActionsProps {
@@ -523,7 +574,6 @@ class _AdminMyActionsView extends React.Component<AdminMyActionsProps, undefined
 	    const userActionsOverview = await corePrivateClient.getActionsOverview(accessToken);
 	    this.props.onUserActionsOverviewReady(userActionsOverview);
 	} catch (e) {
-	    console.log(e);
 	    this.props.onUserActionsOverviewFailed('Could not load user actions overview');
 	}
     }
