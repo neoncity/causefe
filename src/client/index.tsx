@@ -402,7 +402,13 @@ class _CauseView extends React.Component<CauseViewProps, undefined> {
 	    const causeId = parseInt(this.props.params.causeId);
 	    const cause = await corePublicClient.getCause(accessToken, causeId);
 	    this.props.onPublicCauseDetailReady(cause);
+	    // Also update the URL to be _causeLink(cause), but it should do no navigation.
+	    // Users might access this as /c/$id/$firstSlug, but the actual slug assigned
+	    // might be $secondSlog. So we wish to replace the one they specified with
+	    // /c/$id/$secondSlug
+	    browserHistory.replace(_causeLink(cause));
 	} catch (e) {
+	    console.log('Here');
 	    this.props.onPublicCauseDetailFailed('Could not load public cause detail');
 	}
     }
