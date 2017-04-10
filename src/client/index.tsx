@@ -1,9 +1,12 @@
 import Auth0Lock from 'auth0-lock'
+import * as theMoment from 'moment'
 import * as queryString from 'query-string'
 import * as r from 'raynor'
 import { ExtractError, MarshalFrom, MarshalWith } from 'raynor'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
+import * as ReactDatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 import { Provider, connect } from 'react-redux'
 import { Router, Route, IndexRoute, IndexRedirect, Link, browserHistory } from 'react-router'
 
@@ -15,9 +18,11 @@ import * as config from './config'
 import './index.less'
 import { AdminMyActionsState, AdminMyCauseState, OpState, IdentityState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
 
+// Old style imports.
+const moment = require('moment')
+
 
 // Start services here. Will move to a better place later.
-
 
 class AllowedRoutesMarshaller extends r.AbsolutePathMarshaller {
     filter(path: string): string {
@@ -503,7 +508,7 @@ interface AdminMyCauseViewState {
     title: string;
     slug: string;
     description: string;
-    deadline: Date;
+    deadline: theMoment.Moment;
     goalAmount: number;
     goalCurrency: string;
 }
@@ -516,7 +521,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	title: '',
 	slug: '',
 	description: '',
-	deadline: new Date(),
+	deadline: moment(),
 	goalAmount: 100,
 	goalCurrency: 'RON'
     };
@@ -559,6 +564,9 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 			  <label htmlFor="admin-my-cause-title">Title</label>
 			  <input id="admin-my-cause-title" type="text" value={this.state.title} onChange={this._handleTitleChange.bind(this)} placeholder="Cause title..." />
 			  <p>{this.state.slug}</p>
+			  <label htmlFor="admin-my-cause-description">Description</label>
+			  <input id="admin-my-cause-description" type="text" value={this.state.description} onChange={this._handleDescriptionChange.bind(this)} placeholder="Cause description..." />
+			  <ReactDatePicker selected={this.state.deadline} onChange={this._handleDeadlineChange.bind(this)} />
 			  </form>
 			  </div>
 			 );
@@ -593,7 +601,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	    title: cause.title,
 	    slug: cause.slug,
 	    description: cause.description,
-	    deadline: cause.deadline,
+	    deadline: moment(cause.deadline),
 	    goalAmount: cause.goal.amount,
 	    goalCurrency: cause.goal.currency
 	};
@@ -605,6 +613,14 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 
     private _handleTitleChange(e: React.FormEvent<HTMLInputElement>) {
 	this.setState({modifiedGeneral: true, title: e.currentTarget.value, slug: slugify(e.currentTarget.value)});
+    }
+
+    private _handleDescriptionChange(e: React.FormEvent<HTMLInputElement>) {
+	this.setState({modifiedGeneral: true, description: e.currentTarget.value});
+    }
+
+    private _handleDeadlineChange(newDeadline: theMoment.Moment) {
+	this.setState({modifiedGeneral: true, deadline: newDeadline});
     }
 }
 
