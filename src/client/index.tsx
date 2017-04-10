@@ -7,6 +7,7 @@ import * as ReactDOM from 'react-dom'
 import { Provider, connect } from 'react-redux'
 import { Router, Route, IndexRoute, IndexRedirect, Link, browserHistory } from 'react-router'
 
+import { slugify } from '@neoncity/common-js/slugify'
 import { Cause, CorePrivateClient, CorePublicClient, DonationForUser, ShareForUser, newCorePrivateClient, newCorePublicClient, PrivateCause, PublicCause, UserActionsOverview } from '@neoncity/core-sdk-js'
 import { Auth0AccessTokenMarshaller, IdentityClient, newIdentityClient, User } from '@neoncity/identity-sdk-js'
 
@@ -496,7 +497,35 @@ interface AdminMyCauseProps {
 }
 
 
-class _AdminMyCauseView extends React.Component<AdminMyCauseProps, undefined> {
+interface AdminMyCauseViewState {
+    showCreationFormIfNoControls: boolean;
+    modifiedGeneral: boolean;
+    title: string;
+    slug: string;
+    description: string;
+    deadline: Date;
+    goalAmount: number;
+    goalCurrency: string;
+}
+
+
+class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseViewState> {
+    private static readonly _initialState = {
+	showCreationFormIfNoControls: false,
+	modifiedGeneral: false,
+	title: '',
+	slug: '',
+	description: '',
+	deadline: new Date(),
+	goalAmount: 100,
+	goalCurrency: 'RON'
+    };
+    
+    constructor(props: AdminMyCauseProps, context: any) {
+	super(props, context);
+	this.state = (Object as any).assign({}, _AdminMyCauseView._initialState);
+    }
+    
     async componentDidMount() {
         this.props.onPrivateCauseLoading();
 
@@ -511,19 +540,71 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, undefined> {
             }
         }
     }
+
+    componentWillReceiveProps(newProps: AdminMyCauseProps) {
+	if (newProps.isReady) {
+	    this.setState(this._fullStateFromProps(newProps));
+	}
+    }
+
+    componentWillMount() {
+	if (this.props.isReady) {
+	    this.setState(this._fullStateFromProps(this.props));
+	}
+    }
     
     render() {
+	const editForm = (<div>
+			  <form>
+			  <label htmlFor="admin-my-cause-title">Title</label>
+			  <input id="admin-my-cause-title" type="text" value={this.state.title} onChange={this._handleTitleChange.bind(this)} placeholder="Cause title..." />
+			  <p>{this.state.slug}</p>
+			  </form>
+			  </div>
+			 );
+	
 	if (this.props.isLoading) {
 	    return (<div>Loading ...</div>);
 	} else if (this.props.isFailed) {
 	    return (<div>Failed {this.props.errorMessage}</div>);
 	} else if (!this.props.hasCause) {
-            return (<div>There is no cause</div>);
+	    if (!this.state.showCreationFormIfNoControls) {
+		return (<div>There is no cause<button onClick={this._handleShowCreationForm.bind(this)}>Create cause</button></div>);
+	    } else {
+		return (<div>Creation form {editForm}</div>);
+	    }
         } else {
             const cause = this.props.cause as PrivateCause;
             
-            return (<div>{cause.title}</div>);
+            return (<div>{cause.title} {editForm}</div>);
         }
+    }
+
+    private _fullStateFromProps(props: AdminMyCauseProps): AdminMyCauseViewState {
+	if (!props.hasCause) {
+	    return (Object as any).assign({}, _AdminMyCauseView._initialState);
+	}
+	
+	const cause = props.cause as PrivateCause;
+	
+	return {
+	    showCreationFormIfNoControls: false,
+	    modifiedGeneral: false,
+	    title: cause.title,
+	    slug: cause.slug,
+	    description: cause.description,
+	    deadline: cause.deadline,
+	    goalAmount: cause.goal.amount,
+	    goalCurrency: cause.goal.currency
+	};
+    }
+
+    private _handleShowCreationForm() {
+	this.setState({showCreationFormIfNoControls: true});
+    }
+
+    private _handleTitleChange(e: React.FormEvent<HTMLInputElement>) {
+	this.setState({modifiedGeneral: true, title: e.currentTarget.value, slug: slugify(e.currentTarget.value)});
     }
 }
 

@@ -26,7 +26,7 @@
     "tsconfig.json": "c:tsconfig.json"
   },
   "dependencies": {
-    "@neoncity/common-js": "=1.0.0",
+    "@neoncity/common-js": "=1.1.0",
     "@neoncity/core-sdk-js": "=3.1.0",
     "@neoncity/identity-sdk-js": "=1.2.3",
     "auth0-lock": "=10.11.0",
