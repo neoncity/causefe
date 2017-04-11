@@ -11,7 +11,19 @@ import { Provider, connect } from 'react-redux'
 import { Router, Route, IndexRoute, IndexRedirect, Link, browserHistory } from 'react-router'
 
 import { slugify } from '@neoncity/common-js/slugify'
-import { Cause, CorePrivateClient, CorePublicClient, DonationForUser, ShareForUser, newCorePrivateClient, newCorePublicClient, PrivateCause, PublicCause, UserActionsOverview } from '@neoncity/core-sdk-js'
+import { BankInfo,
+	 Cause,
+	 CorePrivateClient,
+	 CorePublicClient,
+	 CurrencyAmount,
+	 DonationForUser,
+	 newCorePrivateClient,
+	 newCorePublicClient,
+	 Picture,
+	 PrivateCause,
+	 PublicCause,
+	 ShareForUser,	 
+	 UserActionsOverview } from '@neoncity/core-sdk-js'
 import { Auth0AccessTokenMarshaller, IdentityClient, newIdentityClient, User } from '@neoncity/identity-sdk-js'
 
 import * as config from './config'
@@ -559,26 +571,39 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
     }
     
     render() {
-	const editForm = (<div>
-			  <form>
-			  <label htmlFor="admin-my-cause-title">Title</label>
-			  <input id="admin-my-cause-title" type="text" value={this.state.title} onChange={this._handleTitleChange.bind(this)} placeholder="Cause title..." />
-			  <p>{this.state.slug}</p>
-			  <label htmlFor="admin-my-cause-description">Description</label>
-			  <input id="admin-my-cause-description" type="text" value={this.state.description} onChange={this._handleDescriptionChange.bind(this)} placeholder="Cause description..." />
-			  <div><ReactDatePicker selected={this.state.deadline} onChange={this._handleDeadlineChange.bind(this)} /></div>
-                          <label htmlFor="admin-my-cause-goal-amount">Goal amount</label>
-                          <input id="admin-my-cause-goal-amount" type="number" value={this.state.goalAmount} onChange={this._handleGoalAmountChange.bind(this)} placeholder="100" />
-                          <label htmlFor="admin-my-cause-goal-currency">Goal currency</label>
-                          <div>
-                          <select id="admin-my-cause-goal-currency" value={this.state.goalCurrency} onChange={this._handleGoalCurrencyChange.bind(this)}>
-                          <option value="RON">RON</option>
-                          <option value="EUR">EUR</option>
-                          </select>
-                          </div>
-			  </form>
-			  </div>
-			 );
+        const editForm = (
+            <div>
+                <form>
+                    <div>
+                        <label htmlFor="admin-my-cause-title">Title</label>
+                        <input id="admin-my-cause-title" type="text" value={this.state.title} onChange={this._handleTitleChange.bind(this)} placeholder="Cause title..." />
+                    </div>
+                    <div>
+                        <label htmlFor="admin-my-cause-slug">URL</label>
+                        <input id="admin-my-cause-slug" value={this.state.slug} disabled={true} placeholder="URL..." />
+                    </div>
+                    <div>
+                        <label htmlFor="admin-my-cause-description">Description</label>
+                        <input id="admin-my-cause-description" type="text" value={this.state.description} onChange={this._handleDescriptionChange.bind(this)} placeholder="Cause description..." />
+                    </div>
+                    <div>
+                        <label htmlFor="admin-my-cause-deadline">Deadline</label>
+                        <ReactDatePicker id="admin-my-cause-deadline" selected={this.state.deadline} onChange={this._handleDeadlineChange.bind(this)} />
+                    </div>
+                    <div>
+                        <label htmlFor="admin-my-cause-goal-amount">Goal amount</label>
+                        <input id="admin-my-cause-goal-amount" type="number" value={this.state.goalAmount} onChange={this._handleGoalAmountChange.bind(this)} placeholder="100" />
+                    </div>
+                    <div>
+                        <label htmlFor="admin-my-cause-goal-currency">Goal currency</label>
+                        <select id="admin-my-cause-goal-currency" value={this.state.goalCurrency} onChange={this._handleGoalCurrencyChange.bind(this)}>
+                            <option value="RON">RON</option>
+                            <option value="EUR">EUR</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        );
 	
 	if (this.props.isLoading) {
 	    return (<div>Loading ...</div>);
@@ -588,25 +613,29 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	    if (!this.state.showCreationFormIfNoControls) {
 		return (<div>There is no cause<button onClick={this._handleShowCreationForm.bind(this)}>Create cause</button></div>);
 	    } else {
-		return (<div>
+		return (
+                    <div>
                         Creation form {editForm}
                         <div>
-                        <button disabled={this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>Reset</button>
-                        <button disabled={!this.state.modifiedGeneral} onClick={this._handleCreate.bind(this)}>Create</button>
+                            <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>Reset</button>
+                            <button disabled={!this.state.modifiedGeneral} onClick={this._handleCreate.bind(this)}>Create</button>
                         </div>
-                        </div>);
-	    }
+		    </div>
+		);
+            }
         } else {
             const cause = this.props.cause as PrivateCause;
             
-            return (<div>
+            return (
+                <div>
                     {cause.title}
                     {editForm}
-                        <div>
-                        <button disabled={this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>Reset</button>
-                        <button disabled={!this.state.modifiedGeneral} onClick={this._handleCreate.bind(this)}>Create</button>
-                        </div>
-                    </div>);
+                    <div>
+                        <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>Reset</button>
+                        <button disabled={!this.state.modifiedGeneral} onClick={this._handleUpdate.bind(this)}>Update</button>
+                    </div>
+                </div>
+	    );
         }
     }
 
@@ -657,8 +686,57 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
         this.setState(this._fullStateFromProps(this.props));
     }
 
-    private _handleCreate() {
+    private async _handleCreate() {
+	this.props.onPrivateCauseLoading();
+
+	try {
+	    const pictures: Picture[] = [];
+	    const goal: CurrencyAmount = new CurrencyAmount();
+	    goal.amount = this.state.goalAmount;
+	    goal.currency = this.state.goalCurrency;
+	    const bankInfo: BankInfo = new BankInfo();
+	    bankInfo.ibans = ["1234"];
+	    
+	    const privateCause = await corePrivateClient.createCause(
+		accessToken,
+		this.state.title,
+		this.state.description,
+		pictures,
+		this.state.deadline.toDate(),
+		goal,
+		bankInfo);
+	    this.props.onPrivateCauseReady(true, privateCause);
+	} catch (e) {
+	    this.props.onPrivateCauseFailed('Could not create cause for user');
+	}
     }
+
+    private async _handleUpdate() {
+	this.props.onPrivateCauseLoading();
+
+	try {
+	    const pictures: Picture[] = [];
+	    const goal: CurrencyAmount = new CurrencyAmount();
+	    goal.amount = this.state.goalAmount;
+	    goal.currency = this.state.goalCurrency;
+	    const bankInfo: BankInfo = new BankInfo();
+	    bankInfo.ibans = ["1234"];
+	    
+	    const privateCause = await corePrivateClient.updateCause(
+		accessToken,
+		{
+		    title: this.state.title,
+		    description: this.state.description,
+		    pictures: pictures,
+		    deadline: this.state.deadline.toDate(),
+		    goal: goal,
+		    bankInfo: bankInfo
+		});
+	    this.props.onPrivateCauseReady(true, privateCause);
+	} catch (e) {
+	    this.props.onPrivateCauseFailed('Could not update cause for user');
+	}	
+    }    
 }
 
 
