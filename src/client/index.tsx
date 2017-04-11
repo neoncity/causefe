@@ -588,12 +588,25 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	    if (!this.state.showCreationFormIfNoControls) {
 		return (<div>There is no cause<button onClick={this._handleShowCreationForm.bind(this)}>Create cause</button></div>);
 	    } else {
-		return (<div>Creation form {editForm}</div>);
+		return (<div>
+                        Creation form {editForm}
+                        <div>
+                        <button disabled={this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>Reset</button>
+                        <button disabled={!this.state.modifiedGeneral} onClick={this._handleCreate.bind(this)}>Create</button>
+                        </div>
+                        </div>);
 	    }
         } else {
             const cause = this.props.cause as PrivateCause;
             
-            return (<div>{cause.title} {editForm}</div>);
+            return (<div>
+                    {cause.title}
+                    {editForm}
+                        <div>
+                        <button disabled={this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>Reset</button>
+                        <button disabled={!this.state.modifiedGeneral} onClick={this._handleCreate.bind(this)}>Create</button>
+                        </div>
+                    </div>);
         }
     }
 
@@ -638,6 +651,13 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 
     private _handleGoalCurrencyChange(e: React.FormEvent<HTMLInputElement>) {
 	this.setState({modifiedGeneral: true, goalCurrency: e.currentTarget.value});
+    }
+
+    private _handleResetGeneral() {
+        this.setState(this._fullStateFromProps(this.props));
+    }
+
+    private _handleCreate() {
     }
 }
 
