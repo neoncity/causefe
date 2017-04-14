@@ -2,7 +2,7 @@ import Auth0Lock from 'auth0-lock'
 import * as theMoment from 'moment'
 import * as queryString from 'query-string'
 import * as r from 'raynor'
-import { ExtractError, MarshalFrom, MarshalWith } from 'raynor'
+import { Marshaller, ExtractError, MarshalFrom, MarshalWith } from 'raynor'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import * as ReactDatePicker from 'react-datepicker'
@@ -10,6 +10,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { Provider, connect } from 'react-redux'
 import { Router, Route, IndexRoute, IndexRedirect, Link, browserHistory } from 'react-router'
 
+import { Currency, StandardCurrencies, CurrencyMarshaller } from '@neoncity/common-js/currency'
 import { slugify } from '@neoncity/common-js/slugify'
 import { BankInfo,
 	 Cause,
@@ -23,7 +24,9 @@ import { BankInfo,
 	 PrivateCause,
 	 PublicCause,
 	 ShareForUser,	 
-	 UserActionsOverview } from '@neoncity/core-sdk-js'
+	 UserActionsOverview,
+	 TitleMarshaller,
+	 DescriptionMarshaller} from '@neoncity/core-sdk-js'
 import { Auth0AccessTokenMarshaller, IdentityClient, newIdentityClient, User } from '@neoncity/identity-sdk-js'
 
 import * as config from './config'
@@ -286,7 +289,7 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, undefine
             <div>
 	        <h2><Link to={_causeLink(this.props.cause)}>{this.props.cause.title}</Link></h2>
 		<p>{this.props.cause.description}</p>
-		<p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency}</p>
+		<p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency.toString()}</p>`
 		<p>{this.props.cause.deadline.toString()}</p>
 	    </div>
 	);
@@ -306,7 +309,7 @@ class DonationForUserWidget extends React.Component<DonationForUserProps, undefi
 	const timeCreated = donation.timeCreated.toString();
 	
 	return (
-		<p>To <Link to={_causeLink(cause)}>{cause.title}</Link> donated {donation.amount.amount} {donation.amount.currency} on {timeCreated}</p>
+		<p>To <Link to={_causeLink(cause)}>{cause.title}</Link> donated {donation.amount.amount} {donation.amount.currency.toString()} on {timeCreated}</p>
 	);
     }
 }
@@ -350,6 +353,7 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
 	    const causes = await corePublicClient.getCauses(accessToken);
 	    this.props.onPublicCausesReady(causes);
 	} catch (e) {
+	    console.log(e);
 	    this.props.onPublicCausesFailed('Could not load public causes');
 	}
     }
@@ -501,6 +505,55 @@ class AdminUpdatesView extends React.Component<AdminUpdatesProps, undefined> {
 }
 
 
+class UserInputMaster<T> {
+    private readonly _marshaller: Marshaller<T>;
+
+    constructor(marshaller: Marshaller<T>) {
+	this._marshaller = marshaller;
+    }
+
+    transform(userInput: string, oldValue: T): UserInput<T> {
+	try {
+	    let value = this._marshaller.extract(userInput);
+	    return new UserInput<T>(value, userInput, true, false);
+	} catch (e) {
+	    return new UserInput<T>(oldValue, userInput, true, true);
+	}
+    }
+}
+
+
+class UserInput<T> {
+    private readonly _value: T;
+    private readonly _userInput: string;
+    private readonly _modified: boolean;
+    private readonly _invalid: boolean;
+
+    constructor(value: T, userInput: string, modified: boolean = false, invalid: boolean = false) {
+	this._value = value;
+	this._userInput = userInput;
+	this._modified = modified;
+	this._invalid = invalid;
+    }
+
+    getValue(): T {
+	return this._value;
+    }
+
+    getUserInput(): string {
+	return this._userInput;
+    }
+
+    isModified(): boolean {
+	return this._modified;
+    }
+
+    isInvalid(): boolean {
+	return this._invalid;
+    }
+}
+
+
 interface AdminMyCauseProps {
     isLoading: boolean;
     isReady: boolean;
@@ -517,12 +570,12 @@ interface AdminMyCauseProps {
 interface AdminMyCauseViewState {
     showCreationFormIfNoControls: boolean;
     modifiedGeneral: boolean;
-    title: string;
-    slug: string;
-    description: string;
+    title: UserInput<string>;
+    slug: UserInput<string>;
+    description: UserInput<string>;
     deadline: theMoment.Moment;
-    goalAmount: number;
-    goalCurrency: string;
+    goalAmount: UserInput<number>;
+    goalCurrency: UserInput<Currency>;
 }
 
 
@@ -530,17 +583,28 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
     private static readonly _initialState = {
 	showCreationFormIfNoControls: false,
 	modifiedGeneral: false,
-	title: '',
-	slug: '',
-	description: '',
+	title: new UserInput<string>('', ''),
+	slug: new UserInput<string>('', ''),
+	description: new UserInput<string>('', ''),
 	deadline: moment(),
-	goalAmount: 100,
-	goalCurrency: 'RON'
+	goalAmount: new UserInput<number>(100, '100'),
+	goalCurrency: new UserInput<Currency>(StandardCurrencies.RON, 'RON')
     };
+
+    private readonly _titleMaster: UserInputMaster<string>;
+    private readonly _slugMaster: UserInputMaster<string>;
+    private readonly _descriptionMaster: UserInputMaster<string>;
+    private readonly _goalAmountMaster: UserInputMaster<number>;
+    private readonly _goalCurrencyMaster: UserInputMaster<Currency>;
     
     constructor(props: AdminMyCauseProps, context: any) {
 	super(props, context);
 	this.state = (Object as any).assign({}, _AdminMyCauseView._initialState);
+	this._titleMaster = new UserInputMaster<string>(new TitleMarshaller());
+	this._slugMaster = new UserInputMaster<string>(new r.SlugMarshaller());
+	this._descriptionMaster = new UserInputMaster<string>(new DescriptionMarshaller());
+	this._goalAmountMaster = new UserInputMaster<number>(new r.PositiveIntegerFromStringMarshaller());
+	this._goalCurrencyMaster = new UserInputMaster<Currency>(new CurrencyMarshaller());
     }
     
     async componentDidMount() {
@@ -553,6 +617,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
             if (e.name == 'NoCauseForUserError') {
                 this.props.onPrivateCauseReady(false, null);
             } else {
+		console.log(e);
                 this.props.onPrivateCauseFailed('Could not load cause for user');
             }
         }
@@ -571,38 +636,50 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
     }
     
     render() {
+	const allValid = !(this.state.title.isInvalid()
+			   || this.state.slug.isInvalid()
+			   || this.state.description.isInvalid()
+			   || this.state.goalAmount.isInvalid()
+			   || this.state.goalCurrency.isInvalid());
+	
         const editForm = (
-            <div>
+		<div>
                 <form>
-                    <div>
-                        <label htmlFor="admin-my-cause-title">Title</label>
-                        <input id="admin-my-cause-title" type="text" value={this.state.title} onChange={this._handleTitleChange.bind(this)} placeholder="Cause title..." />
-                    </div>
-                    <div>
-                        <label htmlFor="admin-my-cause-slug">URL</label>
-                        <input id="admin-my-cause-slug" value={this.state.slug} disabled={true} placeholder="URL..." />
-                    </div>
-                    <div>
-                        <label htmlFor="admin-my-cause-description">Description</label>
-                        <input id="admin-my-cause-description" type="text" value={this.state.description} onChange={this._handleDescriptionChange.bind(this)} placeholder="Cause description..." />
-                    </div>
-                    <div>
-                        <label htmlFor="admin-my-cause-deadline">Deadline</label>
-                        <ReactDatePicker id="admin-my-cause-deadline" selected={this.state.deadline} onChange={this._handleDeadlineChange.bind(this)} />
-                    </div>
-                    <div>
-                        <label htmlFor="admin-my-cause-goal-amount">Goal amount</label>
-                        <input id="admin-my-cause-goal-amount" type="number" value={this.state.goalAmount} onChange={this._handleGoalAmountChange.bind(this)} placeholder="100" />
-                    </div>
-                    <div>
-                        <label htmlFor="admin-my-cause-goal-currency">Goal currency</label>
-                        <select id="admin-my-cause-goal-currency" value={this.state.goalCurrency} onChange={this._handleGoalCurrencyChange.bind(this)}>
-                            <option value="RON">RON</option>
-                            <option value="EUR">EUR</option>
-                        </select>
-                    </div>
+                <div>
+                <label htmlFor="admin-my-cause-title">Title</label>
+                <input
+	    id="admin-my-cause-title"
+	    type="text"
+	    value={this.state.title.getUserInput()}
+	    onChange={this._handleTitleChange.bind(this)}
+	    placeholder="Cause title..." />
+                </div>
+                <div>
+                <label htmlFor="admin-my-cause-slug">URL</label>
+                <input id="admin-my-cause-slug" value={this.state.slug.getValue()} disabled={true} placeholder="URL..." />
+                </div>
+                <div>
+                <label htmlFor="admin-my-cause-description">Description</label>
+                <input id="admin-my-cause-description" type="text" value={this.state.description.getUserInput()} onChange={this._handleDescriptionChange.bind(this)} placeholder="Cause description..." />
+                </div>
+                <div>
+                <label htmlFor="admin-my-cause-deadline">Deadline</label>
+                <ReactDatePicker id="admin-my-cause-deadline" selected={this.state.deadline} onChange={this._handleDeadlineChange.bind(this)} />
+                </div>
+                <div>
+                <label htmlFor="admin-my-cause-goal-amount">Goal amount</label>
+                <input id="admin-my-cause-goal-amount" type="number" value={this.state.goalAmount.getUserInput()} onChange={this._handleGoalAmountChange.bind(this)} placeholder="100" />
+                </div>
+                <div>
+                <label htmlFor="admin-my-cause-goal-currency">Goal currency</label>
+                <select id="admin-my-cause-goal-currency" value={this.state.goalCurrency.getUserInput()} onChange={this._handleGoalCurrencyChange.bind(this)}>
+                <option value="RON">RON</option>
+		<option value="RON">USD</option>
+                <option value="EUR">EUR</option>
+                </select>
+                </div>
                 </form>
-            </div>
+		</div>
         );
 	
 	if (this.props.isLoading) {
@@ -618,7 +695,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
                         Creation form {editForm}
                         <div>
                             <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>Reset</button>
-                            <button disabled={!this.state.modifiedGeneral} onClick={this._handleCreate.bind(this)}>Create</button>
+                            <button disabled={!this.state.modifiedGeneral || !allValid} onClick={this._handleCreate.bind(this)}>Create</button>
                         </div>
 		    </div>
 		);
@@ -632,7 +709,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
                     {editForm}
                     <div>
                         <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>Reset</button>
-                        <button disabled={!this.state.modifiedGeneral} onClick={this._handleUpdate.bind(this)}>Update</button>
+                        <button disabled={!this.state.modifiedGeneral || !allValid} onClick={this._handleUpdate.bind(this)}>Update</button>
                     </div>
                 </div>
 	    );
@@ -649,12 +726,12 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	return {
 	    showCreationFormIfNoControls: false,
 	    modifiedGeneral: false,
-	    title: cause.title,
-	    slug: cause.slug,
-	    description: cause.description,
+	    title: new UserInput<string>(cause.title, cause.title),
+	    slug: new UserInput<string>(cause.slug, cause.slug),
+	    description: new UserInput<string>(cause.description, cause.description),
 	    deadline: moment(cause.deadline),
-	    goalAmount: cause.goal.amount,
-	    goalCurrency: cause.goal.currency
+	    goalAmount: new UserInput<number>(cause.goal.amount, cause.goal.amount.toString()),
+	    goalCurrency: new UserInput<Currency>(cause.goal.currency, cause.goal.currency.toString())
 	};
     }
 
@@ -663,23 +740,39 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
     }
 
     private _handleTitleChange(e: React.FormEvent<HTMLInputElement>) {
-	this.setState({modifiedGeneral: true, title: e.currentTarget.value, slug: slugify(e.currentTarget.value)});
+	this.setState({
+	    modifiedGeneral: true,
+	    title: this._titleMaster.transform(e.currentTarget.value, this.state.title.getValue()),
+	    slug: this._slugMaster.transform(slugify(e.currentTarget.value), this.state.slug.getValue())
+	});
     }
 
     private _handleDescriptionChange(e: React.FormEvent<HTMLInputElement>) {
-	this.setState({modifiedGeneral: true, description: e.currentTarget.value});
+	this.setState({
+	    modifiedGeneral: true,
+	    description: this._descriptionMaster.transform(e.currentTarget.value, this.state.description.getValue())
+	});
     }
 
     private _handleDeadlineChange(newDeadline: theMoment.Moment) {
-	this.setState({modifiedGeneral: true, deadline: newDeadline});
+	this.setState({
+	    modifiedGeneral: true,
+	    deadline: newDeadline
+	});
     }
 
     private _handleGoalAmountChange(e: React.FormEvent<HTMLInputElement>) {
-	this.setState({modifiedGeneral: true, goalAmount: parseInt(e.currentTarget.value)});
+	this.setState({
+	    modifiedGeneral: true,
+	    goalAmount: this._goalAmountMaster.transform(e.currentTarget.value, this.state.goalAmount.getValue())
+	});
     }
 
     private _handleGoalCurrencyChange(e: React.FormEvent<HTMLInputElement>) {
-	this.setState({modifiedGeneral: true, goalCurrency: e.currentTarget.value});
+	this.setState({
+	    modifiedGeneral: true,
+	    goalCurrency: this._goalCurrencyMaster.transform(e.currentTarget.value, this.state.goalCurrency.getValue())
+	});
     }
 
     private _handleResetGeneral() {
@@ -692,15 +785,15 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	try {
 	    const pictures: Picture[] = [];
 	    const goal: CurrencyAmount = new CurrencyAmount();
-	    goal.amount = this.state.goalAmount;
-	    goal.currency = this.state.goalCurrency;
+	    goal.amount = this.state.goalAmount.getValue();
+	    goal.currency = this.state.goalCurrency.getValue();
 	    const bankInfo: BankInfo = new BankInfo();
-	    bankInfo.ibans = ["1234"];
+	    bankInfo.ibans = [];
 	    
 	    const privateCause = await corePrivateClient.createCause(
 		accessToken,
-		this.state.title,
-		this.state.description,
+		this.state.title.getValue(),
+		this.state.description.getValue(),
 		pictures,
 		this.state.deadline.toDate(),
 		goal,
@@ -717,16 +810,16 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	try {
 	    const pictures: Picture[] = [];
 	    const goal: CurrencyAmount = new CurrencyAmount();
-	    goal.amount = this.state.goalAmount;
-	    goal.currency = this.state.goalCurrency;
+	    goal.amount = this.state.goalAmount.getValue();
+	    goal.currency = this.state.goalCurrency.getValue();
 	    const bankInfo: BankInfo = new BankInfo();
-	    bankInfo.ibans = ["1234"];
+	    bankInfo.ibans = [];
 	    
 	    const privateCause = await corePrivateClient.updateCause(
 		accessToken,
 		{
-		    title: this.state.title,
-		    description: this.state.description,
+		    title: this.state.title.getValue(),
+		    description: this.state.description.getValue(),
 		    pictures: pictures,
 		    deadline: this.state.deadline.toDate(),
 		    goal: goal,

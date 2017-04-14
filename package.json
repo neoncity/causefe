@@ -1,6 +1,6 @@
 {
   "name": "@neoncity/causefe",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "The main frontend, where causes are managed and viewed.",
   "author": "NeonCity team",
   "scripts": {
@@ -26,8 +26,8 @@
     "tsconfig.json": "c:tsconfig.json"
   },
   "dependencies": {
-    "@neoncity/common-js": "=1.1.0",
-    "@neoncity/core-sdk-js": "=3.1.2",
+    "@neoncity/common-js": "=1.3.0",
+    "@neoncity/core-sdk-js": "=3.3.0",
     "@neoncity/identity-sdk-js": "=1.2.3",
     "auth0-lock": "=10.11.0",
     "es6-promise": "=4.0.5",
@@ -35,7 +35,7 @@
     "moment": "=2.18.1",
     "mustache": "=2.3.0",
     "query-string": "=4.3.2",
-    "raynor": "=0.1.2",
+    "raynor": "=0.4.0",
     "react": "=15.4.2",
     "react-datepicker": "^0.44.0",
     "react-dom": "=15.4.2",
