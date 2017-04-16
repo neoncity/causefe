@@ -11,6 +11,7 @@ import { Provider, connect } from 'react-redux'
 import { Router, Route, IndexRoute, IndexRedirect, Link, browserHistory } from 'react-router'
 
 import { Currency, StandardCurrencies, CurrencyMarshaller } from '@neoncity/common-js/currency'
+import { isLocal } from '@neoncity/common-js/env'
 import { slugify } from '@neoncity/common-js/slugify'
 import { BankInfo,
 	 Cause,
@@ -71,6 +72,10 @@ class PostLoginRedirectInfoMarshaller extends r.BaseStringMarshaller<PostLoginRe
 	    const redirectInfoRaw = JSON.parse(redirectInfoSer);
 	    return PostLoginRedirectInfoMarshaller._objectMarshaller.extract(redirectInfoRaw);
 	} catch (e) {
+            if (isLocal(config.ENV)) {
+                console.log(e);
+            }
+            
 	    throw new ExtractError(`Could not build redirect info "${e.toString()}"`);
 	}
     }
@@ -124,6 +129,7 @@ if (rawAccessToken != null) {
     identityClient = newIdentityClient(config.IDENTITY_SERVICE_HOST);
     accessToken = rawAccessToken;
 } else if (currentLocation.pathname == '/real/login') {
+    console.log((currentLocation as any).hash);
     const queryParsed = (Object as any).assign({}, queryString.parse((currentLocation as any).hash));
     const auth0RedirectInfo = auth0RedirectInfoMarshaller.extract(queryParsed);
     _saveAccessToken(auth0RedirectInfo.access_token);
@@ -173,6 +179,10 @@ class _AppFrame extends React.Component<AppFrameProps, undefined> {
 	    const user = await identityClient.getOrCreateUser(accessToken);
 	    this.props.onIdentityReady(user);
 	} catch (e) {
+            if (isLocal(config.ENV)) {
+                console.log(e);
+            }
+            
 	    if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
 		const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
 		const postLoginInfoSer = postLoginRedirectInfoMarshaller.pack(postLoginInfo);
@@ -353,7 +363,10 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
 	    const causes = await corePublicClient.getCauses(accessToken);
 	    this.props.onPublicCausesReady(causes);
 	} catch (e) {
-	    console.log(e);
+            if (isLocal(config.ENV)) {
+                console.log(e);
+            }
+            
 	    this.props.onPublicCausesFailed('Could not load public causes');
 	}
     }
@@ -430,7 +443,10 @@ class _CauseView extends React.Component<CauseViewProps, undefined> {
 	    // /c/$id/$secondSlug
 	    browserHistory.replace(_causeLink(cause));
 	} catch (e) {
-	    console.log('Here');
+	    if (isLocal(config.ENV)) {
+                console.log(e);
+            }
+            
 	    this.props.onPublicCauseDetailFailed('Could not load public cause detail');
 	}
     }
@@ -517,6 +533,10 @@ class UserInputMaster<T> {
 	    let value = this._marshaller.extract(userInput);
 	    return new UserInput<T>(value, userInput, true, false);
 	} catch (e) {
+            if (isLocal(config.ENV)) {
+                console.log(e);
+            }
+            
 	    return new UserInput<T>(oldValue, userInput, true, true);
 	}
     }
@@ -617,7 +637,10 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
             if (e.name == 'NoCauseForUserError') {
                 this.props.onPrivateCauseReady(false, null);
             } else {
-		console.log(e);
+                if (isLocal(config.ENV)) {
+                    console.log(e);
+                }
+            
                 this.props.onPrivateCauseFailed('Could not load cause for user');
             }
         }
@@ -800,6 +823,10 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 		bankInfo);
 	    this.props.onPrivateCauseReady(true, privateCause);
 	} catch (e) {
+            if (isLocal(config.ENV)) {
+                console.log(e);
+            }
+            
 	    this.props.onPrivateCauseFailed('Could not create cause for user');
 	}
     }
@@ -827,6 +854,10 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 		});
 	    this.props.onPrivateCauseReady(true, privateCause);
 	} catch (e) {
+            if (isLocal(config.ENV)) {
+                console.log(e);
+            }
+            
 	    this.props.onPrivateCauseFailed('Could not update cause for user');
 	}	
     }    
@@ -879,6 +910,10 @@ class _AdminMyActionsView extends React.Component<AdminMyActionsProps, undefined
 	    const userActionsOverview = await corePrivateClient.getActionsOverview(accessToken);
 	    this.props.onUserActionsOverviewReady(userActionsOverview);
 	} catch (e) {
+            if (isLocal(config.ENV)) {
+                console.log(e);
+            }
+            
 	    this.props.onUserActionsOverviewFailed('Could not load user actions overview');
 	}
     }
