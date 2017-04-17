@@ -129,7 +129,6 @@ if (rawAccessToken != null) {
     identityClient = newIdentityClient(config.IDENTITY_SERVICE_HOST);
     accessToken = rawAccessToken;
 } else if (currentLocation.pathname == '/real/login') {
-    console.log((currentLocation as any).hash);
     const queryParsed = (Object as any).assign({}, queryString.parse((currentLocation as any).hash));
     const auth0RedirectInfo = auth0RedirectInfoMarshaller.extract(queryParsed);
     _saveAccessToken(auth0RedirectInfo.access_token);
@@ -158,6 +157,80 @@ function _loadAccessToken(): string|null {
 function _clearAccessToken() {
     return localStorage.removeItem('neoncity/access_token');
 }
+
+
+interface UserInfoWidgetProps {
+    isInit: boolean;
+    isLoading: boolean;
+    isReady: boolean;
+    isFailed: boolean;
+    user: User|null;
+}
+
+
+class _UserInfoWidget extends React.Component<UserInfoWidgetProps, undefined> {
+    render() {
+        if (this.props.isLoading) {
+            return <p>Loading user</p>;
+        } else if (this.props.isFailed) {
+            return <p>Loading failed</p>;
+        } else if (this.props.isReady) {
+            return <p>User: {(this.props.user as User).name} <button onClick={this._handleLogoutClick.bind(this)}>Logout</button></p>;
+        } else /* if (this.props.isInit) */ {
+            return <p><button onClick={this._handleLoginClick.bind(this)}>Login</button></p>;
+        }
+    }
+
+    private _handleLogoutClick() {
+        _clearAccessToken();
+        location.replace('/');
+    }
+
+    private _handleLoginClick() {
+        const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
+	const postLoginInfoSer = postLoginRedirectInfoMarshaller.pack(postLoginInfo);
+
+	const auth0: Auth0LockStatic = new Auth0Lock(
+	    config.AUTH0_CLIENT_ID,
+	    config.AUTH0_DOMAIN, {
+		closable: false,
+		auth: {
+		    redirect: true,
+		    redirectUrl: config.AUTH0_CALLBACK_URI,
+		    responseType: 'token',
+		    params: {
+			state: postLoginInfoSer
+		    }
+		}
+	    }
+	);
+
+	_clearAccessToken();
+	auth0.show();        
+    }
+}
+
+
+function userInfoWidgetMapStateToProps(state: any) {
+    return {
+        isInit: state.identity.type == OpState.Init,
+        isLoading: state.identity.type == OpState.Loading,
+        isReady: state.identity.type == OpState.Ready,
+        isFailed: state.identity.type == OpState.Failed,
+	user: state.identity.type == OpState.Ready ? state.identity.user : null
+    };    
+}
+
+
+function userInfoWidgetMapDispatchToProps() {
+    return {};
+}
+
+
+const UserInfoWidget = connect(
+    userInfoWidgetMapStateToProps,
+    userInfoWidgetMapDispatchToProps)(_UserInfoWidget);
+
 
 interface AppFrameProps {
     isInit: boolean;
@@ -216,17 +289,6 @@ class _AppFrame extends React.Component<AppFrameProps, undefined> {
     }
     
     render() {
-	let userIdSection;
-        if (this.props.isLoading) {
-            userIdSection = <p>Loading user</p>;
-        } else if (this.props.isFailed) {
-            userIdSection = <p>Loading failed</p>;
-        } else if (this.props.isReady) {
-            userIdSection = <p>User: {(this.props.user as User).name}</p>;
-        } else {
-            userIdSection = <p></p>;
-        }
-        
 	// Bit of a hack. If there's no user, the global navigation to admin and console is done through a regular <a> tag
 	// which will trigger a page load event. This is not so bad, as the login flow is beefy as it is, but it does add
 	// _some_ extra complexity. Hopefully it will be easy to get rid of in the future.
@@ -239,7 +301,7 @@ class _AppFrame extends React.Component<AppFrameProps, undefined> {
                         <Link to="/">Home</Link>
                         <a href="/admin">Admin</a>
                         <a href="/console">Console</a>
-                        {userIdSection}
+                        <UserInfoWidget />
                     </div>
                     {this.props.children}
                 </div>
@@ -252,7 +314,7 @@ class _AppFrame extends React.Component<AppFrameProps, undefined> {
                         <Link to="/">Home</Link>
                         <Link to="/admin">Admin</Link>
                         <Link to="/console">Console</Link>
-                        {userIdSection}
+                        <UserInfoWidget />
                     </div>
                     {this.props.children}
                 </div>
