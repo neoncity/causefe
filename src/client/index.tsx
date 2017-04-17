@@ -299,7 +299,7 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, undefine
             <div>
 	        <h2><Link to={_causeLink(this.props.cause)}>{this.props.cause.title}</Link></h2>
 		<p>{this.props.cause.description}</p>
-		<p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency.toString()}</p>`
+		<p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency.toString()}</p>
 		<p>{this.props.cause.deadline.toString()}</p>
 	    </div>
 	);
