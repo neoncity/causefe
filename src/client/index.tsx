@@ -138,6 +138,7 @@ if (rawAccessToken != null) {
     identityClient = newIdentityClient(config.IDENTITY_SERVICE_HOST);
     browserHistory.push(auth0RedirectInfo.state.path);
 } else if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
+    identityClient = null;
     auth0.show();
 } else {
     identityClient = null;
@@ -159,6 +160,10 @@ function _clearAccessToken() {
 }
 
 interface AppFrameProps {
+    isInit: boolean;
+    isLoading: boolean;
+    isReady: boolean;
+    isFailed: boolean;
     user: User|null;
     onIdentityLoading: () => void;
     onIdentityReady: (user: User) => void;
@@ -211,12 +216,22 @@ class _AppFrame extends React.Component<AppFrameProps, undefined> {
     }
     
     render() {
-	const userIdSection = this.props.user != null ? <p>User: {this.props.user.name}</p> : <p></p>;
+	let userIdSection;
+        if (this.props.isLoading) {
+            userIdSection = <p>Loading user</p>;
+        } else if (this.props.isFailed) {
+            userIdSection = <p>Loading failed</p>;
+        } else if (this.props.isReady) {
+            userIdSection = <p>User: {(this.props.user as User).name}</p>;
+        } else {
+            userIdSection = <p></p>;
+        }
+        
 	// Bit of a hack. If there's no user, the global navigation to admin and console is done through a regular <a> tag
 	// which will trigger a page load event. This is not so bad, as the login flow is beefy as it is, but it does add
 	// _some_ extra complexity. Hopefully it will be easy to get rid of in the future.
 	// TODO: make this simpler / work through the single-page setup.
-        if (this.props.user == null) {
+        if (!this.props.isReady) {
             return (
                 <div>
                     <div>This is the app frame</div>
@@ -248,7 +263,11 @@ class _AppFrame extends React.Component<AppFrameProps, undefined> {
 
 function appFrameMapStateToProps(state: any) {
     return {
-	user: typeof state.identity.user != 'undefined' ? state.identity.user : null
+        isInit: state.identity.type == OpState.Init,
+        isLoading: state.identity.type == OpState.Loading,
+        isReady: state.identity.type == OpState.Ready,
+        isFailed: state.identity.type == OpState.Failed,
+	user: state.identity.type == OpState.Ready ? state.identity.user : null
     };
 }
 
@@ -268,24 +287,44 @@ const AppFrame = connect(
 
 
 interface IdentityFrameProps {
+    isInit: boolean;
+    isLoading: boolean;
+    isReady: boolean;
+    isFailed: boolean;
+    user: User|null;
 }
 
 
-class IdentityFrame extends React.Component<IdentityFrameProps, undefined> {
-    async componentDidMount() {
-        if (identityClient == null) {
-            auth0.show();
-        }
-    }
-    
+class _IdentityFrame extends React.Component<IdentityFrameProps, undefined> {
     render() {
-        if (identityClient == null) {
-	    return (<div>Should be logged in</div>);
+        if (!this.props.isReady) {
+	    return (<div>Logging in ...</div>);
 	} else {
 	    return (<div>{this.props.children}</div>);
 	}
     }
 }
+
+
+function identityFrameMapStateToProps(state: any) {
+    return {
+        isInit: state.identity.type == OpState.Init,
+        isLoading: state.identity.type == OpState.Loading,
+        isReady: state.identity.type == OpState.Ready,
+        isFailed: state.identity.type == OpState.Failed,
+        user: state.identity.type == OpState.Ready ? state.identity.user : null
+    };
+}
+
+
+function identityFrameMapDispatchToProps() {
+    return {};
+}
+
+
+const IdentityFrame = connect(
+    identityFrameMapStateToProps,
+    identityFrameMapDispatchToProps)(_IdentityFrame);
 
 
 interface PublicCauseWidgetProps {
