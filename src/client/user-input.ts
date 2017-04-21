@@ -1,9 +1,5 @@
 import { Marshaller } from 'raynor'
 
-import { isLocal } from '@neoncity/common-js/env'
-
-import * as config from './config'
-
 
 export class UserInput<T> {
     private readonly _value: T;
@@ -48,11 +44,11 @@ export class UserInputMaster<T> {
 	    let value = this._marshaller.extract(userInput);
 	    return new UserInput<T>(value, userInput, true, false);
 	} catch (e) {
-            if (isLocal(config.ENV)) {
-                console.log(e);
+            if (e.name === 'ExtractError') {
+	        return new UserInput<T>(oldValue, userInput, true, true);
             }
-            
-	    return new UserInput<T>(oldValue, userInput, true, true);
+
+            throw e;
 	}
     }
 }
