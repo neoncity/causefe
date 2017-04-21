@@ -716,6 +716,56 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 			   || this.state.description.isInvalid()
 			   || this.state.goalAmount.isInvalid()
 			   || this.state.goalCurrency.isInvalid());
+
+        let titleModifiedRegion = <span></span>;
+        if (this.state.title.isModified()) {
+            titleModifiedRegion = <span>Modified</span>;
+        }
+
+        let titleWarningRegion = <span></span>;
+        if (this.state.title.isInvalid()) {
+            titleWarningRegion = <span>Invalid title value</span>;
+        }
+
+        let slugModifiedRegion = <span></span>;
+        if (this.state.slug.isModified()) {
+            slugModifiedRegion = <span>Modified</span>;
+        }
+
+        let slugWarningRegion = <span></span>;
+        if (this.state.slug.isInvalid()) {
+            slugWarningRegion = <span>Invalid slug value</span>;
+        }
+
+        let descriptionModifiedRegion = <span></span>;
+        if (this.state.description.isModified()) {
+            descriptionModifiedRegion = <span>Modified</span>;
+        }
+
+        let descriptionWarningRegion = <span></span>;
+        if (this.state.description.isInvalid()) {
+            descriptionWarningRegion = <span>Invalid description value</span>;
+        }
+
+        let goalAmountModifiedRegion = <span></span>;
+        if (this.state.goalAmount.isModified()) {
+            goalAmountModifiedRegion = <span>Modified</span>;
+        }
+
+        let goalAmountWarningRegion = <span></span>;
+        if (this.state.goalAmount.isInvalid()) {
+            goalAmountWarningRegion = <span>Invalid goal amount value</span>;
+        }
+
+        let goalCurrencyModifiedRegion = <span></span>;
+        if (this.state.goalCurrency.isModified()) {
+            goalCurrencyModifiedRegion = <span>Modified</span>;
+        }
+
+        let goalCurrencyWarningRegion = <span></span>;
+        if (this.state.goalCurrency.isInvalid()) {
+            goalCurrencyWarningRegion = <span>Invalid goal currency value</span>;
+        }        
 	
         const editForm = (
 		<div>
@@ -728,15 +778,18 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	    value={this.state.title.getUserInput()}
 	    onChange={this._handleTitleChange.bind(this)}
 	    placeholder="Cause title..." />
+                {titleModifiedRegion} {titleWarningRegion}
                 </div>
                 <div>
                 <label htmlFor="admin-my-cause-slug">URL</label>
                 <input id="admin-my-cause-slug" value={this.state.slug.getValue()} disabled={true} placeholder="URL..." />
+                {slugModifiedRegion} {slugWarningRegion}
                 </div>
                 <div>
                 <label htmlFor="admin-my-cause-description">Description</label>
                 <input id="admin-my-cause-description" type="text" value={this.state.description.getUserInput()} onChange={this._handleDescriptionChange.bind(this)} placeholder="Cause description..." />
                 </div>
+                {descriptionModifiedRegion} {descriptionWarningRegion}
                 <div>
                 <label htmlFor="admin-my-cause-deadline">Deadline</label>
                 <ReactDatePicker id="admin-my-cause-deadline" selected={this.state.deadline} onChange={this._handleDeadlineChange.bind(this)} />
@@ -745,6 +798,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
                 <label htmlFor="admin-my-cause-goal-amount">Goal amount</label>
                 <input id="admin-my-cause-goal-amount" type="number" value={this.state.goalAmount.getUserInput()} onChange={this._handleGoalAmountChange.bind(this)} placeholder="100" />
                 </div>
+                {goalAmountModifiedRegion} {goalAmountWarningRegion}
                 <div>
                 <label htmlFor="admin-my-cause-goal-currency">Goal currency</label>
                 <select id="admin-my-cause-goal-currency" value={this.state.goalCurrency.getUserInput()} onChange={this._handleGoalCurrencyChange.bind(this)}>
@@ -752,6 +806,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 		<option value="RON">USD</option>
                 <option value="EUR">EUR</option>
                 </select>
+                {goalCurrencyModifiedRegion} {goalCurrencyWarningRegion}
                 </div>
                 <div>
                 <BankInfoWidget bankInfo={this.state.bankInfo} onBankInfoChange={this._handleBankInfoChange.bind(this)} />
