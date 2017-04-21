@@ -2,7 +2,7 @@ import Auth0Lock from 'auth0-lock'
 import * as theMoment from 'moment'
 import * as queryString from 'query-string'
 import * as r from 'raynor'
-import { Marshaller, ExtractError, MarshalFrom, MarshalWith } from 'raynor'
+import { ExtractError, MarshalFrom, MarshalWith } from 'raynor'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import * as ReactDatePicker from 'react-datepicker'
@@ -30,9 +30,11 @@ import { BankInfo,
 	 DescriptionMarshaller} from '@neoncity/core-sdk-js'
 import { Auth0AccessTokenMarshaller, IdentityClient, newIdentityClient, User } from '@neoncity/identity-sdk-js'
 
+import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
 import './index.less'
 import { AdminMyActionsState, AdminMyCauseState, OpState, IdentityState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
+import { UserInput, UserInputMaster } from './user-input'
 
 // Old style imports.
 const moment = require('moment')
@@ -622,59 +624,6 @@ class AdminUpdatesView extends React.Component<AdminUpdatesProps, undefined> {
 }
 
 
-class UserInputMaster<T> {
-    private readonly _marshaller: Marshaller<T>;
-
-    constructor(marshaller: Marshaller<T>) {
-	this._marshaller = marshaller;
-    }
-
-    transform(userInput: string, oldValue: T): UserInput<T> {
-	try {
-	    let value = this._marshaller.extract(userInput);
-	    return new UserInput<T>(value, userInput, true, false);
-	} catch (e) {
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
-            
-	    return new UserInput<T>(oldValue, userInput, true, true);
-	}
-    }
-}
-
-
-class UserInput<T> {
-    private readonly _value: T;
-    private readonly _userInput: string;
-    private readonly _modified: boolean;
-    private readonly _invalid: boolean;
-
-    constructor(value: T, userInput: string, modified: boolean = false, invalid: boolean = false) {
-	this._value = value;
-	this._userInput = userInput;
-	this._modified = modified;
-	this._invalid = invalid;
-    }
-
-    getValue(): T {
-	return this._value;
-    }
-
-    getUserInput(): string {
-	return this._userInput;
-    }
-
-    isModified(): boolean {
-	return this._modified;
-    }
-
-    isInvalid(): boolean {
-	return this._invalid;
-    }
-}
-
-
 interface AdminMyCauseProps {
     isLoading: boolean;
     isReady: boolean;
@@ -697,6 +646,7 @@ interface AdminMyCauseViewState {
     deadline: theMoment.Moment;
     goalAmount: UserInput<number>;
     goalCurrency: UserInput<Currency>;
+    bankInfo: BankInfo;
 }
 
 
@@ -709,7 +659,8 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	description: new UserInput<string>('', ''),
 	deadline: moment(),
 	goalAmount: new UserInput<number>(100, '100'),
-	goalCurrency: new UserInput<Currency>(StandardCurrencies.RON, 'RON')
+	goalCurrency: new UserInput<Currency>(StandardCurrencies.RON, 'RON'),
+        bankInfo: {ibans: []},
     };
 
     private readonly _titleMaster: UserInputMaster<string>;
@@ -802,6 +753,9 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
                 <option value="EUR">EUR</option>
                 </select>
                 </div>
+                <div>
+                <BankInfoWidget bankInfo={this.state.bankInfo} onBankInfoChange={this._handleBankInfoChange.bind(this)} />
+                </div>
                 </form>
 		</div>
         );
@@ -855,7 +809,8 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	    description: new UserInput<string>(cause.description, cause.description),
 	    deadline: moment(cause.deadline),
 	    goalAmount: new UserInput<number>(cause.goal.amount, cause.goal.amount.toString()),
-	    goalCurrency: new UserInput<Currency>(cause.goal.currency, cause.goal.currency.toString())
+	    goalCurrency: new UserInput<Currency>(cause.goal.currency, cause.goal.currency.toString()),
+            bankInfo: cause.bankInfo
 	};
     }
 
@@ -899,6 +854,13 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	});
     }
 
+    private _handleBankInfoChange(newBankInfo: BankInfo) {
+        this.setState({
+            modifiedGeneral: true,
+            bankInfo: newBankInfo
+        });
+    }
+
     private _handleResetGeneral() {
         this.setState(this._fullStateFromProps(this.props));
     }
@@ -911,8 +873,6 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	    const goal: CurrencyAmount = new CurrencyAmount();
 	    goal.amount = this.state.goalAmount.getValue();
 	    goal.currency = this.state.goalCurrency.getValue();
-	    const bankInfo: BankInfo = new BankInfo();
-	    bankInfo.ibans = [];
 	    
 	    const privateCause = await corePrivateClient.createCause(
 		accessToken,
@@ -921,7 +881,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 		pictures,
 		this.state.deadline.toDate(),
 		goal,
-		bankInfo);
+		this.state.bankInfo);
 	    this.props.onPrivateCauseReady(true, privateCause);
 	} catch (e) {
             if (isLocal(config.ENV)) {
@@ -940,8 +900,6 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	    const goal: CurrencyAmount = new CurrencyAmount();
 	    goal.amount = this.state.goalAmount.getValue();
 	    goal.currency = this.state.goalCurrency.getValue();
-	    const bankInfo: BankInfo = new BankInfo();
-	    bankInfo.ibans = [];
 	    
 	    const privateCause = await corePrivateClient.updateCause(
 		accessToken,
@@ -951,7 +909,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 		    pictures: pictures,
 		    deadline: this.state.deadline.toDate(),
 		    goal: goal,
-		    bankInfo: bankInfo
+		    bankInfo: this.state.bankInfo
 		});
 	    this.props.onPrivateCauseReady(true, privateCause);
 	} catch (e) {
