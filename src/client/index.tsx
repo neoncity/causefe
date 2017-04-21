@@ -803,7 +803,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
                 <label htmlFor="admin-my-cause-goal-currency">Goal currency</label>
                 <select id="admin-my-cause-goal-currency" value={this.state.goalCurrency.getUserInput()} onChange={this._handleGoalCurrencyChange.bind(this)}>
                 <option value="RON">RON</option>
-		<option value="RON">USD</option>
+		<option value="USD">USD</option>
                 <option value="EUR">EUR</option>
                 </select>
                 {goalCurrencyModifiedRegion} {goalCurrencyWarningRegion}
