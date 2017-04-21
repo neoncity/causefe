@@ -18,16 +18,16 @@ interface BankInfoWidgetState {
 
 
 export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInfoWidgetState> {
-    private static readonly _initialState = {
-        ibans: []
-    };
-
     private readonly _ibanMaster: UserInputMaster<IBAN>;
     
     constructor(props: BankInfoWidgetProps, context: any) {
         super(props, context);
-        this.state = (Object as any).assign({}, BankInfoWidget._initialState);
+        this.state = this._fullStateFromProps(props);
         this._ibanMaster = new UserInputMaster<IBAN>(new IBANMarshaller());
+    }
+
+    componentWillReceiveProps(newProps: BankInfoWidgetProps) {
+        this.setState(this._fullStateFromProps(newProps));
     }
     
     render() {
@@ -60,20 +60,36 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
         );
     }
 
+    private _fullStateFromProps(props: BankInfoWidgetProps): BankInfoWidgetState {
+        return {
+            ibans: props.bankInfo.ibans.map(iban => new UserInput<IBAN>(iban, iban.toString()))
+        };
+    }
+
     private _handleAddIBAN() {
         const newIbans = this.state.ibans.concat(new UserInput<IBAN>(new IBAN('', '', ''), ''));
-        this.setState({ibans: newIbans});
+        this.setState({ibans: newIbans}, this._updateOwner);
     }
 
     private _handleRemoveIBAN(ibanIndex: number) {
         const newIbans = this.state.ibans.slice(0);
         newIbans.splice(ibanIndex, 1);
-        this.setState({ibans: newIbans});
+        this.setState({ibans: newIbans}, this._updateOwner);
     }
 
     private _handleIBANChange(ibanIndex: number, e: React.FormEvent<HTMLInputElement>) {
         const newIbans = this.state.ibans.slice(0);
         newIbans[ibanIndex] = this._ibanMaster.transform(e.currentTarget.value, this.state.ibans[ibanIndex].getValue());
-        this.setState({ibans: newIbans});
+        this.setState({ibans: newIbans}, this._updateOwner);
+    }
+
+    private _updateOwner() {
+        const allValid = this.state.ibans.every(iban => !iban.isInvalid());
+
+        if (allValid) {
+            const bankInfo = new BankInfo();
+            bankInfo.ibans = this.state.ibans.map(iban => iban.getValue());
+            this.props.onBankInfoChange(bankInfo);
+        }
     }
 }
