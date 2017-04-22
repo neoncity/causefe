@@ -13,17 +13,17 @@ interface BankInfoWidgetProps {
 
 
 interface BankInfoWidgetState {
-    ibans: UserInput<IBAN>[]
+    ibans: UserInput<string, IBAN>[]
 }
 
 
 export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInfoWidgetState> {
-    private readonly _ibanMaster: UserInputMaster<IBAN>;
+    private readonly _ibanMaster: UserInputMaster<string, IBAN>;
     
     constructor(props: BankInfoWidgetProps, context: any) {
         super(props, context);
         this.state = this._fullStateFromProps(props);
-        this._ibanMaster = new UserInputMaster<IBAN>(new IBANMarshaller());
+        this._ibanMaster = new UserInputMaster<string, IBAN>(new IBANMarshaller());
     }
 
     componentWillReceiveProps(newProps: BankInfoWidgetProps) {
@@ -62,12 +62,12 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
 
     private _fullStateFromProps(props: BankInfoWidgetProps): BankInfoWidgetState {
         return {
-            ibans: props.bankInfo.ibans.map(iban => new UserInput<IBAN>(iban, iban.toString()))
+            ibans: props.bankInfo.ibans.map(iban => new UserInput<string, IBAN>(iban.toString(), iban))
         };
     }
 
     private _handleAddIBAN() {
-        const newIbans = this.state.ibans.concat(new UserInput<IBAN>(new IBAN('', '', ''), ''));
+        const newIbans = this.state.ibans.concat(new UserInput<string, IBAN>('', new IBAN('', '', '')));
         this.setState({ibans: newIbans}, this._updateOwner);
     }
 

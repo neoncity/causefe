@@ -32,6 +32,8 @@ import { Auth0AccessTokenMarshaller, IdentityClient, newIdentityClient, User } f
 
 import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
+import { FileStorageService } from './file-storage-service'
+import { ImageGallery } from './image-gallery'
 import './index.less'
 import { AdminMyActionsState, AdminMyCauseState, OpState, IdentityState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
 import { UserInput, UserInputMaster } from './user-input'
@@ -145,6 +147,8 @@ if (rawAccessToken != null) {
     identityClient = null;
 }
 
+const fileStorageService = new FileStorageService(config.FILESTACK_KEY);
+
 
 function _saveAccessToken(accessToken: string) {
     localStorage.setItem('neoncity/access_token', accessToken);
@@ -174,11 +178,9 @@ class _UserInfoWidget extends React.Component<UserInfoWidgetProps, undefined> {
     render() {
         if (this.props.isLoading) {
             return <p>Loading user</p>;
-        } else if (this.props.isFailed) {
-            return <p>Loading failed</p>;
         } else if (this.props.isReady) {
             return <p>User: {(this.props.user as User).name} <button onClick={this._handleLogoutClick.bind(this)}>Logout</button></p>;
-        } else /* if (this.props.isInit) */ {
+        } else /* if (this.props.isFailed || this.props.isInit) */ {
             return <p><button onClick={this._handleLoginClick.bind(this)}>Login</button></p>;
         }
     }
@@ -640,13 +642,14 @@ interface AdminMyCauseProps {
 interface AdminMyCauseViewState {
     showCreationFormIfNoControls: boolean;
     modifiedGeneral: boolean;
-    title: UserInput<string>;
-    slug: UserInput<string>;
-    description: UserInput<string>;
+    title: UserInput<string, string>;
+    slug: UserInput<string, string>;
+    description: UserInput<string, string>;
     deadline: theMoment.Moment;
-    goalAmount: UserInput<number>;
-    goalCurrency: UserInput<Currency>;
+    goalAmount: UserInput<string, number>;
+    goalCurrency: UserInput<string, Currency>;
     bankInfo: BankInfo;
+    pictures: Picture[];
 }
 
 
@@ -654,29 +657,30 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
     private static readonly _initialState = {
 	showCreationFormIfNoControls: false,
 	modifiedGeneral: false,
-	title: new UserInput<string>('', ''),
-	slug: new UserInput<string>('', ''),
-	description: new UserInput<string>('', ''),
+	title: new UserInput<string, string>('', ''),
+	slug: new UserInput<string, string>('', ''),
+	description: new UserInput<string, string>('', ''),
 	deadline: moment(),
-	goalAmount: new UserInput<number>(100, '100'),
-	goalCurrency: new UserInput<Currency>(StandardCurrencies.RON, 'RON'),
+	goalAmount: new UserInput<string, number>('100', 100),
+	goalCurrency: new UserInput<string, Currency>('RON', StandardCurrencies.RON),
         bankInfo: {ibans: []},
+        pictures: []
     };
 
-    private readonly _titleMaster: UserInputMaster<string>;
-    private readonly _slugMaster: UserInputMaster<string>;
-    private readonly _descriptionMaster: UserInputMaster<string>;
-    private readonly _goalAmountMaster: UserInputMaster<number>;
-    private readonly _goalCurrencyMaster: UserInputMaster<Currency>;
+    private readonly _titleMaster: UserInputMaster<string, string>;
+    private readonly _slugMaster: UserInputMaster<string, string>;
+    private readonly _descriptionMaster: UserInputMaster<string, string>;
+    private readonly _goalAmountMaster: UserInputMaster<string, number>;
+    private readonly _goalCurrencyMaster: UserInputMaster<string, Currency>;
     
     constructor(props: AdminMyCauseProps, context: any) {
 	super(props, context);
 	this.state = (Object as any).assign({}, _AdminMyCauseView._initialState);
-	this._titleMaster = new UserInputMaster<string>(new TitleMarshaller());
-	this._slugMaster = new UserInputMaster<string>(new r.SlugMarshaller());
-	this._descriptionMaster = new UserInputMaster<string>(new DescriptionMarshaller());
-	this._goalAmountMaster = new UserInputMaster<number>(new r.PositiveIntegerFromStringMarshaller());
-	this._goalCurrencyMaster = new UserInputMaster<Currency>(new CurrencyMarshaller());
+	this._titleMaster = new UserInputMaster<string, string>(new TitleMarshaller());
+	this._slugMaster = new UserInputMaster<string, string>(new r.SlugMarshaller());
+	this._descriptionMaster = new UserInputMaster<string, string>(new DescriptionMarshaller());
+	this._goalAmountMaster = new UserInputMaster<string, number>(new r.PositiveIntegerFromStringMarshaller());
+	this._goalCurrencyMaster = new UserInputMaster<string, Currency>(new CurrencyMarshaller());
     }
     
     async componentDidMount() {
@@ -810,6 +814,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
                 </div>
                 <div>
                 <BankInfoWidget bankInfo={this.state.bankInfo} onBankInfoChange={this._handleBankInfoChange.bind(this)} />
+                <ImageGallery pictures={this.state.pictures} selectPicture={pos => fileStorageService.selectImageWithWidget(pos)} onPicturesChange={this._handlePicturesChange.bind(this)} />
                 </div>
                 </form>
 		</div>
@@ -859,13 +864,14 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	return {
 	    showCreationFormIfNoControls: false,
 	    modifiedGeneral: false,
-	    title: new UserInput<string>(cause.title, cause.title),
-	    slug: new UserInput<string>(cause.slug, cause.slug),
-	    description: new UserInput<string>(cause.description, cause.description),
+	    title: new UserInput<string, string>(cause.title, cause.title),
+	    slug: new UserInput<string, string>(cause.slug, cause.slug),
+	    description: new UserInput<string, string>(cause.description, cause.description),
 	    deadline: moment(cause.deadline),
-	    goalAmount: new UserInput<number>(cause.goal.amount, cause.goal.amount.toString()),
-	    goalCurrency: new UserInput<Currency>(cause.goal.currency, cause.goal.currency.toString()),
-            bankInfo: cause.bankInfo
+	    goalAmount: new UserInput<string, number>(cause.goal.amount.toString(), cause.goal.amount),
+	    goalCurrency: new UserInput<string, Currency>(cause.goal.currency.toString(), cause.goal.currency),
+            bankInfo: cause.bankInfo,
+            pictures: cause.pictures
 	};
     }
 
@@ -916,6 +922,13 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
         });
     }
 
+    private _handlePicturesChange(newPictures: Picture[]) {
+        this.setState({
+            modifiedGeneral: true,
+            pictures: newPictures
+        });
+    }
+
     private _handleResetGeneral() {
         this.setState(this._fullStateFromProps(this.props));
     }
@@ -924,7 +937,6 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	this.props.onPrivateCauseLoading();
 
 	try {
-	    const pictures: Picture[] = [];
 	    const goal: CurrencyAmount = new CurrencyAmount();
 	    goal.amount = this.state.goalAmount.getValue();
 	    goal.currency = this.state.goalCurrency.getValue();
@@ -933,7 +945,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 		accessToken,
 		this.state.title.getValue(),
 		this.state.description.getValue(),
-		pictures,
+		this.state.pictures,
 		this.state.deadline.toDate(),
 		goal,
 		this.state.bankInfo);
@@ -951,7 +963,6 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	this.props.onPrivateCauseLoading();
 
 	try {
-	    const pictures: Picture[] = [];
 	    const goal: CurrencyAmount = new CurrencyAmount();
 	    goal.amount = this.state.goalAmount.getValue();
 	    goal.currency = this.state.goalCurrency.getValue();
@@ -961,7 +972,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 		{
 		    title: this.state.title.getValue(),
 		    description: this.state.description.getValue(),
-		    pictures: pictures,
+		    pictures: this.state.pictures,
 		    deadline: this.state.deadline.toDate(),
 		    goal: goal,
 		    bankInfo: this.state.bankInfo
