@@ -9,29 +9,29 @@ import './image-gallery.less'
 import { UserInput, UserInputMaster } from './user-input'
 
 
-interface ImageGalleryProps {
+interface ImageGalleryEditorProps {
     pictures: Picture[];
     selectPicture: (position: number) => Promise<Picture>;
     onPicturesChange: (newPictures: Picture[]) => void;
 }
 
 
-interface ImageGalleryState {
+interface ImageGalleryEditorState {
     hasSelectPictureError: boolean;
     pictures: UserInput<Picture, Picture>[];
 }
 
 
-export class ImageGallery extends React.Component<ImageGalleryProps, ImageGalleryState> {
+export class ImageGalleryEditor extends React.Component<ImageGalleryEditorProps, ImageGalleryEditorState> {
     private readonly _pictureMaster: UserInputMaster<Picture, Picture>;
 
-    constructor(props: ImageGalleryProps, context: any) {
+    constructor(props: ImageGalleryEditorProps, context: any) {
         super(props, context);
         this.state = this._fullStateFromProps(props);
         this._pictureMaster = new UserInputMaster<Picture, Picture>(new (MarshalFrom(Picture))());
     }
 
-    componentWillReceiveProps(newProps: ImageGalleryProps) {
+    componentWillReceiveProps(newProps: ImageGalleryEditorProps) {
         this.setState(this._fullStateFromProps(newProps));
     }
 
@@ -71,7 +71,7 @@ export class ImageGallery extends React.Component<ImageGalleryProps, ImageGaller
         );
     }
 
-    private _fullStateFromProps(props: ImageGalleryProps): ImageGalleryState {
+    private _fullStateFromProps(props: ImageGalleryEditorProps): ImageGalleryEditorState {
         return {
             hasSelectPictureError: false,
             pictures: props.pictures.map(picture => new UserInput<Picture, Picture>(picture, picture))
@@ -110,5 +110,22 @@ export class ImageGallery extends React.Component<ImageGalleryProps, ImageGaller
             const pictures = this.state.pictures.map(picture => picture.getValue());
             this.props.onPicturesChange(pictures);
         }
+    }
+}
+
+
+interface ImageGalleryProps {
+    pictures: Picture[];
+}
+
+
+export class ImageGallery extends React.Component<ImageGalleryProps, null> {
+    render() {
+        const { pictures } = this.props;
+        const picturesRegion = pictures.map((picture, pictureIndex) => {
+            return <p key={pictureIndex.toString()}><img src={picture.uri} className="image-gallery picture" /></p>;
+        });
+
+        return <div>{picturesRegion}</div>;
     }
 }

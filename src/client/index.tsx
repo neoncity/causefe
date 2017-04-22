@@ -33,7 +33,7 @@ import { Auth0AccessTokenMarshaller, IdentityClient, newIdentityClient, User } f
 import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
 import { FileStorageService } from './file-storage-service'
-import { ImageGallery } from './image-gallery'
+import { ImageGallery, ImageGalleryEditor } from './image-gallery'
 import './index.less'
 import { AdminMyActionsState, AdminMyCauseState, OpState, IdentityState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
 import { UserInput, UserInputMaster } from './user-input'
@@ -406,6 +406,7 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, undefine
 		<p>{this.props.cause.description}</p>
 		<p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency.toString()}</p>
 		<p>{this.props.cause.deadline.toString()}</p>
+                <ImageGallery pictures={this.props.cause.pictures} />
 	    </div>
 	);
     }
@@ -814,7 +815,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
                 </div>
                 <div>
                 <BankInfoWidget bankInfo={this.state.bankInfo} onBankInfoChange={this._handleBankInfoChange.bind(this)} />
-                <ImageGallery pictures={this.state.pictures} selectPicture={pos => fileStorageService.selectImageWithWidget(pos)} onPicturesChange={this._handlePicturesChange.bind(this)} />
+                <ImageGalleryEditor pictures={this.state.pictures} selectPicture={pos => fileStorageService.selectImageWithWidget(pos)} onPicturesChange={this._handlePicturesChange.bind(this)} />
                 </div>
                 </form>
 		</div>
