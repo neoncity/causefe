@@ -54,7 +54,7 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
         return (
                 <div>
                 <p>Bank info</p>
-                <button type="button" onClick={this._handleAddIBAN.bind(this)}>Add</button>
+                <button disabled={this.state.ibans.length > BankInfo.MAX_NUMBER_OF_IBANS} type="button" onClick={this._handleAddIBAN.bind(this)}>Add</button>
                 {ibansRegion}
                 </div>
         );
