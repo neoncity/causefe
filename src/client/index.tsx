@@ -21,7 +21,7 @@ import { BankInfo,
 	 DonationForUser,
 	 newCorePrivateClient,
 	 newCorePublicClient,
-	 Picture,
+	 PictureSet,
 	 PrivateCause,
 	 PublicCause,
 	 ShareForUser,	 
@@ -406,7 +406,7 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, undefine
 		<p>{this.props.cause.description}</p>
 		<p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency.toString()}</p>
 		<p>{this.props.cause.deadline.toString()}</p>
-                <ImageGallery pictures={this.props.cause.pictures} />
+                <ImageGallery pictureSet={this.props.cause.pictureSet} />
 	    </div>
 	);
     }
@@ -650,7 +650,7 @@ interface AdminMyCauseViewState {
     goalAmount: UserInput<string, number>;
     goalCurrency: UserInput<string, Currency>;
     bankInfo: BankInfo;
-    pictures: Picture[];
+    pictureSet: PictureSet;
 }
 
 
@@ -665,7 +665,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	goalAmount: new UserInput<string, number>('100', 100),
 	goalCurrency: new UserInput<string, Currency>('RON', StandardCurrencies.RON),
         bankInfo: {ibans: []},
-        pictures: []
+        pictureSet: new PictureSet()
     };
 
     private readonly _titleMaster: UserInputMaster<string, string>;
@@ -815,7 +815,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
                 </div>
                 <div>
                 <BankInfoWidget bankInfo={this.state.bankInfo} onBankInfoChange={this._handleBankInfoChange.bind(this)} />
-                <ImageGalleryEditor pictures={this.state.pictures} selectPicture={pos => fileStorageService.selectImageWithWidget(pos)} onPicturesChange={this._handlePicturesChange.bind(this)} />
+                <ImageGalleryEditor pictureSet={this.state.pictureSet} selectPicture={pos => fileStorageService.selectImageWithWidget(pos)} onPictureSetChange={this._handlePictureSetChange.bind(this)} />
                 </div>
                 </form>
 		</div>
@@ -872,7 +872,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	    goalAmount: new UserInput<string, number>(cause.goal.amount.toString(), cause.goal.amount),
 	    goalCurrency: new UserInput<string, Currency>(cause.goal.currency.toString(), cause.goal.currency),
             bankInfo: cause.bankInfo,
-            pictures: cause.pictures
+            pictureSet: cause.pictureSet
 	};
     }
 
@@ -923,10 +923,10 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
         });
     }
 
-    private _handlePicturesChange(newPictures: Picture[]) {
+    private _handlePictureSetChange(newPictureSet: PictureSet) {
         this.setState({
             modifiedGeneral: true,
-            pictures: newPictures
+            pictureSet: newPictureSet
         });
     }
 
@@ -946,7 +946,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 		accessToken,
 		this.state.title.getValue(),
 		this.state.description.getValue(),
-		this.state.pictures,
+		this.state.pictureSet,
 		this.state.deadline.toDate(),
 		goal,
 		this.state.bankInfo);
@@ -973,7 +973,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 		{
 		    title: this.state.title.getValue(),
 		    description: this.state.description.getValue(),
-		    pictures: this.state.pictures,
+		    pictureSet: this.state.pictureSet,
 		    deadline: this.state.deadline.toDate(),
 		    goal: goal,
 		    bankInfo: this.state.bankInfo
