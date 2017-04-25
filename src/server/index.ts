@@ -29,13 +29,16 @@ async function main() {
 	});
         app.use(middleware);
         app.get('*', (_: express.Request, res: express.Response) => {
-            res.write((middleware as any).fileSystem.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html')));
+            const htmlIndexTemplate = (middleware as any).fileSystem.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html'), 'utf-8');
+            const htmlIndex = Mustache.render(htmlIndexTemplate, config);
+            res.write(htmlIndex);
             res.end();
         });
     } else {
         const jsIndexTemplate = fs.readFileSync(path.join(process.cwd(), 'out', 'client', 'client.js'), 'utf-8');
 	const jsIndex = Mustache.render(jsIndexTemplate, config);
-        const htmlIndex = fs.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html'), 'utf-8');
+        const htmlIndexTemplate = fs.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html'), 'utf-8');
+        const htmlIndex = Mustache.render(htmlIndexTemplate, config);
 
 	app.get('/real/client/client.js', (_: express.Request, res: express.Response) => {
             res.write(jsIndex);

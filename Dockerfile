@@ -46,6 +46,7 @@ ENV AUTH0_CLIENT_ID null
 ENV AUTH0_DOMAIN null
 ENV AUTH0_CALLBACK_URI null
 ENV FILESTACK_KEY null
+ENV FACEBOOK_APP_ID null
 ENV SECRETS_PATH /neoncity/var/secrets.json
 
 RUN chown -R neoncity:neoncity /neoncity/build

@@ -12,6 +12,7 @@ export let AUTH0_CLIENT_ID: string;
 export let AUTH0_DOMAIN: string;
 export let AUTH0_CALLBACK_URI: string;
 export let FILESTACK_KEY: string;
+export let FACEBOOK_APP_ID:string;
 
 if (isLocal(ENV)) {
     const secrets = JSON.parse(readFileSync(process.env.SECRETS_PATH, 'utf-8'));
@@ -20,9 +21,11 @@ if (isLocal(ENV)) {
     AUTH0_DOMAIN = secrets["AUTH0_DOMAIN"];
     AUTH0_CALLBACK_URI = secrets["AUTH0_CALLBACK_URI"];
     FILESTACK_KEY = secrets["FILESTACK_KEY"];
+    FACEBOOK_APP_ID = secrets["FACEBOOK_APP_ID"];
 } else {
     AUTH0_CLIENT_ID = process.env.AUTH0_CLIENT_ID;
     AUTH0_DOMAIN = process.env.AUTH0_DOMAIN;
     AUTH0_CALLBACK_URI = process.env.AUTH0_CALLBACK_URI;
     FILESTACK_KEY = process.env.FILESTACK_KEY;
+    FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID;
 }
