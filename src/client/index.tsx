@@ -397,9 +397,35 @@ interface PublicCauseWidgetProps {
     cause: PublicCause;
 }
 
+interface PublicCauseWidgetState {
+    shareIsLoading: boolean;
+    shareIsReady: boolean;
+    shareIsFailed: boolean;
+}
 
-class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, undefined> {
+
+class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, PublicCauseWidgetState> {
+    private static readonly _initialState: PublicCauseWidgetState = {
+        shareIsLoading: false,
+        shareIsReady: false,
+        shareIsFailed: false
+    };
+    
+    constructor(props: PublicCauseWidgetProps, context: any) {
+        super(props, context);
+        this.state = (Object as any).assign({}, PublicCauseWidget._initialState);
+    }
+    
     render() {
+        let shareResult = <span></span>;
+        if (this.state.shareIsLoading) {
+            shareResult = <span>Sharing</span>;
+        } else if (this.state.shareIsReady) {
+            shareResult = <span>Ready</span>;
+        } else if (this.state.shareIsFailed) {
+            shareResult = <span>Failed</span>;
+        }
+        
 	return (
             <div>
 	        <h2><Link to={_causeLink(this.props.cause)}>{this.props.cause.title}</Link></h2>
@@ -407,8 +433,50 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, undefine
 		<p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency.toString()}</p>
 		<p>{this.props.cause.deadline.toString()}</p>
                 <ImageGallery pictureSet={this.props.cause.pictureSet} />
+                <button type="button" onClick={this._handleShare.bind(this)}>Share</button>
+                {shareResult}
 	    </div>
 	);
+    }
+
+    private _handleShare() {
+        const href = `${window.location.protocol}//${window.location.hostname}:${window.location.port}${_causeLink(this.props.cause)}`;
+
+        this.setState({shareIsLoading: true, shareIsReady: false, shareIsFailed: false});
+        
+        FB.ui({
+            method: 'share',
+            href: href
+        }, async (response: facebook.ShareDialogResponse) => {
+            console.log(response);
+            if (typeof response === 'undefined') {
+                // User closed dialog without sharing.
+                this.setState({shareIsLoading: false, shareIsReady: false, shareIsFailed: true});
+                return;
+            }
+
+            if (response.hasOwnProperty('error_message')) {
+                this.setState({shareIsLoading: false, shareIsReady: false, shareIsFailed: true});
+                return;
+            }
+
+            if (!response.hasOwnProperty('post_id')) {
+                this.setState({shareIsLoading: false, shareIsReady: false, shareIsFailed: true});
+                return;
+            }
+
+            try {
+                await corePublicClient.createShare(accessToken, this.props.cause.id, response.post_id as string);
+                this.setState({shareIsLoading: false, shareIsReady: true, shareIsFailed: false});
+            } catch (e) {
+                console.log(e);
+                if (isLocal(config.ENV)) {
+                    console.log(e);
+                }
+                
+                this.setState({shareIsLoading: false, shareIsReady: false, shareIsFailed: true});
+            }
+        });
     }
 }
 
