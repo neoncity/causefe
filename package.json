@@ -1,6 +1,6 @@
 {
   "name": "@neoncity/causefe",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "The main frontend, where causes are managed and viewed.",
   "author": "NeonCity team",
   "scripts": {
@@ -36,7 +36,7 @@
     "moment": "=2.18.1",
     "mustache": "=2.3.0",
     "query-string": "=4.3.2",
-    "raynor": "=0.4.0",
+    "raynor": "=0.7.0",
     "react": "=15.4.2",
     "react-datepicker": "^0.44.0",
     "react-dom": "=15.4.2",
