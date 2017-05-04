@@ -92,8 +92,8 @@ class PostLoginRedirectInfoMarshaller extends r.BaseStringMarshaller<PostLoginRe
 }
 
 class Auth0RedirectInfo {
-    @MarshalWith(Auth0AccessTokenMarshaller)
-    access_token: string;
+    @MarshalWith(Auth0AccessTokenMarshaller, 'access_token')
+    accessToken: string;
     
     @MarshalWith(PostLoginRedirectInfoMarshaller)
     state: PostLoginRedirectInfo;
@@ -135,8 +135,8 @@ if (rawAccessToken != null) {
 } else if (currentLocation.pathname == '/real/login') {
     const queryParsed = (Object as any).assign({}, queryString.parse((currentLocation as any).hash));
     const auth0RedirectInfo = auth0RedirectInfoMarshaller.extract(queryParsed);
-    _saveAccessToken(auth0RedirectInfo.access_token);
-    accessToken = auth0RedirectInfo.access_token;
+    _saveAccessToken(auth0RedirectInfo.accessToken);
+    accessToken = auth0RedirectInfo.accessToken;
     
     identityClient = newIdentityClient(config.IDENTITY_SERVICE_HOST);
     browserHistory.push(auth0RedirectInfo.state.path);
