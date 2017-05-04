@@ -723,24 +723,12 @@ class AdminFrame extends React.Component<AdminFrameProps, undefined> {
         return (
             <div>
                 <div>This is the admin view</div>
-                <Link to="/admin/updates">Updates</Link>
                 <Link to="/admin/my-cause">My Cause</Link>
                 <Link to="/admin/my-actions">My Actions</Link>
                 <Link to="/admin/account">Account</Link>
                 {this.props.children}
             </div>
         );
-    }
-}
-
-
-interface AdminUpdatesProps {
-}
-
-
-class AdminUpdatesView extends React.Component<AdminUpdatesProps, undefined> {
-    render() {
-        return (<div>This is the updates section</div>);
     }
 }
 
@@ -1256,8 +1244,7 @@ ReactDOM.render(
 
                 <Route path="/" component={IdentityFrame}>
                     <Route path="admin" component={AdminFrame}>
-		        <IndexRedirect to="updates" />
-			<Route path="updates" component={AdminUpdatesView} />
+		        <IndexRedirect to="my-cause" />
 			<Route path="my-cause" component={AdminMyCauseView} />
 			<Route path="my-actions" component={AdminMyActionsView} />
 			<Route path="account" component={AdminAccountView} />
