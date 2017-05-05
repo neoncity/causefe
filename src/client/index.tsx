@@ -724,6 +724,7 @@ class AdminFrame extends React.Component<AdminFrameProps, undefined> {
             <div>
                 <div>This is the admin view</div>
                 <Link to="/admin/my-cause">My Cause</Link>
+                <Link to="/admin/cause-analytics">Cause Analytics</Link>
                 <Link to="/admin/my-actions">My Actions</Link>
                 <Link to="/admin/account">Account</Link>
                 {this.props.children}
@@ -1122,6 +1123,37 @@ const AdminMyCauseView = connect(
     adminMyCauseMapDispatchToProps)(_AdminMyCauseView);
 
 
+interface AdminCauseAnalyticsViewProps {
+}
+
+
+interface AdminCauseAnalyticsViewState {
+}
+
+
+class _AdminCauseAnalyticsView extends React.Component<AdminCauseAnalyticsViewProps, AdminCauseAnalyticsViewState> {
+    render() {
+	return <div>Cause Analytics</div>;
+    }
+}
+
+
+function adminCauseAnalyticsMapStateToProps(_: any) {
+    return {
+    };
+}
+
+
+function adminCauseAnalyticsMapDispatchToProps(_: (newState: any) => void) {
+    return {};
+}
+
+
+const AdminCauseAnalyticsView = connect(
+    adminCauseAnalyticsMapStateToProps,
+    adminCauseAnalyticsMapDispatchToProps)(_AdminCauseAnalyticsView);
+
+
 interface AdminMyActionsProps {
     isLoading: boolean;
     isReady: boolean;
@@ -1246,6 +1278,7 @@ ReactDOM.render(
                     <Route path="admin" component={AdminFrame}>
 		        <IndexRedirect to="my-cause" />
 			<Route path="my-cause" component={AdminMyCauseView} />
+			<Route path="cause-analytics" component={AdminCauseAnalyticsView} />
 			<Route path="my-actions" component={AdminMyActionsView} />
 			<Route path="account" component={AdminAccountView} />
                     </Route>
