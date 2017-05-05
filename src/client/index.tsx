@@ -436,7 +436,7 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, PublicCa
         } 
         
         let shareResult = <span></span>;
-        switch (this.state.donationState) {
+        switch (this.state.shareState) {
         case OpState.Loading:
             shareResult = <span>Sharing</span>;
             break;
