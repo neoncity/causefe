@@ -1,6 +1,6 @@
 import { createStore, combineReducers } from 'redux'
 
-import { PublicCause, PrivateCause, UserActionsOverview } from '@neoncity/core-sdk-js'
+import { CauseAnalytics, PublicCause, PrivateCause, UserActionsOverview } from '@neoncity/core-sdk-js'
 import { User } from '@neoncity/identity-sdk-js'
 
 
@@ -9,7 +9,8 @@ export enum StatePart {
     PublicCauses = 1,
     PublicCauseDetail = 2,
     AdminMyCause = 3,
-    AdminMyActions = 4
+    AdminCauseAnalytics = 4,
+    AdminMyActions = 5
 }
 
 
@@ -199,6 +200,51 @@ function adminMyCause(state=adminMyCauseInitialState, action: AdminMyCauseState)
 }
 
 
+interface AdminCauseAnalyticsInit {
+    part: StatePart.AdminCauseAnalytics;
+    type: OpState.Init;
+}
+interface AdminCauseAnalyticsLoading {
+    part: StatePart.AdminCauseAnalytics;
+    type: OpState.Loading;
+}
+interface AdminCauseAnalyticsReady {
+    part: StatePart.AdminCauseAnalytics;
+    type: OpState.Ready;
+    hasCause: boolean;
+    causeAnalytics: CauseAnalytics|null;
+}
+interface AdminCauseAnalyticsFailed {
+    part: StatePart.AdminCauseAnalytics;
+    type: OpState.Failed;
+    errorMessage: string;
+}
+
+export type AdminCauseAnalyticsState = AdminCauseAnalyticsInit | AdminCauseAnalyticsLoading | AdminCauseAnalyticsReady | AdminCauseAnalyticsFailed;
+
+const adminCauseAnalyticsInitialState: AdminCauseAnalyticsState = {
+    part: StatePart.AdminCauseAnalytics,
+    type: OpState.Init
+};
+
+
+function adminCauseAnalytics(state=adminCauseAnalyticsInitialState, action: AdminCauseAnalyticsState): AdminCauseAnalyticsState {
+    if (action.part != StatePart.AdminCauseAnalytics) {
+	return state;
+    }
+    
+    switch (action.type) {
+    case OpState.Init:
+    case OpState.Loading:
+    case OpState.Ready:
+    case OpState.Failed:
+	return action;
+    default:
+	return state;
+    }
+}
+
+
 interface AdminMyActionsInit {
     part: StatePart.AdminMyActions;
     type: OpState.Init;
@@ -248,6 +294,7 @@ const reducers = combineReducers({
     publicCauses: publicCauses,
     publicCauseDetail: publicCauseDetail,
     adminMyCause: adminMyCause,
+    adminCauseAnalytics: adminCauseAnalytics,    
     adminMyActions: adminMyActions
 });
 

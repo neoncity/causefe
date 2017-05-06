@@ -15,6 +15,7 @@ import { isLocal } from '@neoncity/common-js/env'
 import { slugify } from '@neoncity/common-js/slugify'
 import { BankInfo,
 	 Cause,
+         CauseAnalytics,
 	 CorePrivateClient,
 	 CorePublicClient,
 	 CurrencyAmount,
@@ -35,7 +36,7 @@ import * as config from './config'
 import { FileStorageService } from './file-storage-service'
 import { ImageGallery, ImageGalleryEditor } from './image-gallery'
 import './index.less'
-import { AdminMyActionsState, AdminMyCauseState, OpState, IdentityState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
+import { AdminCauseAnalyticsState, AdminMyActionsState, AdminMyCauseState, OpState, IdentityState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
 import { UserInput, UserInputMaster } from './user-input'
 
 // Old style imports.
@@ -1124,6 +1125,15 @@ const AdminMyCauseView = connect(
 
 
 interface AdminCauseAnalyticsViewProps {
+    isLoading: boolean;
+    isReady: boolean;
+    isFailed: boolean;
+    hasCause: boolean;
+    causeAnalytics: CauseAnalytics|null;
+    errorMessage: string|null;
+    onCauseAnalyticsLoading: () => void;
+    onCauseAnalyticsReady: (hasCause: boolean, causeAnalytics: CauseAnalytics|null) => void;
+    onCauseAnalyticsFailed: (errorMessage: string) => void;
 }
 
 
@@ -1132,20 +1142,68 @@ interface AdminCauseAnalyticsViewState {
 
 
 class _AdminCauseAnalyticsView extends React.Component<AdminCauseAnalyticsViewProps, AdminCauseAnalyticsViewState> {
+    async componentDidMount() {
+        this.props.onCauseAnalyticsLoading();
+
+        try {
+            const causeAnalytics = await corePrivateClient.getCauseAnalytics(accessToken);
+            this.props.onCauseAnalyticsReady(true, causeAnalytics);
+        } catch (e) {
+            if (e.name == 'NoCauseForUserError') {
+                this.props.onCauseAnalyticsReady(false, null);
+            } else {
+                if (isLocal(config.ENV)) {
+                    console.log(e);
+                }
+            
+                this.props.onCauseAnalyticsFailed('Could not load cause analytics for user');
+            }
+        }
+    }
+    
     render() {
-	return <div>Cause Analytics</div>;
+        if (this.props.isLoading) {
+            return <div>Loading ...</div>;
+	} else if (this.props.isFailed) {
+	    return <div>Failed {this.props.errorMessage}</div>;
+	} else if (!this.props.hasCause) {
+            return <div>There is no cause. Please create one to see analytics</div>;
+        } else {
+            const causeAnalytics = this.props.causeAnalytics as CauseAnalytics;
+            
+            return (
+                    <div>
+                    <p>Days left: {causeAnalytics.daysLeft}</p>
+                    <p>Donors count: {causeAnalytics.donorsCount}</p>
+                    <p>Donations count: {causeAnalytics.donationsCount}</p>
+                    <p>Donatin amount: {causeAnalytics.amountDonated.amount} {causeAnalytics.amountDonated.currency.toString()}</p>
+                    <p>Sharers count: {causeAnalytics.sharersCount}</p>
+                    <p>Shares count: {causeAnalytics.sharesCount}</p>
+                    </div>
+            );
+        }
     }
 }
 
 
-function adminCauseAnalyticsMapStateToProps(_: any) {
+function adminCauseAnalyticsMapStateToProps(state: any) {
     return {
+        isLoading: state.adminCauseAnalytics.type == OpState.Init || state.adminCauseAnalytics.type == OpState.Loading,
+        isReady: state.adminCauseAnalytics.type == OpState.Ready,
+        isFailed: state.adminCauseAnalytics.type == OpState.Failed,
+        hasCause: state.adminCauseAnalytics.type == OpState.Ready ? state.adminCauseAnalytics.hasCause : false,
+        causeAnalytics: state.adminCauseAnalytics.type == OpState.Ready ? state.adminCauseAnalytics.causeAnalytics : null,
+        errorMessage: state.adminCauseAnalytics.type == OpState.Failed ? state.adminCauseAnalytics.errorMessage : null
     };
 }
 
 
-function adminCauseAnalyticsMapDispatchToProps(_: (newState: any) => void) {
-    return {};
+function adminCauseAnalyticsMapDispatchToProps(dispatch: (newState: AdminCauseAnalyticsState) => void) {
+    return {
+	onCauseAnalyticsLoading: () => dispatch({part: StatePart.AdminCauseAnalytics, type: OpState.Loading}),
+	onCauseAnalyticsReady: (hasCause: boolean, causeAnalytics: CauseAnalytics|null) => dispatch({part: StatePart.AdminCauseAnalytics, type: OpState.Ready, hasCause: hasCause, causeAnalytics: causeAnalytics}),
+	onCauseAnalyticsFailed: (errorMessage: string) => dispatch({part: StatePart.AdminCauseAnalytics, type: OpState.Failed, errorMessage: errorMessage})
+    };
 }
 
 
