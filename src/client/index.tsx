@@ -211,7 +211,7 @@ class _UserInfoWidget extends React.Component<UserInfoWidgetProps, undefined> {
 	);
 
 	_clearAccessToken();
-	auth0.show();        
+	auth0.show();
     }
 }
 
@@ -395,6 +395,7 @@ const IdentityFrame = connect(
 
 
 interface PublicCauseWidgetProps {
+    isIdentityReady: boolean;
     cause: PublicCause;
 }
 
@@ -473,6 +474,30 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, PublicCa
     }
 
     private async _handleDonate() {
+        // TODO: Handle triggering the donate afterwards.
+        if (!this.props.isIdentityReady) {
+            const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
+	    const postLoginInfoSer = postLoginRedirectInfoMarshaller.pack(postLoginInfo);
+
+	    const auth0: Auth0LockStatic = new Auth0Lock(
+	        config.AUTH0_CLIENT_ID,
+	        config.AUTH0_DOMAIN, {
+		    auth: {
+		        redirect: true,
+		        redirectUrl: config.AUTH0_CALLBACK_URI,
+		        responseType: 'token',
+		        params: {
+			    state: postLoginInfoSer
+		        }
+		    }
+	        }
+	    );
+
+	    _clearAccessToken();
+	    auth0.show();
+            return;
+        }
+        
         this.setState({donationState: OpState.Loading});
         
         try {
@@ -492,6 +517,30 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, PublicCa
     }
 
     private _handleShare() {
+        // TODO: Handle triggering the share afterwards.
+        if (!this.props.isIdentityReady) {
+            const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
+	    const postLoginInfoSer = postLoginRedirectInfoMarshaller.pack(postLoginInfo);
+
+	    const auth0: Auth0LockStatic = new Auth0Lock(
+	        config.AUTH0_CLIENT_ID,
+	        config.AUTH0_DOMAIN, {
+		    auth: {
+		        redirect: true,
+		        redirectUrl: config.AUTH0_CALLBACK_URI,
+		        responseType: 'token',
+		        params: {
+			    state: postLoginInfoSer
+		        }
+		    }
+	        }
+	    );
+
+	    _clearAccessToken();
+	    auth0.show();
+            return;
+        }
+        
         const href = `${window.location.protocol}//${window.location.hostname}:${window.location.port}${_causeLink(this.props.cause)}`;
 
         this.setState({shareState: OpState.Loading});
@@ -572,6 +621,7 @@ interface HomeViewProps {
     isLoading: boolean;
     isReady: boolean;
     isFailed: boolean;
+    isIdentityReady: boolean;
     causes: PublicCause[]|null;
     errorMessage: string|null;
     onPublicCausesLoading: () => void;
@@ -602,7 +652,7 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
 	} else if (this.props.isFailed) {
 	    return (<div>Failed {this.props.errorMessage}</div>);
 	} else {
-	    const causes = (this.props.causes as PublicCause[]).map(c => <PublicCauseWidget key={c.id} cause={c} />);
+	    const causes = (this.props.causes as PublicCause[]).map(c => <PublicCauseWidget key={c.id} cause={c} isIdentityReady={this.props.isIdentityReady} />);
 	    
 	    return (<div>{causes}</div>);
 	}
@@ -615,6 +665,7 @@ function homeViewMapStateToProps(state: any) {
 	isLoading: state.publicCauses.type == OpState.Init || state.publicCauses.type == OpState.Loading,
 	isReady: state.publicCauses.type == OpState.Ready,
 	isFailed: state.publicCauses.type == OpState.Failed,
+        isIdentityReady: state.identity.type == OpState.Ready,
 	causes: state.publicCauses.type == OpState.Ready ? state.publicCauses.causes : null,
 	errorMessage: state.publicCauses.type == OpState.Failed ? state.publicCauses.errorMessage : null,
     };
@@ -645,6 +696,7 @@ interface CauseViewProps {
     isLoading: boolean;
     isReady: boolean;
     isFailed: boolean;
+    isIdentityReady: boolean;
     params: CauseViewParams;
     cause: PublicCause|null;
     errorMessage: string|null;
@@ -682,7 +734,7 @@ class _CauseView extends React.Component<CauseViewProps, undefined> {
 	} else if (this.props.isFailed) {
 	    return (<div>Failed {this.props.errorMessage}</div>);
 	} else {
-	    return <PublicCauseWidget cause={this.props.cause as PublicCause} />;
+	    return <PublicCauseWidget cause={this.props.cause as PublicCause} isIdentityReady={this.props.isIdentityReady} />;
 	}
     }
 }
@@ -693,6 +745,7 @@ function causeViewMapStateToProps(state: any) {
 	isLoading: state.publicCauseDetail.type == OpState.Init || state.publicCauseDetail.type == OpState.Loading,
 	isReady: state.publicCauseDetail.type == OpState.Ready,
 	isFailed: state.publicCauseDetail.type == OpState.Failed,
+        isIdentityReady: state.identity.type == OpState.Ready,
 	cause: state.publicCauseDetail.type == OpState.Ready ? state.publicCauseDetail.cause : null,
 	errorMessage: state.publicCauseDetail.type == OpState.Failed ? state.publicCauseDetail.errorMessage : null,
     };
