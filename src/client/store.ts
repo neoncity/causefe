@@ -167,6 +167,7 @@ interface AdminMyCauseReady {
     part: StatePart.AdminMyCause;
     type: OpState.Ready;
     hasCause: boolean;
+    causeIsDeleted: boolean;
     cause: PrivateCause|null;
 }
 interface AdminMyCauseFailed {

@@ -793,10 +793,11 @@ interface AdminMyCauseProps {
     isReady: boolean;
     isFailed: boolean;
     hasCause: boolean;
+    causeIsDeleted: boolean;
     cause: PrivateCause|null;
     errorMessage: string|null;
     onPrivateCauseLoading: () => void;
-    onPrivateCauseReady: (hasCause: boolean, cause: PrivateCause|null) => void;
+    onPrivateCauseReady: (hasCause: boolean, causeIsDelted: boolean, cause: PrivateCause|null) => void;
     onPrivateCauseFailed: (errorMessage: string) => void;
 }
 
@@ -850,10 +851,12 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 
         try {
             const privateCause = await corePrivateClient.getCause(accessToken);
-            this.props.onPrivateCauseReady(true, privateCause);
+            this.props.onPrivateCauseReady(true, false, privateCause);
         } catch (e) {
             if (e.name == 'NoCauseForUserError') {
-                this.props.onPrivateCauseReady(false, null);
+                this.props.onPrivateCauseReady(false, false, null);
+	    } else if (e.name == 'CauseDeletedForUserError') {
+                this.props.onPrivateCauseReady(true, true, null);
             } else {
                 if (isLocal(config.ENV)) {
                     console.log(e);
@@ -1000,6 +1003,8 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 		    </div>
 		);
             }
+	} else if (this.props.causeIsDeleted) {
+	    return <div>The cause has been deleted. If you wish to undelete it, speak to one of our admins.</div>;
         } else {
             const cause = this.props.cause as PrivateCause;
             
@@ -1011,18 +1016,21 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
                         <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>Reset</button>
                         <button disabled={!this.state.modifiedGeneral || !allValid} onClick={this._handleUpdate.bind(this)}>Update</button>
                     </div>
+		    <div>
+                        <button onClick={this._handleDelete.bind(this)}>Delete Cause</button>
+		    </div>
                 </div>
 	    );
         }
     }
 
     private _fullStateFromProps(props: AdminMyCauseProps): AdminMyCauseViewState {
-	if (!props.hasCause) {
+	if (!props.hasCause || props.causeIsDeleted) {
 	    return (Object as any).assign({}, _AdminMyCauseView._initialState);
 	}
-	
+
 	const cause = props.cause as PrivateCause;
-	
+	    
 	return {
 	    showCreationFormIfNoControls: false,
 	    modifiedGeneral: false,
@@ -1032,8 +1040,8 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 	    deadline: moment(cause.deadline),
 	    goalAmount: new UserInput<string, number>(cause.goal.amount.toString(), cause.goal.amount),
 	    goalCurrency: new UserInput<string, Currency>(cause.goal.currency.toString(), cause.goal.currency),
-            bankInfo: cause.bankInfo,
-            pictureSet: cause.pictureSet
+	    bankInfo: cause.bankInfo,
+	    pictureSet: cause.pictureSet
 	};
     }
 
@@ -1111,7 +1119,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 		this.state.deadline.toDate(),
 		goal,
 		this.state.bankInfo);
-	    this.props.onPrivateCauseReady(true, privateCause);
+	    this.props.onPrivateCauseReady(true, false, privateCause);
 	} catch (e) {
             if (isLocal(config.ENV)) {
                 console.log(e);
@@ -1139,7 +1147,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
 		    goal: goal,
 		    bankInfo: this.state.bankInfo
 		});
-	    this.props.onPrivateCauseReady(true, privateCause);
+	    this.props.onPrivateCauseReady(true, false, privateCause);
 	} catch (e) {
             if (isLocal(config.ENV)) {
                 console.log(e);
@@ -1147,7 +1155,22 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
             
 	    this.props.onPrivateCauseFailed('Could not update cause for user');
 	}	
-    }    
+    }
+
+    private async _handleDelete() {
+	this.props.onPrivateCauseLoading();
+
+	try {
+	    await corePrivateClient.deleteCause(accessToken);
+	    this.props.onPrivateCauseReady(true, true, null);
+	} catch (e) {
+	    if (isLocal(config.ENV)) {
+                console.log(e);
+            }
+            
+	    this.props.onPrivateCauseFailed('Could not delete cause for user');
+	}	
+    }
 }
 
 
@@ -1157,6 +1180,7 @@ function adminMyCauseMapStateToProps(state: any) {
 	isReady: state.adminMyCause.type == OpState.Ready,
 	isFailed: state.adminMyCause.type == OpState.Failed,
         hasCause: state.adminMyCause.type == OpState.Ready ? state.adminMyCause.hasCause : false,
+	causeIsDeleted: state.adminMyCause.type == OpState.Ready ? state.adminMyCause.causeIsDeleted : false,
         cause: state.adminMyCause.type == OpState.Ready ? state.adminMyCause.cause : null,
 	errorMessage: state.adminMyCause.type == OpState.Failed ? state.adminMyCause.errorMessage : null
     };
@@ -1166,7 +1190,7 @@ function adminMyCauseMapStateToProps(state: any) {
 function adminMyCauseMapDispatchToProps(dispatch: (newState: AdminMyCauseState) => void) {
     return {
 	onPrivateCauseLoading: () => dispatch({part: StatePart.AdminMyCause, type: OpState.Loading}),
-	onPrivateCauseReady: (hasCause: boolean, cause: PrivateCause) => dispatch({part: StatePart.AdminMyCause, type: OpState.Ready, hasCause: hasCause, cause: cause}),
+	onPrivateCauseReady: (hasCause: boolean, causeIsDeleted: boolean, cause: PrivateCause) => dispatch({part: StatePart.AdminMyCause, type: OpState.Ready, hasCause, causeIsDeleted, cause}),
 	onPrivateCauseFailed: (errorMessage: string) => dispatch({part: StatePart.AdminMyCause, type: OpState.Failed, errorMessage: errorMessage})
     };
 }
@@ -1221,7 +1245,7 @@ class _AdminCauseAnalyticsView extends React.Component<AdminCauseAnalyticsViewPr
 	    return <div>Failed {this.props.errorMessage}</div>;
 	} else if (!this.props.hasCause) {
             return <div>There is no cause. Please create one to see analytics</div>;
-        } else {
+	} else {
             const causeAnalytics = this.props.causeAnalytics as CauseAnalytics;
             
             return (
