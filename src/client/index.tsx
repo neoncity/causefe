@@ -105,8 +105,8 @@ const auth0RedirectInfoMarshaller = new (MarshalFrom(Auth0RedirectInfo))();
 
 let rawAccessToken: string|null = _loadAccessToken();
 let identityClient: IdentityClient|null;
-const corePublicClient: CorePublicClient = newCorePublicClient(config.CORE_SERVICE_HOST);
-const corePrivateClient: CorePrivateClient = newCorePrivateClient(config.CORE_SERVICE_HOST);
+const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.CORE_SERVICE_HOST);
+const corePrivateClient: CorePrivateClient = newCorePrivateClient(config.ENV, config.CORE_SERVICE_HOST);
 
 const currentLocation = browserHistory.getCurrentLocation();
 
@@ -131,7 +131,7 @@ const auth0: Auth0LockStatic = new Auth0Lock(
 let accessToken: string = 'INVALID';
 
 if (rawAccessToken != null) {
-    identityClient = newIdentityClient(config.IDENTITY_SERVICE_HOST);
+    identityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST);
     accessToken = rawAccessToken;
 } else if (currentLocation.pathname == '/real/login') {
     const queryParsed = (Object as any).assign({}, queryString.parse((currentLocation as any).hash));
@@ -139,7 +139,7 @@ if (rawAccessToken != null) {
     _saveAccessToken(auth0RedirectInfo.accessToken);
     accessToken = auth0RedirectInfo.accessToken;
     
-    identityClient = newIdentityClient(config.IDENTITY_SERVICE_HOST);
+    identityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST);
     browserHistory.push(auth0RedirectInfo.state.path);
 } else if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
     identityClient = null;
