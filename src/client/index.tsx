@@ -2,7 +2,7 @@ import Auth0Lock from 'auth0-lock'
 import * as theMoment from 'moment'
 import * as queryString from 'query-string'
 import * as r from 'raynor'
-import { ExtractError, MarshalFrom, MarshalWith } from 'raynor'
+import { ExtractError, MarshalFrom, MarshalWith, OptionalOf } from 'raynor'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import * as ReactDatePicker from 'react-datepicker'
@@ -93,8 +93,11 @@ class PostLoginRedirectInfoMarshaller extends r.BaseStringMarshaller<PostLoginRe
 }
 
 class Auth0RedirectInfo {
-    @MarshalWith(Auth0AccessTokenMarshaller, 'access_token')
-    accessToken: string;
+    @MarshalWith(OptionalOf(r.StringMarshaller))
+    error: string|null;
+    
+    @MarshalWith(OptionalOf(Auth0AccessTokenMarshaller), 'access_token')
+    accessToken: string|null;
     
     @MarshalWith(PostLoginRedirectInfoMarshaller)
     state: PostLoginRedirectInfo;
@@ -109,7 +112,6 @@ const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, confi
 const corePrivateClient: CorePrivateClient = newCorePrivateClient(config.ENV, config.CORE_SERVICE_HOST);
 
 const currentLocation = browserHistory.getCurrentLocation();
-
 const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
 const postLoginInfoSer = postLoginRedirectInfoMarshaller.pack(postLoginInfo);
 
@@ -136,10 +138,15 @@ if (rawAccessToken != null) {
 } else if (currentLocation.pathname == '/real/login') {
     const queryParsed = (Object as any).assign({}, queryString.parse((currentLocation as any).hash));
     const auth0RedirectInfo = auth0RedirectInfoMarshaller.extract(queryParsed);
-    _saveAccessToken(auth0RedirectInfo.accessToken);
-    accessToken = auth0RedirectInfo.accessToken;
-    
-    identityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST);
+
+    if (auth0RedirectInfo.accessToken != null) {
+        _saveAccessToken(auth0RedirectInfo.accessToken);
+        accessToken = auth0RedirectInfo.accessToken;
+        identityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST);
+    } else {
+        identityClient = null;
+    }
+
     browserHistory.push(auth0RedirectInfo.state.path);
 } else if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
     identityClient = null;
@@ -192,13 +199,13 @@ class _UserInfoWidget extends React.Component<UserInfoWidgetProps, undefined> {
     }
 
     private _handleLoginClick() {
+        const currentLocation = browserHistory.getCurrentLocation();
         const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
 	const postLoginInfoSer = postLoginRedirectInfoMarshaller.pack(postLoginInfo);
 
 	const auth0: Auth0LockStatic = new Auth0Lock(
 	    config.AUTH0_CLIENT_ID,
 	    config.AUTH0_DOMAIN, {
-		closable: false,
 		auth: {
 		    redirect: true,
 		    redirectUrl: config.AUTH0_CALLBACK_URI,
@@ -265,6 +272,8 @@ class _AppFrame extends React.Component<AppFrameProps, undefined> {
             if (isLocal(config.ENV)) {
                 console.log(e);
             }
+
+            const currentLocation = browserHistory.getCurrentLocation();
             
 	    if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
 		const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
@@ -476,6 +485,7 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, PublicCa
     private async _handleDonate() {
         // TODO: Handle triggering the donate afterwards.
         if (!this.props.isIdentityReady) {
+            const currentLocation = browserHistory.getCurrentLocation();
             const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
 	    const postLoginInfoSer = postLoginRedirectInfoMarshaller.pack(postLoginInfo);
 
@@ -519,6 +529,7 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, PublicCa
     private _handleShare() {
         // TODO: Handle triggering the share afterwards.
         if (!this.props.isIdentityReady) {
+            const currentLocation = browserHistory.getCurrentLocation();
             const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
 	    const postLoginInfoSer = postLoginRedirectInfoMarshaller.pack(postLoginInfo);
 
