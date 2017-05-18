@@ -25,6 +25,7 @@ import { User } from '@neoncity/identity-sdk-js'
 import { accessToken } from './access-token'
 import { clearAccessToken } from './access-token-storage'
 import { AdminAccountView } from './admin-account-view'
+import { AppFrame } from './app-frame'
 import { showAuth0Lock } from './auth0'
 import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
@@ -33,111 +34,12 @@ import { ImageGallery } from './image-gallery'
 import { ImageGalleryEditor } from './image-gallery-editor'
 import './index.less'
 import { ShareForUserWidget } from './share-for-user-widget'
-import { corePublicClient, corePrivateClient, fileStorageService, identityClient } from './services'
-import { AdminCauseAnalyticsState, AdminMyActionsState, AdminMyCauseState, OpState, IdentityState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
+import { corePublicClient, corePrivateClient, fileStorageService } from './services'
+import { AdminCauseAnalyticsState, AdminMyActionsState, AdminMyCauseState, OpState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
 import { UserInput, UserInputMaster } from './user-input'
-import { UserInfoWidget } from './user-info-widget'
 
 // Old style imports.
 const moment = require('moment')
-
-
-interface AppFrameProps {
-    isInit: boolean;
-    isLoading: boolean;
-    isReady: boolean;
-    isFailed: boolean;
-    user: User|null;
-    onIdentityLoading: () => void;
-    onIdentityReady: (user: User) => void;
-    onIdentityFailed: (errorMessage: string) => void;
-    children: React.ReactNode;
-}
-
-
-class _AppFrame extends React.Component<AppFrameProps, undefined> {
-    async componentDidMount() {
-	if (accessToken == 'INVALID') {
-	    return;
-	}
-	
-	this.props.onIdentityLoading();
-
-	try {
-	    const user = await identityClient.getOrCreateUser(accessToken);
-	    this.props.onIdentityReady(user);
-	} catch (e) {
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
-
-            const currentLocation = browserHistory.getCurrentLocation();
-            
-	    if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
-		clearAccessToken();
-		showAuth0Lock();
-            }
-	    
-	    this.props.onIdentityFailed('Could not load user');
-	}
-    }
-    
-    render() {
-	// Bit of a hack. If there's no user, the global navigation to admin and console is done through a regular <a> tag
-	// which will trigger a page load event. This is not so bad, as the login flow is beefy as it is, but it does add
-	// _some_ extra complexity. Hopefully it will be easy to get rid of in the future.
-	// TODO: make this simpler / work through the single-page setup.
-        if (!this.props.isReady) {
-            return (
-                <div>
-                    <div>This is the app frame</div>
-                    <div>
-                        <Link to="/">Home</Link>
-                        <a href="/admin">Admin</a>
-                        <UserInfoWidget />
-                    </div>
-                    {this.props.children}
-                </div>
-            );
-        } else {
-            return (
-                <div>
-                    <div>This is the app frame</div>
-                    <div>
-                        <Link to="/">Home</Link>
-                        <Link to="/admin">Admin</Link>
-                        <UserInfoWidget />
-                    </div>
-                    {this.props.children}
-                </div>
-            );      
-        }
-    }
-}
-
-function appFrameMapStateToProps(state: any) {
-    return {
-        isInit: state.identity.type == OpState.Init,
-        isLoading: state.identity.type == OpState.Loading,
-        isReady: state.identity.type == OpState.Ready,
-        isFailed: state.identity.type == OpState.Failed,
-	user: state.identity.type == OpState.Ready ? state.identity.user : null
-    };
-}
-
-
-function appFrameMapDispatchToProps(dispatch: (newState: IdentityState) => void) {
-    return {
-	onIdentityLoading: () => dispatch({part: StatePart.Identity, type: OpState.Loading}),
-	onIdentityReady: (user: User) => dispatch({part: StatePart.Identity, type: OpState.Ready, user: user}),
-	onIdentityFailed: (errorMessage: string) => dispatch({part: StatePart.Identity, type: OpState.Failed, errorMessage: errorMessage})
-    };
-}
-
-
-const AppFrame = connect(
-    appFrameMapStateToProps,
-    appFrameMapDispatchToProps)(_AppFrame);
 
 
 interface IdentityFrameProps {
