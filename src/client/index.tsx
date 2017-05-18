@@ -19,7 +19,6 @@ import { BankInfo,
 	 CorePrivateClient,
 	 CorePublicClient,
 	 CurrencyAmount,
-	 DonationForUser,
 	 newCorePrivateClient,
 	 newCorePublicClient,
 	 PictureSet,
@@ -33,6 +32,7 @@ import { Auth0AccessTokenMarshaller, IdentityClient, newIdentityClient, User } f
 
 import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
+import { DonationForUserWidget } from './donation-for-user-widget'
 import { FileStorageService } from './file-storage-service'
 import { ImageGallery, ImageGalleryEditor } from './image-gallery'
 import './index.less'
@@ -592,22 +592,7 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, PublicCa
 }
 
 
-interface DonationForUserProps {
-    donationForUser: DonationForUser;
-}
 
-
-class DonationForUserWidget extends React.Component<DonationForUserProps, undefined> {
-    render() {
-	const donation = this.props.donationForUser;
-	const cause = this.props.donationForUser.forCause;
-	const timeCreated = donation.timeCreated.toString();
-	
-	return (
-		<p>To <Link to={_causeLink(cause)}>{cause.title}</Link> donated {donation.amount.amount} {donation.amount.currency.toString()} on {timeCreated}</p>
-	);
-    }
-}
 
 
 interface ShareForUserProps {
