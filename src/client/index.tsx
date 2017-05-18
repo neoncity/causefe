@@ -28,8 +28,9 @@ import { BankInfo,
 	 DescriptionMarshaller} from '@neoncity/core-sdk-js'
 import { IdentityClient, newIdentityClient, User } from '@neoncity/identity-sdk-js'
 
-import { showAuth0Lock, Auth0RedirectInfo } from './auth0'
+import { clearAccessToken, loadAccessToken, saveAccessToken } from './access-token-storage'
 import { AdminAccountView } from './admin-account-view'
+import { showAuth0Lock, Auth0RedirectInfo } from './auth0'
 import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
 import { DonationForUserWidget } from './donation-for-user-widget'
@@ -44,7 +45,7 @@ import { UserInput, UserInputMaster } from './user-input'
 // Old style imports.
 const moment = require('moment')
 
-let rawAccessToken: string|null = _loadAccessToken();
+let rawAccessToken: string|null = loadAccessToken();
 let identityClient: IdentityClient|null;
 const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.CORE_SERVICE_HOST);
 const corePrivateClient: CorePrivateClient = newCorePrivateClient(config.ENV, config.CORE_SERVICE_HOST);
@@ -61,7 +62,7 @@ if (rawAccessToken != null) {
     const auth0RedirectInfo = auth0RedirectInfoMarshaller.extract(queryParsed);
 
     if (auth0RedirectInfo.accessToken != null) {
-        _saveAccessToken(auth0RedirectInfo.accessToken);
+        saveAccessToken(auth0RedirectInfo.accessToken);
         accessToken = auth0RedirectInfo.accessToken;
         identityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST);
     } else {
@@ -77,21 +78,6 @@ if (rawAccessToken != null) {
 }
 
 const fileStorageService = new FileStorageService(config.FILESTACK_KEY);
-
-
-function _saveAccessToken(accessToken: string) {
-    localStorage.setItem('neoncity/access_token', accessToken);
-}
-
-
-function _loadAccessToken(): string|null {
-    return localStorage.getItem('neoncity/access_token');
-}
-
-
-function _clearAccessToken() {
-    return localStorage.removeItem('neoncity/access_token');
-}
 
 
 interface UserInfoWidgetProps {
@@ -115,12 +101,12 @@ class _UserInfoWidget extends React.Component<UserInfoWidgetProps, undefined> {
     }
 
     private _handleLogoutClick() {
-        _clearAccessToken();
+        clearAccessToken();
         location.replace('/');
     }
 
     private _handleLoginClick() {
-	_clearAccessToken();
+	clearAccessToken();
 	showAuth0Lock();
     }
 }
@@ -179,7 +165,7 @@ class _AppFrame extends React.Component<AppFrameProps, undefined> {
             const currentLocation = browserHistory.getCurrentLocation();
             
 	    if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
-		_clearAccessToken();
+		clearAccessToken();
 		showAuth0Lock();
             }
 	    
@@ -368,7 +354,7 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, PublicCa
     private async _handleDonate() {
         // TODO: Handle triggering the donate afterwards.
         if (!this.props.isIdentityReady) {
-	    _clearAccessToken();
+	    clearAccessToken();
 	    showAuth0Lock();
             return;
         }
