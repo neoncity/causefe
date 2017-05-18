@@ -36,62 +36,10 @@ import { ShareForUserWidget } from './share-for-user-widget'
 import { corePublicClient, corePrivateClient, fileStorageService, identityClient } from './services'
 import { AdminCauseAnalyticsState, AdminMyActionsState, AdminMyCauseState, OpState, IdentityState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
 import { UserInput, UserInputMaster } from './user-input'
+import { UserInfoWidget } from './user-info-widget'
 
 // Old style imports.
 const moment = require('moment')
-
-
-interface UserInfoWidgetProps {
-    isInit: boolean;
-    isLoading: boolean;
-    isReady: boolean;
-    isFailed: boolean;
-    user: User|null;
-}
-
-
-class _UserInfoWidget extends React.Component<UserInfoWidgetProps, undefined> {
-    render() {
-        if (this.props.isLoading) {
-            return <p>Loading user</p>;
-        } else if (this.props.isReady) {
-            return <p>User: {(this.props.user as User).name} <button onClick={this._handleLogoutClick.bind(this)}>Logout</button></p>;
-        } else /* if (this.props.isFailed || this.props.isInit) */ {
-            return <p><button onClick={this._handleLoginClick.bind(this)}>Login</button></p>;
-        }
-    }
-
-    private _handleLogoutClick() {
-        clearAccessToken();
-        location.replace('/');
-    }
-
-    private _handleLoginClick() {
-	clearAccessToken();
-	showAuth0Lock();
-    }
-}
-
-
-function userInfoWidgetMapStateToProps(state: any) {
-    return {
-        isInit: state.identity.type == OpState.Init,
-        isLoading: state.identity.type == OpState.Loading,
-        isReady: state.identity.type == OpState.Ready,
-        isFailed: state.identity.type == OpState.Failed,
-	user: state.identity.type == OpState.Ready ? state.identity.user : null
-    };    
-}
-
-
-function userInfoWidgetMapDispatchToProps() {
-    return {};
-}
-
-
-const UserInfoWidget = connect(
-    userInfoWidgetMapStateToProps,
-    userInfoWidgetMapDispatchToProps)(_UserInfoWidget);
 
 
 interface AppFrameProps {
