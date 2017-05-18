@@ -1,8 +1,7 @@
-import Auth0Lock from 'auth0-lock'
 import * as theMoment from 'moment'
 import * as queryString from 'query-string'
 import * as r from 'raynor'
-import { ExtractError, MarshalFrom, MarshalWith, OptionalOf } from 'raynor'
+import { MarshalFrom } from 'raynor'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import * as ReactDatePicker from 'react-datepicker'
@@ -27,8 +26,9 @@ import { BankInfo,
 	 UserActionsOverview,
 	 TitleMarshaller,
 	 DescriptionMarshaller} from '@neoncity/core-sdk-js'
-import { Auth0AccessTokenMarshaller, IdentityClient, newIdentityClient, User } from '@neoncity/identity-sdk-js'
+import { IdentityClient, newIdentityClient, User } from '@neoncity/identity-sdk-js'
 
+import { showAuth0Lock, Auth0RedirectInfo } from './auth0'
 import { AdminAccountView } from './admin-account-view'
 import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
@@ -44,94 +44,14 @@ import { UserInput, UserInputMaster } from './user-input'
 // Old style imports.
 const moment = require('moment')
 
-
-// Start services here. Will move to a better place later.
-
-class AllowedRoutesMarshaller extends r.AbsolutePathMarshaller {
-    filter(path: string): string {
-	if (!(path == '/'
-	      || path.indexOf('/c/') == 0
-	      || path.indexOf('/admin') == 0)) {
-	    throw new ExtractError('Expected one of our paths');
-	}
-
-	return path;
-    }
-}
-
-// Generate in a better way. Perhaps something something HMAC to make sure it's one of ours.
-class PostLoginRedirectInfo {
-    @MarshalWith(AllowedRoutesMarshaller)
-    path: string;
-
-    constructor(path: string) {
-        this.path = path;
-    }
-}
-
-class PostLoginRedirectInfoMarshaller extends r.BaseStringMarshaller<PostLoginRedirectInfo> {
-    private static readonly _objectMarshaller = new (MarshalFrom(PostLoginRedirectInfo))();
-
-    build(a: string): PostLoginRedirectInfo {
-	try {
-	    const redirectInfoSer = decodeURIComponent(a);
-	    const redirectInfoRaw = JSON.parse(redirectInfoSer);
-	    return PostLoginRedirectInfoMarshaller._objectMarshaller.extract(redirectInfoRaw);
-	} catch (e) {
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
-            
-	    throw new ExtractError(`Could not build redirect info "${e.toString()}"`);
-	}
-    }
-
-    unbuild(redirectInfo: PostLoginRedirectInfo) {
-	const redirectInfoRaw = PostLoginRedirectInfoMarshaller._objectMarshaller.pack(redirectInfo);
-	const redirectInfoSer = JSON.stringify(redirectInfoRaw);
-	return encodeURIComponent(redirectInfoSer);
-    }
-}
-
-class Auth0RedirectInfo {
-    @MarshalWith(OptionalOf(r.StringMarshaller))
-    error: string|null;
-    
-    @MarshalWith(OptionalOf(Auth0AccessTokenMarshaller), 'access_token')
-    accessToken: string|null;
-    
-    @MarshalWith(PostLoginRedirectInfoMarshaller)
-    state: PostLoginRedirectInfo;
-}
-
-const postLoginRedirectInfoMarshaller = new PostLoginRedirectInfoMarshaller();
-const auth0RedirectInfoMarshaller = new (MarshalFrom(Auth0RedirectInfo))();
-
 let rawAccessToken: string|null = _loadAccessToken();
 let identityClient: IdentityClient|null;
 const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.CORE_SERVICE_HOST);
 const corePrivateClient: CorePrivateClient = newCorePrivateClient(config.ENV, config.CORE_SERVICE_HOST);
-
-const currentLocation = browserHistory.getCurrentLocation();
-const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
-const postLoginInfoSer = postLoginRedirectInfoMarshaller.pack(postLoginInfo);
-
-const auth0: Auth0LockStatic = new Auth0Lock(
-    config.AUTH0_CLIENT_ID,
-    config.AUTH0_DOMAIN, {
-        closable: false,
-        auth: {
-            redirect: true,
-            redirectUrl: config.AUTH0_CALLBACK_URI,
-            responseType: 'token',
-            params: {
-                state: postLoginInfoSer
-            }
-        }
-    }
-);
+const auth0RedirectInfoMarshaller = new (MarshalFrom(Auth0RedirectInfo))();
 
 let accessToken: string = 'INVALID';
+const currentLocation = browserHistory.getCurrentLocation();
 
 if (rawAccessToken != null) {
     identityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST);
@@ -151,7 +71,7 @@ if (rawAccessToken != null) {
     browserHistory.push(auth0RedirectInfo.state.path);
 } else if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
     identityClient = null;
-    auth0.show();
+    showAuth0Lock(false);
 } else {
     identityClient = null;
 }
@@ -200,26 +120,8 @@ class _UserInfoWidget extends React.Component<UserInfoWidgetProps, undefined> {
     }
 
     private _handleLoginClick() {
-        const currentLocation = browserHistory.getCurrentLocation();
-        const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
-	const postLoginInfoSer = postLoginRedirectInfoMarshaller.pack(postLoginInfo);
-
-	const auth0: Auth0LockStatic = new Auth0Lock(
-	    config.AUTH0_CLIENT_ID,
-	    config.AUTH0_DOMAIN, {
-		auth: {
-		    redirect: true,
-		    redirectUrl: config.AUTH0_CALLBACK_URI,
-		    responseType: 'token',
-		    params: {
-			state: postLoginInfoSer
-		    }
-		}
-	    }
-	);
-
 	_clearAccessToken();
-	auth0.show();
+	showAuth0Lock();
     }
 }
 
@@ -277,26 +179,8 @@ class _AppFrame extends React.Component<AppFrameProps, undefined> {
             const currentLocation = browserHistory.getCurrentLocation();
             
 	    if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
-		const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
-		const postLoginInfoSer = postLoginRedirectInfoMarshaller.pack(postLoginInfo);
-
-		const auth0: Auth0LockStatic = new Auth0Lock(
-		    config.AUTH0_CLIENT_ID,
-		    config.AUTH0_DOMAIN, {
-			closable: false,
-			auth: {
-			    redirect: true,
-			    redirectUrl: config.AUTH0_CALLBACK_URI,
-			    responseType: 'token',
-			    params: {
-				state: postLoginInfoSer
-			    }
-			}
-		    }
-		);
-
 		_clearAccessToken();
-	        auth0.show();
+		showAuth0Lock();
             }
 	    
 	    this.props.onIdentityFailed('Could not load user');
@@ -484,26 +368,8 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, PublicCa
     private async _handleDonate() {
         // TODO: Handle triggering the donate afterwards.
         if (!this.props.isIdentityReady) {
-            const currentLocation = browserHistory.getCurrentLocation();
-            const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
-	    const postLoginInfoSer = postLoginRedirectInfoMarshaller.pack(postLoginInfo);
-
-	    const auth0: Auth0LockStatic = new Auth0Lock(
-	        config.AUTH0_CLIENT_ID,
-	        config.AUTH0_DOMAIN, {
-		    auth: {
-		        redirect: true,
-		        redirectUrl: config.AUTH0_CALLBACK_URI,
-		        responseType: 'token',
-		        params: {
-			    state: postLoginInfoSer
-		        }
-		    }
-	        }
-	    );
-
 	    _clearAccessToken();
-	    auth0.show();
+	    showAuth0Lock();
             return;
         }
         
@@ -528,26 +394,7 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, PublicCa
     private _handleShare() {
         // TODO: Handle triggering the share afterwards.
         if (!this.props.isIdentityReady) {
-            const currentLocation = browserHistory.getCurrentLocation();
-            const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
-	    const postLoginInfoSer = postLoginRedirectInfoMarshaller.pack(postLoginInfo);
-
-	    const auth0: Auth0LockStatic = new Auth0Lock(
-	        config.AUTH0_CLIENT_ID,
-	        config.AUTH0_DOMAIN, {
-		    auth: {
-		        redirect: true,
-		        redirectUrl: config.AUTH0_CALLBACK_URI,
-		        responseType: 'token',
-		        params: {
-			    state: postLoginInfoSer
-		        }
-		    }
-	        }
-	    );
-
-	    _clearAccessToken();
-	    auth0.show();
+	    showAuth0Lock();
             return;
         }
         
