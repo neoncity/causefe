@@ -1,7 +1,5 @@
 import * as theMoment from 'moment'
-import * as queryString from 'query-string'
 import * as r from 'raynor'
-import { MarshalFrom } from 'raynor'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import * as ReactDatePicker from 'react-datepicker'
@@ -24,9 +22,10 @@ import { BankInfo,
 	 DescriptionMarshaller} from '@neoncity/core-sdk-js'
 import { User } from '@neoncity/identity-sdk-js'
 
-import { clearAccessToken, loadAccessToken, saveAccessToken } from './access-token-storage'
+import { accessToken } from './access-token'
+import { clearAccessToken } from './access-token-storage'
 import { AdminAccountView } from './admin-account-view'
-import { showAuth0Lock, Auth0RedirectInfo } from './auth0'
+import { showAuth0Lock } from './auth0'
 import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
 import { DonationForUserWidget } from './donation-for-user-widget'
@@ -40,33 +39,6 @@ import { UserInput, UserInputMaster } from './user-input'
 
 // Old style imports.
 const moment = require('moment')
-
-let rawAccessToken: string|null = loadAccessToken();
-
-const auth0RedirectInfoMarshaller = new (MarshalFrom(Auth0RedirectInfo))();
-
-let accessToken: string = 'INVALID';
-const currentLocation = browserHistory.getCurrentLocation();
-
-if (rawAccessToken != null) {
-    accessToken = rawAccessToken;
-} else if (currentLocation.pathname == '/real/login') {
-    const queryParsed = (Object as any).assign({}, queryString.parse((currentLocation as any).hash));
-    const auth0RedirectInfo = auth0RedirectInfoMarshaller.extract(queryParsed);
-
-    if (auth0RedirectInfo.accessToken != null) {
-        saveAccessToken(auth0RedirectInfo.accessToken);
-        accessToken = auth0RedirectInfo.accessToken;
-    } else {
-        accessToken = 'INVALID';
-    }
-
-    browserHistory.push(auth0RedirectInfo.state.path);
-} else if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
-    showAuth0Lock(false);
-} else {
-    accessToken = 'INVALID';
-}
 
 
 interface UserInfoWidgetProps {
