@@ -1,3 +1,4 @@
+import Auth0Lock from 'auth0-lock'
 import * as r from 'raynor'
 import { ExtractError, MarshalFrom, MarshalWith, OptionalOf } from 'raynor'
 import { browserHistory } from 'react-router'

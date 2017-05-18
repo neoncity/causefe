@@ -22,7 +22,7 @@ import { BankInfo,
 	 UserActionsOverview,
 	 TitleMarshaller,
 	 DescriptionMarshaller} from '@neoncity/core-sdk-js'
-import { IdentityClient, newIdentityClient, User } from '@neoncity/identity-sdk-js'
+import { User } from '@neoncity/identity-sdk-js'
 
 import { clearAccessToken, loadAccessToken, saveAccessToken } from './access-token-storage'
 import { AdminAccountView } from './admin-account-view'
@@ -34,7 +34,7 @@ import { ImageGallery } from './image-gallery'
 import { ImageGalleryEditor } from './image-gallery-editor'
 import './index.less'
 import { ShareForUserWidget } from './share-for-user-widget'
-import { corePublicClient, corePrivateClient, fileStorageService } from './services'
+import { corePublicClient, corePrivateClient, fileStorageService, identityClient } from './services'
 import { AdminCauseAnalyticsState, AdminMyActionsState, AdminMyCauseState, OpState, IdentityState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
 import { UserInput, UserInputMaster } from './user-input'
 
@@ -42,7 +42,6 @@ import { UserInput, UserInputMaster } from './user-input'
 const moment = require('moment')
 
 let rawAccessToken: string|null = loadAccessToken();
-let identityClient: IdentityClient|null;
 
 const auth0RedirectInfoMarshaller = new (MarshalFrom(Auth0RedirectInfo))();
 
@@ -50,7 +49,6 @@ let accessToken: string = 'INVALID';
 const currentLocation = browserHistory.getCurrentLocation();
 
 if (rawAccessToken != null) {
-    identityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST);
     accessToken = rawAccessToken;
 } else if (currentLocation.pathname == '/real/login') {
     const queryParsed = (Object as any).assign({}, queryString.parse((currentLocation as any).hash));
@@ -59,17 +57,15 @@ if (rawAccessToken != null) {
     if (auth0RedirectInfo.accessToken != null) {
         saveAccessToken(auth0RedirectInfo.accessToken);
         accessToken = auth0RedirectInfo.accessToken;
-        identityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST);
     } else {
-        identityClient = null;
+        accessToken = 'INVALID';
     }
 
     browserHistory.push(auth0RedirectInfo.state.path);
 } else if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
-    identityClient = null;
     showAuth0Lock(false);
 } else {
-    identityClient = null;
+    accessToken = 'INVALID';
 }
 
 
@@ -141,10 +137,10 @@ interface AppFrameProps {
 
 class _AppFrame extends React.Component<AppFrameProps, undefined> {
     async componentDidMount() {
-        if (identityClient == null) {
+	if (accessToken == 'INVALID') {
 	    return;
-        }
-
+	}
+	
 	this.props.onIdentityLoading();
 
 	try {
