@@ -24,7 +24,6 @@ import { BankInfo,
 	 PictureSet,
 	 PrivateCause,
 	 PublicCause,
-	 ShareForUser,	 
 	 UserActionsOverview,
 	 TitleMarshaller,
 	 DescriptionMarshaller} from '@neoncity/core-sdk-js'
@@ -36,6 +35,7 @@ import { DonationForUserWidget } from './donation-for-user-widget'
 import { FileStorageService } from './file-storage-service'
 import { ImageGallery, ImageGalleryEditor } from './image-gallery'
 import './index.less'
+import { ShareForUserWidget } from './share-for-user-widget'
 import { AdminCauseAnalyticsState, AdminMyActionsState, AdminMyCauseState, OpState, IdentityState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
 import { UserInput, UserInputMaster } from './user-input'
 
@@ -588,27 +588,6 @@ class PublicCauseWidget extends React.Component<PublicCauseWidgetProps, PublicCa
                 this.setState({shareState: OpState.Failed});
             }
         });
-    }
-}
-
-
-
-
-
-interface ShareForUserProps {
-    shareForUser: ShareForUser;
-}
-
-
-class ShareForUserWidget extends React.Component<ShareForUserProps, undefined> {
-    render() {
-	const share = this.props.shareForUser;
-	const cause = this.props.shareForUser.forCause;
-	const timeCreated = share.timeCreated.toString();
-	
-	return (
-		<p>To <Link to={`/c/${cause.id}/${cause.slug}`}>{cause.title}</Link> shared on {timeCreated}</p>
-	);
     }
 }
 
