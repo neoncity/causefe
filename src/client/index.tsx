@@ -15,11 +15,7 @@ import { slugify } from '@neoncity/common-js/slugify'
 import { BankInfo,
 	 Cause,
          CauseAnalytics,
-	 CorePrivateClient,
-	 CorePublicClient,
 	 CurrencyAmount,
-	 newCorePrivateClient,
-	 newCorePublicClient,
 	 PictureSet,
 	 PrivateCause,
 	 PublicCause,
@@ -34,11 +30,11 @@ import { showAuth0Lock, Auth0RedirectInfo } from './auth0'
 import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
 import { DonationForUserWidget } from './donation-for-user-widget'
-import { FileStorageService } from './file-storage-service'
 import { ImageGallery } from './image-gallery'
 import { ImageGalleryEditor } from './image-gallery-editor'
 import './index.less'
 import { ShareForUserWidget } from './share-for-user-widget'
+import { corePublicClient, corePrivateClient, fileStorageService } from './services'
 import { AdminCauseAnalyticsState, AdminMyActionsState, AdminMyCauseState, OpState, IdentityState, PublicCausesState, PublicCauseDetailState, StatePart, store } from './store'
 import { UserInput, UserInputMaster } from './user-input'
 
@@ -47,8 +43,7 @@ const moment = require('moment')
 
 let rawAccessToken: string|null = loadAccessToken();
 let identityClient: IdentityClient|null;
-const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.CORE_SERVICE_HOST);
-const corePrivateClient: CorePrivateClient = newCorePrivateClient(config.ENV, config.CORE_SERVICE_HOST);
+
 const auth0RedirectInfoMarshaller = new (MarshalFrom(Auth0RedirectInfo))();
 
 let accessToken: string = 'INVALID';
@@ -76,8 +71,6 @@ if (rawAccessToken != null) {
 } else {
     identityClient = null;
 }
-
-const fileStorageService = new FileStorageService(config.FILESTACK_KEY);
 
 
 interface UserInfoWidgetProps {
