@@ -29,6 +29,7 @@ import { BankInfo,
 	 DescriptionMarshaller} from '@neoncity/core-sdk-js'
 import { Auth0AccessTokenMarshaller, IdentityClient, newIdentityClient, User } from '@neoncity/identity-sdk-js'
 
+import { AdminAccountView } from './admin-account-view'
 import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
 import { DonationForUserWidget } from './donation-for-user-widget'
@@ -1345,15 +1346,7 @@ const AdminMyActionsView = connect(
     adminMyActionsMapDispatchToProps)(_AdminMyActionsView);
 
 
-interface AdminAccountProps {
-}
 
-
-class AdminAccountView extends React.Component<AdminAccountProps, undefined> {
-    render() {
-        return (<div>This is the account section</div>);
-    }
-}
 
 
 function _causeLink(cause: Cause): string {
