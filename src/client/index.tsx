@@ -50,8 +50,7 @@ class AllowedRoutesMarshaller extends r.AbsolutePathMarshaller {
     filter(path: string): string {
 	if (!(path == '/'
 	      || path.indexOf('/c/') == 0
-	      || path.indexOf('/admin') == 0
-	      || path.indexOf('/console') == 0)) {
+	      || path.indexOf('/admin') == 0)) {
 	    throw new ExtractError('Expected one of our paths');
 	}
 
@@ -315,7 +314,6 @@ class _AppFrame extends React.Component<AppFrameProps, undefined> {
                     <div>
                         <Link to="/">Home</Link>
                         <a href="/admin">Admin</a>
-                        <a href="/console">Console</a>
                         <UserInfoWidget />
                     </div>
                     {this.props.children}
@@ -328,7 +326,6 @@ class _AppFrame extends React.Component<AppFrameProps, undefined> {
                     <div>
                         <Link to="/">Home</Link>
                         <Link to="/admin">Admin</Link>
-                        <Link to="/console">Console</Link>
                         <UserInfoWidget />
                     </div>
                     {this.props.children}
@@ -1359,20 +1356,6 @@ class AdminAccountView extends React.Component<AdminAccountProps, undefined> {
 }
 
 
-interface ConsoleViewProps {
-    user: User;
-}
-
-
-class ConsoleView extends React.Component<ConsoleViewProps, undefined> {
-    render() {
-        return (
-	    <div>This is the console view</div>
-	);
-    }
-}
-
-
 function _causeLink(cause: Cause): string {
     return `/c/${cause.id}/${cause.slug}`;
 }
@@ -1393,7 +1376,6 @@ ReactDOM.render(
 			<Route path="my-actions" component={AdminMyActionsView} />
 			<Route path="account" component={AdminAccountView} />
                     </Route>
-                    <Route path="console" component={ConsoleView} />
                 </Route>
             </Route>
         </Router>
