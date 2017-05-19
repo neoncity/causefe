@@ -42,9 +42,9 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
     
     render() {
 	if (this.props.isLoading) {
-	    return (<div>Loading ...</div>);
+	    return <div>Loading ...</div>;
 	} else if (this.props.isFailed) {
-	    return (<div>Failed {this.props.errorMessage}</div>);
+	    return <div>Failed {this.props.errorMessage}</div>;
 	} else {
 	    const donationWidgets = (this.props.userActionsOverview as UserActionsOverview)
 		  .donations
@@ -90,6 +90,4 @@ function dispatchToProps(dispatch: (newState: AdminMyActionsState) => void) {
 }
 
 
-export const AdminMyActionsView = connect(
-    stateToProps,
-    dispatchToProps)(_AdminMyActionsView);
+export const AdminMyActionsView = connect(stateToProps, dispatchToProps)(_AdminMyActionsView);

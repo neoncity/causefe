@@ -18,9 +18,9 @@ interface Props {
 class _IdentityFrame extends React.Component<Props, undefined> {
     render() {
         if (!this.props.isReady) {
-	    return (<div>Logging in ...</div>);
+	    return <div>Logging in ...</div>;
 	} else {
-	    return (<div>{this.props.children}</div>);
+	    return <div>{this.props.children}</div>;
 	}
     }
 }
@@ -42,6 +42,4 @@ function dispatchToProps() {
 }
 
 
-export const IdentityFrame = connect(
-    stateToProps,
-    dispatchToProps)(_IdentityFrame);
+export const IdentityFrame = connect(stateToProps, dispatchToProps)(_IdentityFrame);

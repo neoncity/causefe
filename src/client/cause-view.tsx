@@ -37,32 +37,36 @@ class _CauseView extends React.Component<Props, undefined> {
     async componentDidMount() {
 	this.props.onPublicCauseDetailLoading();
 
-	try {
-	    const causeId = parseInt(this.props.params.causeId);
-	    const cause = await corePublicClient.getCause(accessToken, causeId);
-	    this.props.onPublicCauseDetailReady(cause);
-	    // Also update the URL to be causeLink(cause), but it should do no navigation.
-	    // Users might access this as /c/$id/$firstSlug, but the actual slug assigned
-	    // might be $secondSlog. So we wish to replace the one they specified with
-	    // /c/$id/$secondSlug
-	    browserHistory.replace(causeLink(cause));
-	} catch (e) {
-	    if (isLocal(config.ENV)) {
+        try {
+            const causeId = parseInt(this.props.params.causeId);
+            const cause = await corePublicClient.getCause(accessToken, causeId);
+            this.props.onPublicCauseDetailReady(cause);
+            // Also update the URL to be causeLink(cause), but it should do no navigation.
+            // Users might access this as /c/$id/$firstSlug, but the actual slug assigned
+            // might be $secondSlog. So we wish to replace the one they specified with
+            // /c/$id/$secondSlug
+            browserHistory.replace(causeLink(cause));
+        } catch (e) {
+            if (isLocal(config.ENV)) {
                 console.log(e);
             }
             
-	    this.props.onPublicCauseDetailFailed('Could not load public cause detail');
-	}
+            this.props.onPublicCauseDetailFailed('Could not load public cause detail');
+        }
     }
     
     render() {
-	if (this.props.isLoading) {
-	    return (<div>Loading ...</div>);
-	} else if (this.props.isFailed) {
-	    return (<div>Failed {this.props.errorMessage}</div>);
-	} else {
-	    return <PublicCauseWidget cause={this.props.cause as PublicCause} isIdentityReady={this.props.isIdentityReady} />;
-	}
+        if (this.props.isLoading) {
+            return <div>Loading ...</div>;
+        } else if (this.props.isFailed) {
+            return <div>Failed {this.props.errorMessage}</div>;
+        } else {
+            return (
+                <PublicCauseWidget
+                    cause={this.props.cause as PublicCause}
+                    isIdentityReady={this.props.isIdentityReady} />
+            );
+        }
     }
 }
 
@@ -88,6 +92,4 @@ function dispatchToProps(dispatch: (newState: PublicCauseDetailState) => void) {
 }
 
 
-export const CauseView = connect(
-    stateToProps,
-    dispatchToProps)(_CauseView);
+export const CauseView = connect(stateToProps, dispatchToProps)(_CauseView);

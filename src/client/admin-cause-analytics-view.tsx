@@ -9,6 +9,7 @@ import * as config from './config'
 import { corePrivateClient } from './services'
 import { AdminCauseAnalyticsState, OpState, StatePart } from './store'
 
+
 interface Props {
     isLoading: boolean;
     isReady: boolean;
@@ -53,14 +54,14 @@ class _AdminCauseAnalyticsView extends React.Component<Props, undefined> {
             const causeAnalytics = this.props.causeAnalytics as CauseAnalytics;
             
             return (
-                    <div>
+                <div>
                     <p>Days left: {causeAnalytics.daysLeft}</p>
                     <p>Donors count: {causeAnalytics.donorsCount}</p>
                     <p>Donations count: {causeAnalytics.donationsCount}</p>
                     <p>Donatin amount: {causeAnalytics.amountDonated.amount} {causeAnalytics.amountDonated.currency.toString()}</p>
                     <p>Sharers count: {causeAnalytics.sharersCount}</p>
                     <p>Shares count: {causeAnalytics.sharesCount}</p>
-                    </div>
+                </div>
             );
         }
     }
@@ -88,6 +89,4 @@ function dispatchToProps(dispatch: (newState: AdminCauseAnalyticsState) => void)
 }
 
 
-export const AdminCauseAnalyticsView = connect(
-    stateToProps,
-    dispatchToProps)(_AdminCauseAnalyticsView);
+export const AdminCauseAnalyticsView = connect(stateToProps, dispatchToProps)(_AdminCauseAnalyticsView);

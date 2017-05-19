@@ -43,20 +43,29 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
             }
             
             return (
-                    <p key={ibanIndex.toString()}>
-                    <input type="text" value={iban.getUserInput()} onChange={e => this._handleIBANChange(ibanIndex, e)} placeholder="Your IBAN..." />
+                <p key={ibanIndex.toString()}>
+                    <input
+		        type="text"
+			value={iban.getUserInput()}
+			onChange={e => this._handleIBANChange(ibanIndex, e)}
+			placeholder="Your IBAN..." />
                     {modifiedRegion} {warningRegion}
                     <button type="button" onClick={_ => this._handleRemoveIBAN(ibanIndex)}>Remove</button>
-                    </p>
+                </p>
             );
         });
         
         return (
-                <div>
+            <div>
                 <p>Bank info</p>
-                <button disabled={this.state.ibans.length > BankInfo.MAX_NUMBER_OF_IBANS} type="button" onClick={this._handleAddIBAN.bind(this)}>Add</button>
+                <button
+		    disabled={this.state.ibans.length > BankInfo.MAX_NUMBER_OF_IBANS}
+		    type="button"
+		    onClick={this._handleAddIBAN.bind(this)}>
+		    Add
+		</button>
                 {ibansRegion}
-                </div>
+            </div>
         );
     }
 

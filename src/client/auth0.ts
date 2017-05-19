@@ -23,6 +23,7 @@ class AllowedRoutesMarshaller extends r.AbsolutePathMarshaller {
     }
 }
 
+
 // Generate in a better way. Perhaps something something HMAC to make sure it's one of ours.
 class PostLoginRedirectInfo {
     @MarshalWith(AllowedRoutesMarshaller)
@@ -32,6 +33,7 @@ class PostLoginRedirectInfo {
         this.path = path;
     }
 }
+
 
 class PostLoginRedirectInfoMarshaller extends r.BaseStringMarshaller<PostLoginRedirectInfo> {
     private static readonly _objectMarshaller = new (MarshalFrom(PostLoginRedirectInfo))();
@@ -57,6 +59,7 @@ class PostLoginRedirectInfoMarshaller extends r.BaseStringMarshaller<PostLoginRe
     }
 }
 
+
 export class Auth0RedirectInfo {
     @MarshalWith(OptionalOf(r.StringMarshaller))
     error: string|null;
@@ -67,6 +70,7 @@ export class Auth0RedirectInfo {
     @MarshalWith(PostLoginRedirectInfoMarshaller)
     state: PostLoginRedirectInfo;
 }
+
 
 const postLoginRedirectInfoMarshaller = new PostLoginRedirectInfoMarshaller();
 

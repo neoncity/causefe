@@ -107,6 +107,4 @@ function dispatchToProps(dispatch: (newState: IdentityState) => void) {
 }
 
 
-export const AppFrame = connect(
-    stateToProps,
-    dispatchToProps)(_AppFrame);
+export const AppFrame = connect(stateToProps, dispatchToProps)(_AppFrame);

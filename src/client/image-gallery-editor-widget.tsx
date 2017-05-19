@@ -48,11 +48,15 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
             }
 
             return (
-                    <p key={pictureIndex.toString()}>
+                <p key={pictureIndex.toString()}>
                     <img src={picture.getValue().uri} className="image-gallery picture" />
                     {modifiedRegion} {warningRegion}
-                    <button type="button" onClick={_ => this._handleRemovePicture(pictureIndex)}>Remove</button>
-                    </p>
+                    <button
+		        type="button"
+		        onClick={_ => this._handleRemovePicture(pictureIndex)}>
+		    Remove
+		    </button>
+                </p>
             );
         });
 
@@ -62,12 +66,17 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
         }
 
         return (
-                <div>
+            <div>
                 <p>Pictures</p>
-                <button disabled={this.state.pictures.length >= PictureSet.MAX_NUMBER_OF_PICTURES} type="button" onClick={this._handleAddPicture.bind(this)}>Add</button>
+                <button
+                    type="button"
+	            disabled={this.state.pictures.length >= PictureSet.MAX_NUMBER_OF_PICTURES}
+	            onClick={this._handleAddPicture.bind(this)}>
+		    Add
+	        </button>
                 {selectPictureErrorRegion}
                 {picturesRegion}
-                </div>
+            </div>
         );
     }
 

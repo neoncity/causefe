@@ -56,6 +56,4 @@ function dispatchToProps() {
 }
 
 
-export const UserInfoWidget = connect(
-    stateToProps,
-    dispatchToProps)(_UserInfoWidget);
+export const UserInfoWidget = connect(stateToProps, dispatchToProps)(_UserInfoWidget);

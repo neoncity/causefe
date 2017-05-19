@@ -17,8 +17,6 @@ export class DonationForUserWidget extends React.Component<Props, null> {
 	const cause = this.props.donationForUser.forCause;
 	const timeCreated = donation.timeCreated.toString();
 	
-	return (
-		<p>To <Link to={causeLink(cause)}>{cause.title}</Link> donated {donation.amount.amount} {donation.amount.currency.toString()} on {timeCreated}</p>
-	);
+	return <p>To <Link to={causeLink(cause)}>{cause.title}</Link> donated {donation.amount.amount} {donation.amount.currency.toString()} on {timeCreated}</p>;
     }
 }

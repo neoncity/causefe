@@ -18,7 +18,7 @@ export class ShareForUserWidget extends React.Component<Props, null> {
 	const timeCreated = share.timeCreated.toString();
 	
 	return (
-		<p>To <Link to={causeLink(cause)}>{cause.title}</Link> shared on {timeCreated}</p>
+             <p>To <Link to={causeLink(cause)}>{cause.title}</Link> shared on {timeCreated}</p>
 	);
     }
 }

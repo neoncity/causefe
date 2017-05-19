@@ -79,13 +79,34 @@ export class PublicCauseWidget extends React.Component<Props, State> {
 		<p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency.toString()}</p>
 		<p>{this.props.cause.deadline.toString()}</p>
                 <ImageGalleryWidget pictureSet={this.props.cause.pictureSet} />
-                <button type="button" onClick={_ => this._handleSetDonationAmount(10)}>10</button>
-                <button type="button" onClick={_ => this._handleSetDonationAmount(25)}>25</button>
-                <button type="button" onClick={_ => this._handleSetDonationAmount(50)}>50</button>
+                <button
+		    type="button"
+		    onClick={_ => this._handleSetDonationAmount(10)}>
+		    10
+		</button>
+                <button
+		    type="button"
+		    onClick={_ => this._handleSetDonationAmount(25)}>
+		    25
+		</button>
+                <button
+		    type="button"
+		    onClick={_ => this._handleSetDonationAmount(50)}>
+		    50
+		</button>
                 <span>{this.state.donationAmount.getValue()} - {this.props.cause.goal.currency.toString()}</span>
-                <button disabled={!allValid} type="button" onClick={this._handleDonate.bind(this)}>Donate</button>
+                <button
+		    type="button" 
+		    disabled={!allValid}
+		    onClick={this._handleDonate.bind(this)}>
+		    Donate
+		</button>
                 {donationResult}
-                <button type="button" onClick={this._handleShare.bind(this)}>Share</button>
+                <button
+		    type="button"
+		    onClick={this._handleShare.bind(this)}>
+		    Share
+		</button>
                 {shareResult}
 	    </div>
 	);

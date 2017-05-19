@@ -176,61 +176,85 @@ class _AdminMyCauseView extends React.Component<Props, State> {
         }        
 	
         const editForm = (
-		<div>
+            <div>
                 <form>
-                <div>
-                <label htmlFor="admin-my-cause-title">Title</label>
-                <input
-	    id="admin-my-cause-title"
-	    type="text"
-	    value={this.state.title.getUserInput()}
-	    onChange={this._handleTitleChange.bind(this)}
-	    placeholder="Cause title..." />
-                {titleModifiedRegion} {titleWarningRegion}
-                </div>
-                <div>
-                <label htmlFor="admin-my-cause-slug">URL</label>
-                <input id="admin-my-cause-slug" value={this.state.slug.getValue()} disabled={true} placeholder="URL..." />
-                {slugModifiedRegion} {slugWarningRegion}
-                </div>
-                <div>
-                <label htmlFor="admin-my-cause-description">Description</label>
-                <input id="admin-my-cause-description" type="text" value={this.state.description.getUserInput()} onChange={this._handleDescriptionChange.bind(this)} placeholder="Cause description..." />
-                </div>
-                {descriptionModifiedRegion} {descriptionWarningRegion}
-                <div>
-                <label htmlFor="admin-my-cause-deadline">Deadline</label>
-                <ReactDatePicker id="admin-my-cause-deadline" selected={this.state.deadline} onChange={this._handleDeadlineChange.bind(this)} />
-                </div>
-                <div>
-                <label htmlFor="admin-my-cause-goal-amount">Goal amount</label>
-                <input id="admin-my-cause-goal-amount" type="number" value={this.state.goalAmount.getUserInput()} onChange={this._handleGoalAmountChange.bind(this)} placeholder="100" />
-                </div>
-                {goalAmountModifiedRegion} {goalAmountWarningRegion}
-                <div>
-                <label htmlFor="admin-my-cause-goal-currency">Goal currency</label>
-                <select id="admin-my-cause-goal-currency" value={this.state.goalCurrency.getUserInput()} onChange={this._handleGoalCurrencyChange.bind(this)}>
-                <option value="RON">RON</option>
-		<option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                </select>
-                {goalCurrencyModifiedRegion} {goalCurrencyWarningRegion}
-                </div>
-                <div>
-                <BankInfoWidget bankInfo={this.state.bankInfo} onBankInfoChange={this._handleBankInfoChange.bind(this)} />
-                <ImageGalleryEditorWidget pictureSet={this.state.pictureSet} selectPicture={pos => fileStorageService.selectImageWithWidget(pos)} onPictureSetChange={this._handlePictureSetChange.bind(this)} />
-                </div>
+                    <div>
+                        <label htmlFor="admin-my-cause-title">Title</label>
+                        <input
+                            id="admin-my-cause-title"
+                            type="text"
+                            value={this.state.title.getUserInput()}
+                            onChange={this._handleTitleChange.bind(this)}
+                            placeholder="Cause title..." />
+                            {titleModifiedRegion} {titleWarningRegion}
+                    </div>
+                    <div>
+                        <label htmlFor="admin-my-cause-slug">URL</label>
+                        <input
+                            id="admin-my-cause-slug"
+                            value={this.state.slug.getValue()}
+                            disabled={true}
+                            placeholder="URL..." />
+                        {slugModifiedRegion} {slugWarningRegion}
+                    </div>
+                    <div>
+                        <label htmlFor="admin-my-cause-description">Description</label>
+                        <input
+                            id="admin-my-cause-description"
+                            type="text"
+                            value={this.state.description.getUserInput()}
+                            onChange={this._handleDescriptionChange.bind(this)}
+                            placeholder="Cause description..." />
+                        {descriptionModifiedRegion} {descriptionWarningRegion}
+                    </div>
+                    <div>
+                        <label htmlFor="admin-my-cause-deadline">Deadline</label>
+                        <ReactDatePicker
+                            id="admin-my-cause-deadline"
+                            selected={this.state.deadline}
+                            onChange={this._handleDeadlineChange.bind(this)} />
+                    </div>
+                    <div>
+                        <label htmlFor="admin-my-cause-goal-amount">Goal amount</label>
+                        <input
+                            id="admin-my-cause-goal-amount"
+                            type="number"
+                            value={this.state.goalAmount.getUserInput()}
+                            onChange={this._handleGoalAmountChange.bind(this)} placeholder="100" />
+                        {goalAmountModifiedRegion} {goalAmountWarningRegion}
+                    </div>
+                    <div>
+                        <label htmlFor="admin-my-cause-goal-currency">Goal currency</label>
+                        <select
+                            id="admin-my-cause-goal-currency"
+                            value={this.state.goalCurrency.getUserInput()}
+                            onChange={this._handleGoalCurrencyChange.bind(this)}>
+                            <option value="RON">RON</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                        </select>
+                        {goalCurrencyModifiedRegion} {goalCurrencyWarningRegion}
+                    </div>
+                    <div>
+                        <BankInfoWidget
+                            bankInfo={this.state.bankInfo}
+                            onBankInfoChange={this._handleBankInfoChange.bind(this)} />
+                        <ImageGalleryEditorWidget
+                            pictureSet={this.state.pictureSet}
+                            selectPicture={pos => fileStorageService.selectImageWithWidget(pos)}
+                            onPictureSetChange={this._handlePictureSetChange.bind(this)} />
+                    </div>
                 </form>
-		</div>
+            </div>
         );
 	
 	if (this.props.isLoading) {
-	    return (<div>Loading ...</div>);
+	    return <div>Loading ...</div>;
 	} else if (this.props.isFailed) {
-	    return (<div>Failed {this.props.errorMessage}</div>);
+	    return <div>Failed {this.props.errorMessage}</div>;
 	} else if (!this.props.hasCause) {
 	    if (!this.state.showCreationFormIfNoControls) {
-		return (<div>There is no cause<button onClick={this._handleShowCreationForm.bind(this)}>Create cause</button></div>);
+		return <div>There is no cause <button onClick={this._handleShowCreationForm.bind(this)}>Create cause</button> </div>;
 	    } else {
 		return (
                     <div>
@@ -239,7 +263,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                             <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>Reset</button>
                             <button disabled={!this.state.modifiedGeneral || !allValid} onClick={this._handleCreate.bind(this)}>Create</button>
                         </div>
-		    </div>
+                    </div>
 		);
             }
 	} else if (this.props.causeIsDeleted) {
@@ -435,6 +459,4 @@ function dispatchToProps(dispatch: (newState: AdminMyCauseState) => void) {
 }
 
 
-export const AdminMyCauseView = connect(
-    stateToProps,
-    dispatchToProps)(_AdminMyCauseView);
+export const AdminMyCauseView = connect(stateToProps, dispatchToProps)(_AdminMyCauseView);

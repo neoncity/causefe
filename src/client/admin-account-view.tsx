@@ -7,6 +7,6 @@ interface Props {
 
 export class AdminAccountView extends React.Component<Props, undefined> {
     render() {
-        return (<div>This is the account section</div>);
+        return <div>This is the account section</div>;
     }
 }

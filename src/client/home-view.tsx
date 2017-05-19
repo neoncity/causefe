@@ -42,13 +42,15 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
     
     render() {
 	if (this.props.isLoading) {
-	    return (<div>Loading ...</div>);
+	    return <div>Loading ...</div>;
 	} else if (this.props.isFailed) {
-	    return (<div>Failed {this.props.errorMessage}</div>);
+	    return <div>Failed {this.props.errorMessage}</div>;
 	} else {
-	    const causes = (this.props.causes as PublicCause[]).map(c => <PublicCauseWidget key={c.id} cause={c} isIdentityReady={this.props.isIdentityReady} />);
+	    const causes = (this.props.causes as PublicCause[]).map(
+	        c => <PublicCauseWidget key={c.id} cause={c} isIdentityReady={this.props.isIdentityReady} />
+	    );
 	    
-	    return (<div>{causes}</div>);
+	    return <div>{causes}</div>;
 	}
     }
 }
@@ -75,6 +77,4 @@ function dispatchToProps(dispatch: (newState: PublicCausesState) => void) {
 }
 
 
-export const HomeView = connect(
-    stateToProps,
-    dispatchToProps)(_HomeView);
+export const HomeView = connect(stateToProps, dispatchToProps)(_HomeView);
