@@ -30,6 +30,7 @@ import { showAuth0Lock } from './auth0'
 import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
 import { DonationForUserWidget } from './donation-for-user-widget'
+import { IdentityFrame } from './identity-frame'
 import { ImageGallery } from './image-gallery'
 import { ImageGalleryEditor } from './image-gallery-editor'
 import './index.less'
@@ -40,47 +41,6 @@ import { UserInput, UserInputMaster } from './user-input'
 
 // Old style imports.
 const moment = require('moment')
-
-
-interface IdentityFrameProps {
-    isInit: boolean;
-    isLoading: boolean;
-    isReady: boolean;
-    isFailed: boolean;
-    user: User|null;
-}
-
-
-class _IdentityFrame extends React.Component<IdentityFrameProps, undefined> {
-    render() {
-        if (!this.props.isReady) {
-	    return (<div>Logging in ...</div>);
-	} else {
-	    return (<div>{this.props.children}</div>);
-	}
-    }
-}
-
-
-function identityFrameMapStateToProps(state: any) {
-    return {
-        isInit: state.identity.type == OpState.Init,
-        isLoading: state.identity.type == OpState.Loading,
-        isReady: state.identity.type == OpState.Ready,
-        isFailed: state.identity.type == OpState.Failed,
-        user: state.identity.type == OpState.Ready ? state.identity.user : null
-    };
-}
-
-
-function identityFrameMapDispatchToProps() {
-    return {};
-}
-
-
-const IdentityFrame = connect(
-    identityFrameMapStateToProps,
-    identityFrameMapDispatchToProps)(_IdentityFrame);
 
 
 interface PublicCauseWidgetProps {
