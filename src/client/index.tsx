@@ -5,7 +5,7 @@ import * as ReactDOM from 'react-dom'
 import * as ReactDatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { Provider, connect } from 'react-redux'
-import { Router, Route, IndexRoute, IndexRedirect, Link, browserHistory } from 'react-router'
+import { Router, Route, IndexRoute, IndexRedirect, browserHistory } from 'react-router'
 
 import { Currency, StandardCurrencies, CurrencyMarshaller } from '@neoncity/common-js/currency'
 import { isLocal } from '@neoncity/common-js/env'
@@ -16,11 +16,11 @@ import { BankInfo,
 	 PrivateCause,
 	 TitleMarshaller,
 	 DescriptionMarshaller} from '@neoncity/core-sdk-js'
-import { User } from '@neoncity/identity-sdk-js'
 
 import { accessToken } from './access-token'
 import { AdminAccountView } from './admin-account-view'
 import { AdminCauseAnalyticsView } from './admin-cause-analytics-view'
+import { AdminFrame } from './admin-frame'
 import { AdminMyActionsView } from './admin-myactions-view'
 import { AppFrame } from './app-frame'
 import { BankInfoWidget } from './bank-info-widget'
@@ -36,28 +36,6 @@ import { UserInput, UserInputMaster } from './user-input'
 
 // Old style imports.
 const moment = require('moment')
-
-
-interface AdminFrameProps {
-    user: User;
-    children: React.ReactNode;
-}
-
-
-class AdminFrame extends React.Component<AdminFrameProps, undefined> {
-    render() {
-        return (
-            <div>
-                <div>This is the admin view</div>
-                <Link to="/admin/my-cause">My Cause</Link>
-                <Link to="/admin/cause-analytics">Cause Analytics</Link>
-                <Link to="/admin/my-actions">My Actions</Link>
-                <Link to="/admin/account">Account</Link>
-                {this.props.children}
-            </div>
-        );
-    }
-}
 
 
 interface AdminMyCauseProps {
