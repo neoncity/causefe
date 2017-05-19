@@ -12,7 +12,7 @@ import { ShareForUserWidget } from './share-for-user-widget'
 import { AdminMyActionsState, OpState, StatePart } from './store'
 
 
-interface AdminMyActionsProps {
+interface Props {
     isLoading: boolean;
     isReady: boolean;
     isFailed: boolean;
@@ -24,7 +24,7 @@ interface AdminMyActionsProps {
 }
 
 
-class _AdminMyActionsView extends React.Component<AdminMyActionsProps, undefined> {
+class _AdminMyActionsView extends React.Component<Props, undefined> {
     async componentDidMount() {
 	this.props.onUserActionsOverviewLoading();
 
