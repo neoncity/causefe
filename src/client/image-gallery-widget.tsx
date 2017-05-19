@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import { PictureSet } from '@neoncity/core-sdk-js'
 
-import './image-gallery.less'
+import './image-gallery-widget.less'
 
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 }
 
 
-export class ImageGallery extends React.Component<Props, null> {
+export class ImageGalleryWidget extends React.Component<Props, null> {
     render() {
         const { pictures } = this.props.pictureSet;
         const picturesRegion = pictures.map((picture, pictureIndex) => {

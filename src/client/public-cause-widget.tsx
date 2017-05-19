@@ -10,7 +10,7 @@ import { clearAccessToken } from './access-token-storage'
 import { showAuth0Lock } from './auth0'
 import * as config from './config'
 import { OpState } from './store'
-import { ImageGallery } from './image-gallery'
+import { ImageGalleryWidget } from './image-gallery-widget'
 import { corePublicClient } from './services'
 import { UserInput, UserInputMaster } from './user-input'
 import { causeLink } from './utils'
@@ -78,7 +78,7 @@ export class PublicCauseWidget extends React.Component<Props, State> {
 		<p>{this.props.cause.description}</p>
 		<p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency.toString()}</p>
 		<p>{this.props.cause.deadline.toString()}</p>
-                <ImageGallery pictureSet={this.props.cause.pictureSet} />
+                <ImageGalleryWidget pictureSet={this.props.cause.pictureSet} />
                 <button type="button" onClick={_ => this._handleSetDonationAmount(10)}>10</button>
                 <button type="button" onClick={_ => this._handleSetDonationAmount(25)}>25</button>
                 <button type="button" onClick={_ => this._handleSetDonationAmount(50)}>50</button>

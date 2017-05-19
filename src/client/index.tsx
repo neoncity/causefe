@@ -29,7 +29,7 @@ import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
 import { DonationForUserWidget } from './donation-for-user-widget'
 import { IdentityFrame } from './identity-frame'
-import { ImageGalleryEditor } from './image-gallery-editor'
+import { ImageGalleryEditorWidget } from './image-gallery-editor-widget'
 import './index.less'
 import { PublicCauseWidget } from './public-cause-widget'
 import { ShareForUserWidget } from './share-for-user-widget'
@@ -403,7 +403,7 @@ class _AdminMyCauseView extends React.Component<AdminMyCauseProps, AdminMyCauseV
                 </div>
                 <div>
                 <BankInfoWidget bankInfo={this.state.bankInfo} onBankInfoChange={this._handleBankInfoChange.bind(this)} />
-                <ImageGalleryEditor pictureSet={this.state.pictureSet} selectPicture={pos => fileStorageService.selectImageWithWidget(pos)} onPictureSetChange={this._handlePictureSetChange.bind(this)} />
+                <ImageGalleryEditorWidget pictureSet={this.state.pictureSet} selectPicture={pos => fileStorageService.selectImageWithWidget(pos)} onPictureSetChange={this._handlePictureSetChange.bind(this)} />
                 </div>
                 </form>
 		</div>

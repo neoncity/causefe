@@ -5,7 +5,7 @@ import { isLocal } from '@neoncity/common-js/env'
 import { Picture, PictureSet } from '@neoncity/core-sdk-js'
 
 import * as config from './config'
-import './image-gallery-editor.less'
+import './image-gallery-editor-widget.less'
 import { UserInput, UserInputMaster } from './user-input'
 
 
@@ -22,7 +22,7 @@ interface State {
 }
 
 
-export class ImageGalleryEditor extends React.Component<Props, State> {
+export class ImageGalleryEditorWidget extends React.Component<Props, State> {
     private readonly _pictureMaster: UserInputMaster<Picture, Picture>;
 
     constructor(props: Props, context: any) {
