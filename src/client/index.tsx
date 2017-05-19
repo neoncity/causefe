@@ -11,12 +11,10 @@ import { Currency, StandardCurrencies, CurrencyMarshaller } from '@neoncity/comm
 import { isLocal } from '@neoncity/common-js/env'
 import { slugify } from '@neoncity/common-js/slugify'
 import { BankInfo,
-	 Cause,
          CauseAnalytics,
 	 CurrencyAmount,
 	 PictureSet,
 	 PrivateCause,
-	 PublicCause,
 	 UserActionsOverview,
 	 TitleMarshaller,
 	 DescriptionMarshaller} from '@neoncity/core-sdk-js'
@@ -26,100 +24,20 @@ import { accessToken } from './access-token'
 import { AdminAccountView } from './admin-account-view'
 import { AppFrame } from './app-frame'
 import { BankInfoWidget } from './bank-info-widget'
+import { CauseView } from './cause-view'
 import * as config from './config'
 import { DonationForUserWidget } from './donation-for-user-widget'
 import { HomeView } from './home-view'
 import { IdentityFrame } from './identity-frame'
 import { ImageGalleryEditorWidget } from './image-gallery-editor-widget'
 import './index.less'
-import { PublicCauseWidget } from './public-cause-widget'
 import { ShareForUserWidget } from './share-for-user-widget'
-import { corePublicClient, corePrivateClient, fileStorageService } from './services'
-import { AdminCauseAnalyticsState, AdminMyActionsState, AdminMyCauseState, OpState, PublicCauseDetailState, StatePart, store } from './store'
+import { corePrivateClient, fileStorageService } from './services'
+import { AdminCauseAnalyticsState, AdminMyActionsState, AdminMyCauseState, OpState, StatePart, store } from './store'
 import { UserInput, UserInputMaster } from './user-input'
 
 // Old style imports.
 const moment = require('moment')
-
-
-interface CauseViewParams {
-    causeId: string;
-    causeSlug: string;
-}
-
-
-interface CauseViewProps {
-    isLoading: boolean;
-    isReady: boolean;
-    isFailed: boolean;
-    isIdentityReady: boolean;
-    params: CauseViewParams;
-    cause: PublicCause|null;
-    errorMessage: string|null;
-    onPublicCauseDetailLoading: () => void;
-    onPublicCauseDetailReady: (cause: PublicCause) => void;
-    onPublicCauseDetailFailed: (errorMessage: string) => void;
-}
-
-
-class _CauseView extends React.Component<CauseViewProps, undefined> {
-    async componentDidMount() {
-	this.props.onPublicCauseDetailLoading();
-
-	try {
-	    const causeId = parseInt(this.props.params.causeId);
-	    const cause = await corePublicClient.getCause(accessToken, causeId);
-	    this.props.onPublicCauseDetailReady(cause);
-	    // Also update the URL to be _causeLink(cause), but it should do no navigation.
-	    // Users might access this as /c/$id/$firstSlug, but the actual slug assigned
-	    // might be $secondSlog. So we wish to replace the one they specified with
-	    // /c/$id/$secondSlug
-	    browserHistory.replace(_causeLink(cause));
-	} catch (e) {
-	    if (isLocal(config.ENV)) {
-                console.log(e);
-            }
-            
-	    this.props.onPublicCauseDetailFailed('Could not load public cause detail');
-	}
-    }
-    
-    render() {
-	if (this.props.isLoading) {
-	    return (<div>Loading ...</div>);
-	} else if (this.props.isFailed) {
-	    return (<div>Failed {this.props.errorMessage}</div>);
-	} else {
-	    return <PublicCauseWidget cause={this.props.cause as PublicCause} isIdentityReady={this.props.isIdentityReady} />;
-	}
-    }
-}
-
-
-function causeViewMapStateToProps(state: any) {
-    return {
-	isLoading: state.publicCauseDetail.type == OpState.Init || state.publicCauseDetail.type == OpState.Loading,
-	isReady: state.publicCauseDetail.type == OpState.Ready,
-	isFailed: state.publicCauseDetail.type == OpState.Failed,
-        isIdentityReady: state.identity.type == OpState.Ready,
-	cause: state.publicCauseDetail.type == OpState.Ready ? state.publicCauseDetail.cause : null,
-	errorMessage: state.publicCauseDetail.type == OpState.Failed ? state.publicCauseDetail.errorMessage : null,
-    };
-}
-
-
-function causeViewMapDispatchToProps(dispatch: (newState: PublicCauseDetailState) => void) {
-    return {
-	onPublicCauseDetailLoading: () => dispatch({part: StatePart.PublicCauseDetail, type: OpState.Loading}),
-	onPublicCauseDetailReady: (cause: PublicCause) => dispatch({part: StatePart.PublicCauseDetail, type: OpState.Ready, cause: cause}),
-	onPublicCauseDetailFailed: (errorMessage: string) => dispatch({part: StatePart.PublicCauseDetail, type: OpState.Failed, errorMessage: errorMessage})
-    };
-}
-
-
-const CauseView = connect(
-    causeViewMapStateToProps,
-    causeViewMapDispatchToProps)(_CauseView);
 
 
 interface AdminFrameProps {
@@ -727,13 +645,6 @@ const AdminMyActionsView = connect(
     adminMyActionsMapStateToProps,
     adminMyActionsMapDispatchToProps)(_AdminMyActionsView);
 
-
-
-
-
-function _causeLink(cause: Cause): string {
-    return `/c/${cause.id}/${cause.slug}`;
-}
 
 
 ReactDOM.render(
