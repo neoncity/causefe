@@ -36,6 +36,15 @@ async function main() {
 	    res.end();
 	});
         app.use(webpackDevMiddleware);
+        app.get('/real/login', (req: express.Request, res: express.Response) => {
+            console.log(req.url);
+	    const htmlIndexTemplate = (webpackDevMiddleware as any).fileSystem.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html'), 'utf-8');
+            const htmlIndex = Mustache.render(htmlIndexTemplate, _buildTemplateData());
+
+            res.write(htmlIndex);
+	    res.status(HttpStatus.OK);
+            res.end();            
+        });
         app.get('*', [cookieParser(), newSessionMiddleware(config.ENV, identityClient)], wrap(async (_: CauseFeRequest, res: express.Response) => {
 	    const htmlIndexTemplate = (webpackDevMiddleware as any).fileSystem.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html'), 'utf-8');
             const htmlIndex = Mustache.render(htmlIndexTemplate, _buildTemplateData());

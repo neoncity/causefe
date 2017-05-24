@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { CauseAnalytics } from '@neoncity/core-sdk-js'
 import { isLocal } from '@neoncity/common-js'
 
-import { accessToken } from './access-token'
+import { AUTH0_ACCESS_TOKEN } from './from-server'
 import * as config from './config'
 import { corePrivateClient } from './services'
 import { AdminCauseAnalyticsState, OpState, StatePart } from './store'
@@ -28,7 +28,7 @@ class _AdminCauseAnalyticsView extends React.Component<Props, undefined> {
         this.props.onCauseAnalyticsLoading();
 
         try {
-            const causeAnalytics = await corePrivateClient.getCauseAnalytics(accessToken);
+            const causeAnalytics = await corePrivateClient.getCauseAnalytics(AUTH0_ACCESS_TOKEN);
             this.props.onCauseAnalyticsReady(true, causeAnalytics);
         } catch (e) {
             if (e.name == 'NoCauseForUserError') {

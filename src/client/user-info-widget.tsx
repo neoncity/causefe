@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 
 import { User } from '@neoncity/identity-sdk-js'
 
-import { clearAccessToken } from './access-token-storage'
 import { showAuth0Lock } from './auth0'
 import { OpState } from './store'
 
@@ -29,12 +28,10 @@ class _UserInfoWidget extends React.Component<Props, undefined> {
     }
 
     private _handleLogoutClick() {
-        clearAccessToken();
-        location.replace('/');
+        location.replace('/real/logout');
     }
 
     private _handleLoginClick() {
-	clearAccessToken();
 	showAuth0Lock();
     }
 }

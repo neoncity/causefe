@@ -18,7 +18,8 @@ module.exports = {
         loaders: [{
             test: /\.tsx?$/,
             include: [
-                path.resolve(__dirname, 'src', 'client')
+                path.resolve(__dirname, 'src', 'client'),
+                path.resolve(__dirname, 'src', 'shared')
             ],
             loader: 'ts',
             query: {

@@ -5,7 +5,7 @@ import { browserHistory } from 'react-router'
 import { PublicCause } from '@neoncity/core-sdk-js'
 import { isLocal } from '@neoncity/common-js'
 
-import { accessToken } from './access-token'
+import { AUTH0_ACCESS_TOKEN } from './from-server'
 import * as config from './config'
 import { PublicCauseWidget } from './public-cause-widget'
 import { corePublicClient } from './services'
@@ -39,7 +39,7 @@ class _CauseView extends React.Component<Props, undefined> {
 
         try {
             const causeId = parseInt(this.props.params.causeId);
-            const cause = await corePublicClient.getCause(accessToken, causeId);
+            const cause = await corePublicClient.getCause(AUTH0_ACCESS_TOKEN, causeId);
             this.props.onPublicCauseDetailReady(cause);
             // Also update the URL to be causeLink(cause), but it should do no navigation.
             // Users might access this as /c/$id/$firstSlug, but the actual slug assigned

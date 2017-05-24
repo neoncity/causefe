@@ -5,8 +5,7 @@ import { Link, browserHistory } from 'react-router'
 import { isLocal } from '@neoncity/common-js'
 import { User } from '@neoncity/identity-sdk-js'
 
-import { accessToken } from './access-token'
-import { clearAccessToken } from './access-token-storage'
+import { AUTH0_ACCESS_TOKEN } from './from-server'
 import { showAuth0Lock } from './auth0'
 import * as config from './config'
 import { identityClient } from './services'
@@ -29,14 +28,14 @@ interface Props {
 
 class _AppFrame extends React.Component<Props, undefined> {
     async componentDidMount() {
-	if (accessToken == 'INVALID') {
+	if (AUTH0_ACCESS_TOKEN == 'INVALID') {
 	    return;
 	}
 	
 	this.props.onIdentityLoading();
 
 	try {
-	    const user = await identityClient.getOrCreateUser(accessToken);
+	    const user = await identityClient.getOrCreateUser(AUTH0_ACCESS_TOKEN);
 	    this.props.onIdentityReady(user);
 	} catch (e) {
             if (isLocal(config.ENV)) {
@@ -46,7 +45,6 @@ class _AppFrame extends React.Component<Props, undefined> {
             const currentLocation = browserHistory.getCurrentLocation();
             
 	    if ((currentLocation.pathname.indexOf('/admin') == 0) || (currentLocation.pathname.indexOf('/console') == 0)) {
-		clearAccessToken();
 		showAuth0Lock();
             }
 	    
