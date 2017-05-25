@@ -1,31 +1,9 @@
 import Auth0Lock from 'auth0-lock'
-import { MarshalWith, OptionalOf } from 'raynor'
 import { browserHistory } from 'react-router'
-
-import {
-    Auth0AuthorizationCodeMarshaller,
-    Auth0AccessTokenMarshaller } from '@neoncity/identity-sdk-js'
 
 import * as config from './config'
 
 import { PostLoginRedirectInfo, PostLoginRedirectInfoMarshaller } from '../shared/auth-flow'
-
-
-export class Auth0AuthorizeRedirectInfo {
-    @MarshalWith(OptionalOf(Auth0AuthorizationCodeMarshaller), 'code')
-    authorizationCode: string|null;
-
-    @MarshalWith(PostLoginRedirectInfoMarshaller)
-    state: PostLoginRedirectInfo;
-}
-
-
-
-export class Auth0ExchangeTokenRedirectInfo {
-    @MarshalWith(OptionalOf(Auth0AccessTokenMarshaller), 'access_token')
-    accessToken: string|null;
-}
-
 
 const postLoginRedirectInfoMarshaller = new PostLoginRedirectInfoMarshaller();
 
@@ -42,7 +20,7 @@ export function showAuth0Lock(canDismiss: boolean = true) {
             auth: {
 		redirect: true,
 		redirectUrl: config.AUTH0_CALLBACK_URI,
-		responseType: 'token',
+		responseType: 'code',
 		params: {
                     state: postLoginInfoSer
 		}

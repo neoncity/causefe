@@ -9,10 +9,11 @@
         "strictNullChecks": true,
         "sourceMap": true,
         "declaration": true,
-        "outDir": "./out/server",
+        "outDir": "./out/",
         "experimentalDecorators": true
     },
     "include": [
-        "./src/server/**/*"
+        "./src/server/**/*",
+        "./src/shared/**/*"	
     ]
 }

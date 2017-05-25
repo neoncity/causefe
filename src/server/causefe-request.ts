@@ -1,7 +1,8 @@
 import { Request } from '@neoncity/common-server-js'
-import { Session } from '@neoncity/identity-sdk-js'
+import { AuthInfo, Session } from '@neoncity/identity-sdk-js'
 
 
 export interface CauseFeRequest extends Request {
+    authInfo: AuthInfo;
     session: Session;
 }

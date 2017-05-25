@@ -5,7 +5,7 @@ import { Link, browserHistory } from 'react-router'
 import { isLocal } from '@neoncity/common-js'
 import { User } from '@neoncity/identity-sdk-js'
 
-import { AUTH0_ACCESS_TOKEN } from './from-server'
+import { SESSION_ID, AUTH0_ACCESS_TOKEN } from './from-server'
 import { showAuth0Lock } from './auth0'
 import * as config from './config'
 import { identityClient } from './services'
@@ -35,7 +35,8 @@ class _AppFrame extends React.Component<Props, undefined> {
 	this.props.onIdentityLoading();
 
 	try {
-	    const user = await identityClient.getOrCreateUser(AUTH0_ACCESS_TOKEN);
+	    console.log(AUTH0_ACCESS_TOKEN);
+	    const user = await identityClient.getOrCreateUser(SESSION_ID, AUTH0_ACCESS_TOKEN);
 	    this.props.onIdentityReady(user);
 	} catch (e) {
             if (isLocal(config.ENV)) {

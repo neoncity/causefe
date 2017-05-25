@@ -1,28 +1,30 @@
 import { wrap } from 'async-middleware'
 import * as express from 'express'
 import * as HttpStatus from 'http-status-codes'
-import { UuidMarshaller } from 'raynor'
+import { MarshalFrom } from 'raynor'
 
 import { isLocal, Env } from '@neoncity/common-js'
-import { IdentityClient } from '@neoncity/identity-sdk-js'
+import { AuthInfo, IdentityClient } from '@neoncity/identity-sdk-js'
 
 import { CauseFeRequest } from './causefe-request'
 
 
-const SESSION_COOKIE_NAME = 'neoncity-session';
+const AUTH_INFO_COOKIE_NAME = 'neoncity-auth-info';
 
 
 export function newSessionMiddleware(env: Env, identityClient: IdentityClient): express.RequestHandler {
 
-    const uuidMarshaller = new UuidMarshaller();
+    const authInfoMarshaller = new (MarshalFrom(AuthInfo))();
 
     return wrap(async (req: CauseFeRequest, res: express.Response, next: express.NextFunction) => {
 	try {
-	    if (req.cookies['neoncity-session'] === undefined) {
+	    if (req.cookies[AUTH_INFO_COOKIE_NAME] === undefined) {
 		req.session = await identityClient.createSession();
+		req.authInfo = new AuthInfo(req.session.id);
 	    } else {
-		const sessionId = uuidMarshaller.extract(req.cookies['neoncity-session']);
-		req.session = await identityClient.getOrCreateSession(sessionId);
+		const authInfo = authInfoMarshaller.extract(req.cookies[AUTH_INFO_COOKIE_NAME]);
+		req.session = await identityClient.getOrCreateSession(authInfo.sessionId);
+		req.authInfo = new AuthInfo(req.session.id, req.session.id == authInfo.sessionId ? authInfo.auth0AccessToken : null);
 	    }
 	} catch (e) {
 	    // Could not extract the session if from a cookie
@@ -53,7 +55,7 @@ export function newSessionMiddleware(env: Env, identityClient: IdentityClient): 
 	}
 
 	// Set a cookie on the response.
-        res.cookie(SESSION_COOKIE_NAME, uuidMarshaller.pack(req.session.id), {
+        res.cookie(AUTH_INFO_COOKIE_NAME, authInfoMarshaller.pack(req.authInfo), {
 	    expires: req.session.timeExpires,
 	    httpOnly: true,
 	    secure: !isLocal(env)
