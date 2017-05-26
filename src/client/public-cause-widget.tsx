@@ -5,7 +5,7 @@ import * as r from 'raynor'
 import { isLocal } from '@neoncity/common-js'
 import { CurrencyAmount, PublicCause } from '@neoncity/core-sdk-js'
 
-import { AUTH0_ACCESS_TOKEN } from './from-server'
+import { SESSION_ID, AUTH0_ACCESS_TOKEN } from './from-server'
 import { showAuth0Lock } from './auth0'
 import * as config from './config'
 import { OpState } from './store'
@@ -129,7 +129,7 @@ export class PublicCauseWidget extends React.Component<Props, State> {
             currencyAmount.amount = this.state.donationAmount.getValue();
             currencyAmount.currency = this.props.cause.goal.currency;
             
-            await corePublicClient.createDonation(AUTH0_ACCESS_TOKEN, this.props.cause.id, currencyAmount);
+            await corePublicClient.createDonation(SESSION_ID, AUTH0_ACCESS_TOKEN, this.props.cause.id, currencyAmount);
             this.setState({donationState: OpState.Ready});
         } catch (e) {
             if (isLocal(config.ENV)) {
@@ -173,7 +173,7 @@ export class PublicCauseWidget extends React.Component<Props, State> {
             }
 
             try {
-                await corePublicClient.createShare(AUTH0_ACCESS_TOKEN, this.props.cause.id, response.post_id as string);
+                await corePublicClient.createShare(SESSION_ID, AUTH0_ACCESS_TOKEN, this.props.cause.id, response.post_id as string);
                 this.setState({shareState: OpState.Ready});
             } catch (e) {
                 if (isLocal(config.ENV)) {

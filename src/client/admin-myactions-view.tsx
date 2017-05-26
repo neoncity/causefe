@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { UserActionsOverview } from '@neoncity/core-sdk-js'
 import { isLocal } from '@neoncity/common-js'
 
-import { AUTH0_ACCESS_TOKEN } from './from-server'
+import { SESSION_ID, AUTH0_ACCESS_TOKEN } from './from-server'
 import * as config from './config'
 import { DonationForUserWidget } from './donation-for-user-widget'
 import { corePrivateClient } from './services'
@@ -29,7 +29,7 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
 	this.props.onUserActionsOverviewLoading();
 
 	try {
-	    const userActionsOverview = await corePrivateClient.getActionsOverview(AUTH0_ACCESS_TOKEN);
+	    const userActionsOverview = await corePrivateClient.getActionsOverview(SESSION_ID, AUTH0_ACCESS_TOKEN);
 	    this.props.onUserActionsOverviewReady(userActionsOverview);
 	} catch (e) {
             if (isLocal(config.ENV)) {

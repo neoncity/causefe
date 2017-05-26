@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { PublicCause } from '@neoncity/core-sdk-js'
 import { isLocal } from '@neoncity/common-js'
 
-import { AUTH0_ACCESS_TOKEN } from './from-server'
+import { SESSION_ID, AUTH0_ACCESS_TOKEN } from './from-server'
 import * as config from './config'
 import { PublicCauseWidget } from './public-cause-widget'
 import { corePublicClient } from './services'
@@ -29,7 +29,7 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
 	this.props.onPublicCausesLoading();
 
 	try {
-	    const causes = await corePublicClient.getCauses(AUTH0_ACCESS_TOKEN);
+	    const causes = await corePublicClient.getCauses(SESSION_ID, AUTH0_ACCESS_TOKEN);
 	    this.props.onPublicCausesReady(causes);
 	} catch (e) {
             if (isLocal(config.ENV)) {

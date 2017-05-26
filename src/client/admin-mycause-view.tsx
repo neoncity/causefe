@@ -15,7 +15,7 @@ import { BankInfo,
 	 TitleMarshaller,
 	 DescriptionMarshaller} from '@neoncity/core-sdk-js'
 
-import { AUTH0_ACCESS_TOKEN } from './from-server'
+import { SESSION_ID, AUTH0_ACCESS_TOKEN } from './from-server'
 import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
 import { ImageGalleryEditorWidget } from './image-gallery-editor-widget'
@@ -89,7 +89,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
         this.props.onPrivateCauseLoading();
 
         try {
-            const privateCause = await corePrivateClient.getCause(AUTH0_ACCESS_TOKEN);
+            const privateCause = await corePrivateClient.getCause(SESSION_ID, AUTH0_ACCESS_TOKEN);
             this.props.onPrivateCauseReady(true, false, privateCause);
         } catch (e) {
             if (e.name == 'NoCauseForUserError') {
@@ -375,6 +375,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	    goal.currency = this.state.goalCurrency.getValue();
 	    
 	    const privateCause = await corePrivateClient.createCause(
+		SESSION_ID,
 		AUTH0_ACCESS_TOKEN,
 		this.state.title.getValue(),
 		this.state.description.getValue(),
@@ -401,6 +402,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	    goal.currency = this.state.goalCurrency.getValue();
 	    
 	    const privateCause = await corePrivateClient.updateCause(
+		SESSION_ID,
 		AUTH0_ACCESS_TOKEN,
 		{
 		    title: this.state.title.getValue(),
@@ -424,7 +426,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	this.props.onPrivateCauseLoading();
 
 	try {
-	    await corePrivateClient.deleteCause(AUTH0_ACCESS_TOKEN);
+	    await corePrivateClient.deleteCause(SESSION_ID, AUTH0_ACCESS_TOKEN);
 	    this.props.onPrivateCauseReady(true, true, null);
 	} catch (e) {
 	    if (isLocal(config.ENV)) {

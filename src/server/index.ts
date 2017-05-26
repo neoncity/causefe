@@ -183,7 +183,9 @@ function _buildTemplateData(authInfo: AuthInfo|null = null): any {
 
     if (authInfo != null) {
 	templateData['SESSION_ID'] = authInfo.sessionId;
-	templateData['AUTH0_ACCESS_TOKEN'] = authInfo.auth0AccessToken;
+	templateData['AUTH0_ACCESS_TOKEN'] = authInfo.auth0AccessToken != null
+	    ? authInfo.auth0AccessToken
+	    : "INVALID";
     }
     
     // Then put template related data.
