@@ -5,7 +5,6 @@ import { browserHistory } from 'react-router'
 import { PublicCause } from '@neoncity/core-sdk-js'
 import { isLocal } from '@neoncity/common-js'
 
-import { SESSION_ID, AUTH0_ACCESS_TOKEN } from './from-server'
 import * as config from './config'
 import { PublicCauseWidget } from './public-cause-widget'
 import { corePublicClient } from './services'
@@ -23,7 +22,6 @@ interface Props {
     isLoading: boolean;
     isReady: boolean;
     isFailed: boolean;
-    isIdentityReady: boolean;
     params: Params;
     cause: PublicCause|null;
     errorMessage: string|null;
@@ -39,7 +37,7 @@ class _CauseView extends React.Component<Props, undefined> {
 
         try {
             const causeId = parseInt(this.props.params.causeId);
-            const cause = await corePublicClient.getCause(SESSION_ID, AUTH0_ACCESS_TOKEN, causeId);
+            const cause = await corePublicClient.getCause(causeId);
             this.props.onPublicCauseDetailReady(cause);
             // Also update the URL to be causeLink(cause), but it should do no navigation.
             // Users might access this as /c/$id/$firstSlug, but the actual slug assigned
@@ -62,9 +60,7 @@ class _CauseView extends React.Component<Props, undefined> {
             return <div>Failed {this.props.errorMessage}</div>;
         } else {
             return (
-                <PublicCauseWidget
-                    cause={this.props.cause as PublicCause}
-                    isIdentityReady={this.props.isIdentityReady} />
+                <PublicCauseWidget cause={this.props.cause as PublicCause} />
             );
         }
     }
@@ -76,7 +72,6 @@ function stateToProps(state: any) {
 	isLoading: state.publicCauseDetail.type == OpState.Init || state.publicCauseDetail.type == OpState.Loading,
 	isReady: state.publicCauseDetail.type == OpState.Ready,
 	isFailed: state.publicCauseDetail.type == OpState.Failed,
-        isIdentityReady: state.identity.type == OpState.Ready,
 	cause: state.publicCauseDetail.type == OpState.Ready ? state.publicCauseDetail.cause : null,
 	errorMessage: state.publicCauseDetail.type == OpState.Failed ? state.publicCauseDetail.errorMessage : null,
     };

@@ -4,11 +4,10 @@ import { connect } from 'react-redux'
 import { UserActionsOverview } from '@neoncity/core-sdk-js'
 import { isLocal } from '@neoncity/common-js'
 
-import { SESSION_ID, AUTH0_ACCESS_TOKEN } from './from-server'
 import * as config from './config'
-import { DonationForUserWidget } from './donation-for-user-widget'
+import { DonationForSessionWidget } from './donation-for-session-widget'
 import { corePrivateClient } from './services'
-import { ShareForUserWidget } from './share-for-user-widget'
+import { ShareForSessionWidget } from './share-for-session-widget'
 import { AdminMyActionsState, OpState, StatePart } from './store'
 
 
@@ -29,7 +28,7 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
 	this.props.onUserActionsOverviewLoading();
 
 	try {
-	    const userActionsOverview = await corePrivateClient.getActionsOverview(SESSION_ID, AUTH0_ACCESS_TOKEN);
+	    const userActionsOverview = await corePrivateClient.getUserActionsOverview();
 	    this.props.onUserActionsOverviewReady(userActionsOverview);
 	} catch (e) {
             if (isLocal(config.ENV)) {
@@ -50,12 +49,12 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
 		  .donations
 		  .slice(0) // clone
 		  .sort((a, b) => b.timeCreated.getTime() - a.timeCreated.getTime())
-		  .map((d) => <DonationForUserWidget key={d.id} donationForUser={d} />);
+		  .map((d) => <DonationForSessionWidget key={d.id} donationForSession={d} />);
 	    const shareWidgets = (this.props.userActionsOverview as UserActionsOverview)
 		  .shares
 		  .slice(0) // clone
 		  .sort((a, b) => b.timeCreated.getTime() - a.timeCreated.getTime())
-		  .map((d) => <ShareForUserWidget key={d.id} shareForUser={d} />);	    
+		  .map((d) => <ShareForSessionWidget key={d.id} shareForSession={d} />);
 
 	    return (
                 <div>

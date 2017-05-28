@@ -1,7 +1,6 @@
 import { wrap } from 'async-middleware'
-import * as cookieParser from 'cookie-parser'
 import * as express from 'express'
-import * as fs from 'fs'
+//import * as fs from 'fs'
 import 'isomorphic-fetch'
 import * as HttpStatus from 'http-status-codes'
 import Mustache = require('mustache')
@@ -13,15 +12,20 @@ import * as theWebpackDevMiddleware from 'webpack-dev-middleware'
 
 import { isLocal } from '@neoncity/common-js'
 import {
+    AuthInfoLevel,
+    newAuthInfoMiddleware,
+    newSessionMiddleware,
+    SessionLevel } from '@neoncity/common-server-js'
+import {
     Auth0AccessTokenMarshaller,
     Auth0AuthorizationCodeMarshaller,
     AuthInfo,
     IdentityClient,
-    newIdentityClient } from '@neoncity/identity-sdk-js'
+    newIdentityClient,
+    Session } from '@neoncity/identity-sdk-js'
 
 import { CauseFeRequest } from './causefe-request'
 import * as config from './config'
-import { newSessionMiddleware } from './session-middleware'
 import { PostLoginRedirectInfo, PostLoginRedirectInfoMarshaller } from '../shared/auth-flow'
 
 
@@ -57,6 +61,7 @@ async function main() {
     const authInfoMarshaller = new (MarshalFrom(AuthInfo))();
     const auth0TokenExchangeResultMarshaller = new (MarshalFrom(Auth0TokenExchangeResult))();
     const auth0AuthorizeRedirectInfoMarshaller = new (MarshalFrom(Auth0AuthorizeRedirectInfo))();
+    const sessionMarshaller = new (MarshalFrom(Session))();
     const app = express();
 
     if (isLocal(config.ENV)) {
@@ -65,7 +70,7 @@ async function main() {
 	    serverSideRender: false
         });
 
-        app.get('/real/login', [cookieParser(), newSessionMiddleware(config.ENV, identityClient)], wrap(async (req: CauseFeRequest, res: express.Response) => {
+        app.get('/real/login', [newAuthInfoMiddleware(AuthInfoLevel.SessionId), newSessionMiddleware(SessionLevel.Session, config.ENV, identityClient)], wrap(async (req: CauseFeRequest, res: express.Response) => {
 	    let redirectInfo: Auth0AuthorizeRedirectInfo|null = null;
 	    try {
 	    	redirectInfo = auth0AuthorizeRedirectInfoMarshaller.extract(url.parse(req.url, true).query);
@@ -126,72 +131,97 @@ async function main() {
 	    	return;
 	    }
 
-	    const authInfo = new AuthInfo(req.session.id, auth0TokenExchangeResult.accessToken);
+	    let authInfo = new AuthInfo((req.authInfo as AuthInfo).sessionId, auth0TokenExchangeResult.accessToken);
 
-            res.cookie('neoncity-auth-info', authInfoMarshaller.pack(authInfo), {
-		expires: req.session.timeExpires,
+	    try {
+		authInfo = (await identityClient.withAuthInfo(authInfo).getOrCreateUserOnSession())[0];
+	    } catch (e) {
+		console.log(`Session creation error - ${e.toString()}`);
+	    	if (isLocal(config.ENV)) {
+		    console.log(e);
+	    	}
+		
+	    	res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+	    	res.end();
+	    	return;		
+	    }
+	    
+	    res.cookie(AuthInfo.CookieName, authInfoMarshaller.pack(authInfo), {
+		expires: (req.session as Session).timeExpires,
 		httpOnly: true,
 		secure: !isLocal(config.ENV)
 	    });
 
 	    res.redirect(redirectInfo.state.path);
         }));
-	app.get('/real/client/client.js', [cookieParser(), newSessionMiddleware(config.ENV, identityClient)], (req: CauseFeRequest, res: express.Response) => {
+	app.get('/real/client/client.js', [newAuthInfoMiddleware(AuthInfoLevel.SessionId), newSessionMiddleware(SessionLevel.Session, config.ENV, identityClient)], (req: CauseFeRequest, res: express.Response) => {
 	    const jsIndexTemplate = (webpackDevMiddleware as any).fileSystem.readFileSync(path.join(process.cwd(), 'out', 'client', 'client.js'), 'utf-8');
-	    const jsIndex = Mustache.render(jsIndexTemplate, _buildTemplateData(req.authInfo));
+	    const jsIndex = Mustache.render(jsIndexTemplate, _buildTemplateData(req.session as Session));
 	    res.write(jsIndex);
 	    res.status(HttpStatus.OK);
 	    res.end();
 	});
         app.use(webpackDevMiddleware);
-        app.get('*', [cookieParser(), newSessionMiddleware(config.ENV, identityClient)], wrap(async (req: CauseFeRequest, res: express.Response) => {
+        app.get('*', [newAuthInfoMiddleware(AuthInfoLevel.None), newSessionMiddleware(SessionLevel.None, config.ENV, identityClient)], wrap(async (req: CauseFeRequest, res: express.Response) => {
+	    if (req.authInfo == null) {
+		try {
+		    const [authInfo, session] = await identityClient.getOrCreateSession();
+		    req.authInfo = authInfo;
+		    req.session = session;
+
+		    res.cookie(AuthInfo.CookieName, authInfoMarshaller.pack(authInfo), {
+			expires: session.timeExpires,
+			httpOnly: true,
+			secure: !isLocal(config.ENV)
+		    });
+		} catch (e) {
+		    console.log(`Session creation error - ${e.toString()}`);
+	    	    if (isLocal(config.ENV)) {
+			console.log(e);
+	    	    }
+		    
+	    	    res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+	    	    res.end();
+	    	    return;		    
+		}
+	    }
+	    
 	    const htmlIndexTemplate = (webpackDevMiddleware as any).fileSystem.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html'), 'utf-8');
-            const htmlIndex = Mustache.render(htmlIndexTemplate, _buildTemplateData(req.authInfo));
+            const htmlIndex = Mustache.render(htmlIndexTemplate, _buildTemplateData(req.session as Session));
 
             res.write(htmlIndex);
 	    res.status(HttpStatus.OK);
             res.end();
         }));
     } else {
-        const jsIndexTemplate = fs.readFileSync(path.join(process.cwd(), 'out', 'client', 'client.js'), 'utf-8');
-        const htmlIndexTemplate = fs.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html'), 'utf-8');
+        // const jsIndexTemplate = fs.readFileSync(path.join(process.cwd(), 'out', 'client', 'client.js'), 'utf-8');
+        // const htmlIndexTemplate = fs.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html'), 'utf-8');
 
-	app.get('/real/client/client.js', (_: express.Request, res: express.Response) => {
-	    const jsIndex = Mustache.render(jsIndexTemplate, _buildTemplateData());
-            res.write(jsIndex);
-	    res.status(HttpStatus.OK);
-            res.end();
-        });
-        app.use('/real/client', express.static(path.join(process.cwd(), 'out', 'client')));
-        app.get('*', [cookieParser(), newSessionMiddleware(config.ENV, identityClient)], wrap(async (_: CauseFeRequest, res: express.Response) => {
-            const htmlIndex = Mustache.render(htmlIndexTemplate, _buildTemplateData());
-            res.write(htmlIndex);
-	    res.status(HttpStatus.OK);
-            res.end();
-        }));
+	// app.get('/real/client/client.js', (_: express.Request, res: express.Response) => {
+	//     const jsIndex = Mustache.render(jsIndexTemplate, _buildTemplateData());
+        //     res.write(jsIndex);
+	//     res.status(HttpStatus.OK);
+        //     res.end();
+        // });
+        // app.use('/real/client', express.static(path.join(process.cwd(), 'out', 'client')));
+        // app.get('*', [cookieParser(), newSessionMiddleware(config.ENV, identityClient)], wrap(async (_: CauseFeRequest, res: express.Response) => {
+        //     const htmlIndex = Mustache.render(htmlIndexTemplate, _buildTemplateData());
+        //     res.write(htmlIndex);
+	//     res.status(HttpStatus.OK);
+        //     res.end();
+        // }));
     }
 
     app.listen(config.PORT, config.ADDRESS, () => {
 	console.log(`Started ... ${config.ADDRESS}:${config.PORT}`);
     });
-}
 
-
-function _buildTemplateData(authInfo: AuthInfo|null = null): any {
-    // First, put in the things which are global for the application - the config.
-    const templateData = (Object as any).assign({}, config);
-
-    if (authInfo != null) {
-	templateData['SESSION_ID'] = authInfo.sessionId;
-	templateData['AUTH0_ACCESS_TOKEN'] = authInfo.auth0AccessToken != null
-	    ? authInfo.auth0AccessToken
-	    : "INVALID";
+    function _buildTemplateData(session: Session): any {
+	return (Object as any).assign({}, config, {SESSION: JSON.stringify(sessionMarshaller.pack(session))});
     }
-    
-    // Then put template related data.
-    templateData['LANG'] = 'en';
-    return templateData;
 }
+
+
 
 
 main();

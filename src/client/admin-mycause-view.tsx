@@ -15,7 +15,6 @@ import { BankInfo,
 	 TitleMarshaller,
 	 DescriptionMarshaller} from '@neoncity/core-sdk-js'
 
-import { SESSION_ID, AUTH0_ACCESS_TOKEN } from './from-server'
 import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
 import { ImageGalleryEditorWidget } from './image-gallery-editor-widget'
@@ -36,7 +35,7 @@ interface Props {
     cause: PrivateCause|null;
     errorMessage: string|null;
     onPrivateCauseLoading: () => void;
-    onPrivateCauseReady: (hasCause: boolean, causeIsDelted: boolean, cause: PrivateCause|null) => void;
+    onPrivateCauseReady: (hasCause: boolean, causeIsDeleted: boolean, cause: PrivateCause|null) => void;
     onPrivateCauseFailed: (errorMessage: string) => void;
 }
 
@@ -89,7 +88,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
         this.props.onPrivateCauseLoading();
 
         try {
-            const privateCause = await corePrivateClient.getCause(SESSION_ID, AUTH0_ACCESS_TOKEN);
+            const privateCause = await corePrivateClient.getCause();
             this.props.onPrivateCauseReady(true, false, privateCause);
         } catch (e) {
             if (e.name == 'NoCauseForUserError') {
@@ -375,8 +374,6 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	    goal.currency = this.state.goalCurrency.getValue();
 	    
 	    const privateCause = await corePrivateClient.createCause(
-		SESSION_ID,
-		AUTH0_ACCESS_TOKEN,
 		this.state.title.getValue(),
 		this.state.description.getValue(),
 		this.state.pictureSet,
@@ -402,8 +399,6 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	    goal.currency = this.state.goalCurrency.getValue();
 	    
 	    const privateCause = await corePrivateClient.updateCause(
-		SESSION_ID,
-		AUTH0_ACCESS_TOKEN,
 		{
 		    title: this.state.title.getValue(),
 		    description: this.state.description.getValue(),
@@ -426,7 +421,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	this.props.onPrivateCauseLoading();
 
 	try {
-	    await corePrivateClient.deleteCause(SESSION_ID, AUTH0_ACCESS_TOKEN);
+	    await corePrivateClient.deleteCause();
 	    this.props.onPrivateCauseReady(true, true, null);
 	} catch (e) {
 	    if (isLocal(config.ENV)) {

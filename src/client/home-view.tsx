@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { PublicCause } from '@neoncity/core-sdk-js'
 import { isLocal } from '@neoncity/common-js'
 
-import { SESSION_ID, AUTH0_ACCESS_TOKEN } from './from-server'
 import * as config from './config'
 import { PublicCauseWidget } from './public-cause-widget'
 import { corePublicClient } from './services'
@@ -15,7 +14,6 @@ interface HomeViewProps {
     isLoading: boolean;
     isReady: boolean;
     isFailed: boolean;
-    isIdentityReady: boolean;
     causes: PublicCause[]|null;
     errorMessage: string|null;
     onPublicCausesLoading: () => void;
@@ -29,7 +27,7 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
 	this.props.onPublicCausesLoading();
 
 	try {
-	    const causes = await corePublicClient.getCauses(SESSION_ID, AUTH0_ACCESS_TOKEN);
+	    const causes = await corePublicClient.getCauses();
 	    this.props.onPublicCausesReady(causes);
 	} catch (e) {
             if (isLocal(config.ENV)) {
@@ -47,7 +45,7 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
 	    return <div>Failed {this.props.errorMessage}</div>;
 	} else {
 	    const causes = (this.props.causes as PublicCause[]).map(
-	        c => <PublicCauseWidget key={c.id} cause={c} isIdentityReady={this.props.isIdentityReady} />
+	        c => <PublicCauseWidget key={c.id} cause={c} />
 	    );
 	    
 	    return <div>{causes}</div>;
@@ -61,7 +59,6 @@ function stateToProps(state: any) {
 	isLoading: state.publicCauses.type == OpState.Init || state.publicCauses.type == OpState.Loading,
 	isReady: state.publicCauses.type == OpState.Ready,
 	isFailed: state.publicCauses.type == OpState.Failed,
-        isIdentityReady: state.identity.type == OpState.Ready,
 	causes: state.publicCauses.type == OpState.Ready ? state.publicCauses.causes : null,
 	errorMessage: state.publicCauses.type == OpState.Failed ? state.publicCauses.errorMessage : null,
     };

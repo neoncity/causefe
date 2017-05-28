@@ -1,45 +1,26 @@
 import * as React from 'react'
-import { connect } from 'react-redux'
 
-import { User } from '@neoncity/identity-sdk-js'
-
-import { OpState } from './store'
+import { showAuth0Lock } from './auth0'
+import { SESSION } from './from-server'
 
 
 interface Props {
-    isInit: boolean;
-    isLoading: boolean;
-    isReady: boolean;
-    isFailed: boolean;
-    user: User|null;
+    children: React.ReactNode;
 }
 
 
-class _IdentityFrame extends React.Component<Props, undefined> {
+export class IdentityFrame extends React.Component<Props, undefined> {
+    componentDidMount() {
+	if (!SESSION.hasUser()) {
+	    showAuth0Lock();
+	}
+    }
+    
     render() {
-        if (!this.props.isReady) {
-	    return <div>Logging in ...</div>;
+        if (!SESSION.hasUser()) {
+	    return <div>Should be logged in!</div>;
 	} else {
 	    return <div>{this.props.children}</div>;
 	}
     }
 }
-
-
-function stateToProps(state: any) {
-    return {
-        isInit: state.identity.type == OpState.Init,
-        isLoading: state.identity.type == OpState.Loading,
-        isReady: state.identity.type == OpState.Ready,
-        isFailed: state.identity.type == OpState.Failed,
-        user: state.identity.type == OpState.Ready ? state.identity.user : null
-    };
-}
-
-
-function dispatchToProps() {
-    return {};
-}
-
-
-export const IdentityFrame = connect(stateToProps, dispatchToProps)(_IdentityFrame);

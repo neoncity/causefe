@@ -5,8 +5,6 @@ import * as r from 'raynor'
 import { isLocal } from '@neoncity/common-js'
 import { CurrencyAmount, PublicCause } from '@neoncity/core-sdk-js'
 
-import { SESSION_ID, AUTH0_ACCESS_TOKEN } from './from-server'
-import { showAuth0Lock } from './auth0'
 import * as config from './config'
 import { OpState } from './store'
 import { ImageGalleryWidget } from './image-gallery-widget'
@@ -16,7 +14,6 @@ import { causeLink } from './utils'
 
 
 interface Props {
-    isIdentityReady: boolean;
     cause: PublicCause;
 }
 
@@ -116,12 +113,6 @@ export class PublicCauseWidget extends React.Component<Props, State> {
     }
 
     private async _handleDonate() {
-        // TODO: Handle triggering the donate afterwards.
-        if (!this.props.isIdentityReady) {
-	    showAuth0Lock();
-            return;
-        }
-        
         this.setState({donationState: OpState.Loading});
         
         try {
@@ -129,7 +120,7 @@ export class PublicCauseWidget extends React.Component<Props, State> {
             currencyAmount.amount = this.state.donationAmount.getValue();
             currencyAmount.currency = this.props.cause.goal.currency;
             
-            await corePublicClient.createDonation(SESSION_ID, AUTH0_ACCESS_TOKEN, this.props.cause.id, currencyAmount);
+            await corePublicClient.createDonation(this.props.cause.id, currencyAmount);
             this.setState({donationState: OpState.Ready});
         } catch (e) {
             if (isLocal(config.ENV)) {
@@ -141,12 +132,6 @@ export class PublicCauseWidget extends React.Component<Props, State> {
     }
 
     private _handleShare() {
-        // TODO: Handle triggering the share afterwards.
-        if (!this.props.isIdentityReady) {
-	    showAuth0Lock();
-            return;
-        }
-        
         const href = `${window.location.protocol}//${window.location.hostname}:${window.location.port}${causeLink(this.props.cause)}`;
 
         this.setState({shareState: OpState.Loading});
@@ -173,7 +158,7 @@ export class PublicCauseWidget extends React.Component<Props, State> {
             }
 
             try {
-                await corePublicClient.createShare(SESSION_ID, AUTH0_ACCESS_TOKEN, this.props.cause.id, response.post_id as string);
+                await corePublicClient.createShare(this.props.cause.id, response.post_id as string);
                 this.setState({shareState: OpState.Ready});
             } catch (e) {
                 if (isLocal(config.ENV)) {

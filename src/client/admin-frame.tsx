@@ -1,11 +1,8 @@
 import * as React from 'react'
 import { Link } from 'react-router'
 
-import { User } from '@neoncity/identity-sdk-js'
-
 
 interface Props {
-    user: User;
     children: React.ReactNode;
 }
 

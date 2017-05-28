@@ -1,20 +1,20 @@
 import * as React from 'react'
 import { Link } from 'react-router'
 
-import { ShareForUser } from '@neoncity/core-sdk-js'
+import { ShareForSession } from '@neoncity/core-sdk-js'
 
 import { causeLink } from './utils'
 
 
 interface Props {
-    shareForUser: ShareForUser;
+    shareForSession: ShareForSession;
 }
 
 
-export class ShareForUserWidget extends React.Component<Props, null> {
+export class ShareForSessionWidget extends React.Component<Props, null> {
     render() {
-	const share = this.props.shareForUser;
-	const cause = this.props.shareForUser.forCause;
+	const share = this.props.shareForSession;
+	const cause = this.props.shareForSession.forCause;
 	const timeCreated = share.timeCreated.toString();
 	
 	return (
