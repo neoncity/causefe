@@ -180,7 +180,7 @@ async function main() {
 	});
         app.use(webpackDevMiddleware);
         app.get('*', [newAuthInfoMiddleware(AuthInfoLevel.None), newSessionMiddleware(SessionLevel.None, config.ENV, identityClient)], wrap(async (req: CauseFeRequest, res: express.Response) => {
-	    if (req.authInfo == null) {
+	    if (req.authInfo == null || req.session == null) {
 		try {
 		    const [authInfo, session] = await identityClient.getOrCreateSession();
 		    req.authInfo = authInfo;
