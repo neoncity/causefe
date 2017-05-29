@@ -154,6 +154,23 @@ async function main() {
 
 	    res.redirect(redirectInfo.state.path);
         }));
+	app.get('/real/logout', [newAuthInfoMiddleware(AuthInfoLevel.SessionIdAndAuth0AccessToken), newSessionMiddleware(SessionLevel.SessionAndUser, config.ENV, identityClient)], wrap(async (req: CauseFeRequest, res: express.Response) => {
+	    try {
+		await identityClient.withAuthInfo(req.authInfo as AuthInfo).expireSession();
+	    } catch (e) {
+		console.log(`Session creation error - ${e.toString()}`);
+	    	if (isLocal(config.ENV)) {
+		    console.log(e);
+	    	}
+		
+	    	res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+	    	res.end();
+	    	return;		
+	    }
+	    
+	    res.clearCookie(AuthInfo.CookieName, {httpOnly: true, secure: !isLocal(config.ENV)});
+	    res.redirect('/');
+	}));
 	app.get('/real/client/client.js', [newAuthInfoMiddleware(AuthInfoLevel.SessionId), newSessionMiddleware(SessionLevel.Session, config.ENV, identityClient)], (req: CauseFeRequest, res: express.Response) => {
 	    const jsIndexTemplate = (webpackDevMiddleware as any).fileSystem.readFileSync(path.join(process.cwd(), 'out', 'client', 'client.js'), 'utf-8');
 	    const jsIndex = Mustache.render(jsIndexTemplate, _buildTemplateData(req.session as Session));
