@@ -34,6 +34,10 @@ module.exports = {
 	    ],
 	    loader: ExtractTextPlugin.extract('style', 'css?sourceMap!less')
 	}, {
+	    test: /\.text$/,
+	    include: [path.resolve(__dirname, 'src', 'client')],
+	    loader: 'json'
+	}, {
 	    test: /\.html$/,
 	    include: [path.resolve(__dirname, 'src', 'client', 'static')],
 	    loader: 'file?name=[name].[ext]'
@@ -54,7 +58,8 @@ module.exports = {
     resolve: {
         extensions: ['', '.js', '.ts', '.tsx', '.css', '.less'],
         root: [
-            path.resolve(__dirname, 'src', 'client')
+            path.resolve(__dirname, 'src', 'client'),
+            path.resolve(__dirname, 'src', 'shared'),	    
         ]
     },
     devtool: 'source-map'

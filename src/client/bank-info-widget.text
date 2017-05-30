@@ -1,0 +1,10 @@
+{
+    "modified": {
+	"en": "Modified",
+	"ro": "Modificat"
+    },
+    "invalidIBAN": {
+	"en": "Invalid IBAN value",
+	"ro": "IBAN gresit"
+    }
+}

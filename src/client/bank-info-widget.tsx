@@ -3,7 +3,10 @@ import * as React from 'react'
 import { IBAN, IBANMarshaller } from '@neoncity/common-js/iban'
 import { BankInfo } from '@neoncity/core-sdk-js'
 
+import { LANG } from './from-server'
 import { UserInput, UserInputMaster } from './user-input'
+
+const text = require('./bank-info-widget.text')
 
 
 interface BankInfoWidgetProps {
@@ -34,12 +37,12 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
         const ibansRegion = this.state.ibans.map((iban, ibanIndex) => {
             let modifiedRegion = <span></span>;
             if (iban.isModified()) {
-                modifiedRegion = <span>Modified</span>;
+                modifiedRegion = <span>{text.modified[LANG]}</span>;
             }
             
             let warningRegion = <span></span>;
             if (iban.isInvalid()) {
-                warningRegion = <span>Invalid IBAN value</span>;
+                warningRegion = <span>{text.invalidIBAN[LANG]}</span>;
             }
             
             return (
