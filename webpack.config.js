@@ -16,7 +16,7 @@ module.exports = {
     },
     module: {
         loaders: [{
-            test: /\.tsx?$/,
+            test: /\.(tsx?|text)$/,
             include: [
                 path.resolve(__dirname, 'src', 'client'),
                 path.resolve(__dirname, 'src', 'shared')
@@ -33,10 +33,6 @@ module.exports = {
 		path.resolve(__dirname, 'node_modules')
 	    ],
 	    loader: ExtractTextPlugin.extract('style', 'css?sourceMap!less')
-	}, {
-	    test: /\.text$/,
-	    include: [path.resolve(__dirname, 'src', 'client')],
-	    loader: 'json'
 	}, {
 	    test: /\.html$/,
 	    include: [path.resolve(__dirname, 'src', 'client', 'static')],

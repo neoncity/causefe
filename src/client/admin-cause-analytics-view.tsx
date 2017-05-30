@@ -5,8 +5,11 @@ import { CauseAnalytics } from '@neoncity/core-sdk-js'
 import { isLocal } from '@neoncity/common-js'
 
 import * as config from './config'
+import { LANG } from './from-server'
 import { corePrivateClient } from './services'
 import { AdminCauseAnalyticsState, OpState, StatePart } from './store'
+
+import * as text from'./admin-cause-analytics-view-text'
 
 
 interface Props {
@@ -44,22 +47,22 @@ class _AdminCauseAnalyticsView extends React.Component<Props, undefined> {
     
     render() {
         if (this.props.isLoading) {
-            return <div>Loading ...</div>;
+            return <div>{text.loading[LANG]}</div>;
 	} else if (this.props.isFailed) {
-	    return <div>Failed {this.props.errorMessage}</div>;
+	    return <div>{text.loadingFailed[LANG]}</div>;
 	} else if (!this.props.hasCause) {
-            return <div>There is no cause. Please create one to see analytics</div>;
+            return <div>{text.noCause[LANG]}</div>;
 	} else {
             const causeAnalytics = this.props.causeAnalytics as CauseAnalytics;
             
             return (
                 <div>
-                    <p>Days left: {causeAnalytics.daysLeft}</p>
-                    <p>Donors count: {causeAnalytics.donorsCount}</p>
-                    <p>Donations count: {causeAnalytics.donationsCount}</p>
-                    <p>Donatin amount: {causeAnalytics.amountDonated.amount} {causeAnalytics.amountDonated.currency.toString()}</p>
-                    <p>Sharers count: {causeAnalytics.sharersCount}</p>
-                    <p>Shares count: {causeAnalytics.sharesCount}</p>
+                    <p>{text.daysLeft[LANG](causeAnalytics.daysLeft)}</p>
+                    <p>{text.donorsCount[LANG](causeAnalytics.donorsCount)}</p>
+                    <p>{text.donationsCount[LANG](causeAnalytics.donationsCount)}</p>
+                    <p>{text.donatedAmount[LANG](causeAnalytics.amountDonated.amount, causeAnalytics.amountDonated.currency.toString())}</p>
+                    <p>{text.sharersCount[LANG](causeAnalytics.sharersCount)}</p>
+                    <p>{text.sharesCount[LANG](causeAnalytics.sharesCount)}</p>
                 </div>
             );
         }
