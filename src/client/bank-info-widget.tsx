@@ -6,7 +6,7 @@ import { BankInfo } from '@neoncity/core-sdk-js'
 import { LANG } from './from-server'
 import { UserInput, UserInputMaster } from './user-input'
 
-import * as text from './bank-info-widget-text'
+import * as text from './bank-info-widget.text'
 
 
 interface BankInfoWidgetProps {

@@ -9,7 +9,7 @@ import { LANG } from './from-server'
 import { corePrivateClient } from './services'
 import { AdminCauseAnalyticsState, OpState, StatePart } from './store'
 
-import * as text from'./admin-cause-analytics-view-text'
+import * as text from'./admin-cause-analytics-view.text'
 
 
 interface Props {

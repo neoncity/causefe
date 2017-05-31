@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import { LANG } from './from-server'
 
-import * as text from './admin-account-view-text'
+import * as text from './admin-account-view.text'
 
 
 interface Props {
