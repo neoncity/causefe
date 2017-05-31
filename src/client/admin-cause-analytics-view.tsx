@@ -9,7 +9,8 @@ import { LANG } from './from-server'
 import { corePrivateClient } from './services'
 import { AdminCauseAnalyticsState, OpState, StatePart } from './store'
 
-import * as text from'./admin-cause-analytics-view.text'
+import * as text from './admin-cause-analytics-view.text'
+import * as commonText from './common.text'
 
 
 interface Props {
@@ -47,9 +48,9 @@ class _AdminCauseAnalyticsView extends React.Component<Props, undefined> {
     
     render() {
         if (this.props.isLoading) {
-            return <div>{text.loading[LANG]}</div>;
+            return <div>{commonText.loading[LANG]}</div>;
 	} else if (this.props.isFailed) {
-	    return <div>{text.loadingFailed[LANG]}</div>;
+	    return <div>{commonText.loadingFailed[LANG]}</div>;
 	} else if (!this.props.hasCause) {
             return <div>{text.noCause[LANG]}</div>;
 	} else {

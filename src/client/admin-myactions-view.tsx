@@ -6,9 +6,13 @@ import { isLocal } from '@neoncity/common-js'
 
 import * as config from './config'
 import { DonationForSessionWidget } from './donation-for-session-widget'
+import { LANG } from './from-server'
 import { corePrivateClient } from './services'
 import { ShareForSessionWidget } from './share-for-session-widget'
 import { AdminMyActionsState, OpState, StatePart } from './store'
+
+import * as text from './admin-myactions-view.text'
+import * as commonText from './common.text'
 
 
 interface Props {
@@ -41,9 +45,9 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
     
     render() {
 	if (this.props.isLoading) {
-	    return <div>Loading ...</div>;
+	    return <div>{commonText.loading[LANG]}</div>;
 	} else if (this.props.isFailed) {
-	    return <div>Failed {this.props.errorMessage}</div>;
+	    return <div>{commonText.loadingFailed[LANG]}</div>;
 	} else {
 	    const donationWidgets = (this.props.userActionsOverview as UserActionsOverview)
 		  .donations
@@ -58,9 +62,9 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
 
 	    return (
                 <div>
-		    <h6>Donations</h6>
+		    <h6>{text.donations[LANG]}</h6>
 		    {donationWidgets}
-		    <h6>Shares</h6>
+		    <h6>{text.shares[LANG]}</h6>
 		    {shareWidgets}
 		</div>
 	    );
