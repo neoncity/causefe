@@ -2,8 +2,10 @@ import * as React from 'react'
 import { Link } from 'react-router'
 
 
-import { SESSION } from './from-server'
+import { LANG, SESSION } from './from-server'
 import { UserInfoWidget } from './user-info-widget'
+
+import * as text from './app-frame.text'
 
 
 interface Props {
@@ -19,10 +21,10 @@ export class AppFrame extends React.Component<Props, undefined> {
         if (!SESSION.hasUser()) {
             return (
                 <div>
-                    <div>This is the app frame</div>
+                    <div>{text.viewTitle[LANG]}</div>
                     <div>
-                        <Link to="/">Home</Link>
-                        <a href="/admin">Admin</a>
+                        <Link to="/">{text.home[LANG]}</Link>
+                        <a href="/admin">{text.admin[LANG]}</a>
                         <UserInfoWidget />
                     </div>
                     {this.props.children}
@@ -31,10 +33,10 @@ export class AppFrame extends React.Component<Props, undefined> {
         } else {
             return (
                 <div>
-                    <div>This is the app frame</div>
+                    <div>{text.viewTitle[LANG]}</div>
                     <div>
-                        <Link to="/">Home</Link>
-                        <Link to="/admin">Admin</Link>
+                        <Link to="/">{text.home[LANG]}</Link>
+                        <Link to="/admin">{text.admin[LANG]}</Link>
                         <UserInfoWidget />
                     </div>
                     {this.props.children}
