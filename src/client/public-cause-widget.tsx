@@ -6,11 +6,14 @@ import { isLocal } from '@neoncity/common-js'
 import { CurrencyAmount, PublicCause } from '@neoncity/core-sdk-js'
 
 import * as config from './config'
-import { OpState } from './store'
+import { LANG } from './from-server'
 import { ImageGalleryWidget } from './image-gallery-widget'
 import { corePublicClient } from './services'
+import { OpState } from './store'
 import { UserInput, UserInputMaster } from './user-input'
 import { causeLink } from './utils'
+
+import * as text from './public-cause-widget.text'
 
 
 interface Props {
@@ -45,26 +48,26 @@ export class PublicCauseWidget extends React.Component<Props, State> {
         let donationResult = <span></span>;
         switch (this.state.donationState) {
         case OpState.Loading:
-            donationResult = <span>Donating</span>;
+            donationResult = <span>{this.donating[LANG]}</span>;
             break;
         case OpState.Ready:
-            donationResult = <span>Ready</span>;
+            donationResult = <span>{this.ready[LANG]}</span>;
             break;
         case OpState.Failed:
-            donationResult = <span>Failed</span>;
+            donationResult = <span>{this.failed[LANG]}</span>;
             break;
         } 
         
         let shareResult = <span></span>;
         switch (this.state.shareState) {
         case OpState.Loading:
-            shareResult = <span>Sharing</span>;
+            shareResult = <span>{this.sharing[LANG]}</span>;
             break;
         case OpState.Ready:
-            shareResult = <span>Ready</span>;
+            shareResult = <span>{this.ready[LANG]}</span>;
             break;
         case OpState.Failed:
-            shareResult = <span>Failed</span>;
+            shareResult = <span>{this.failed[LANG]}</span>;
             break;
         }
         
@@ -95,13 +98,13 @@ export class PublicCauseWidget extends React.Component<Props, State> {
 		    type="button" 
 		    disabled={!allValid}
 		    onClick={this._handleDonate.bind(this)}>
-		    Donate
+                    {text.donate[LANG]}
 		</button>
                 {donationResult}
                 <button
 		    type="button"
 		    onClick={this._handleShare.bind(this)}>
-		    Share
+                    {text.share[LANG]}
 		</button>
                 {shareResult}
 	    </div>
