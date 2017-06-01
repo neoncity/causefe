@@ -2,8 +2,10 @@ import * as React from 'react'
 
 import { User } from '@neoncity/identity-sdk-js'
 
-import { SESSION } from './from-server'
+import { LANG, SESSION } from './from-server'
 import { showAuth0Lock } from './auth0'
+
+import * as text from './user-info-widget.text'
 
 
 interface Props {

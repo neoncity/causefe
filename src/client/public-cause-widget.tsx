@@ -48,26 +48,26 @@ export class PublicCauseWidget extends React.Component<Props, State> {
         let donationResult = <span></span>;
         switch (this.state.donationState) {
         case OpState.Loading:
-            donationResult = <span>{this.donating[LANG]}</span>;
+            donationResult = <span>{text.donating[LANG]}</span>;
             break;
         case OpState.Ready:
-            donationResult = <span>{this.ready[LANG]}</span>;
+            donationResult = <span>{text.ready[LANG]}</span>;
             break;
         case OpState.Failed:
-            donationResult = <span>{this.failed[LANG]}</span>;
+            donationResult = <span>{text.failed[LANG]}</span>;
             break;
         } 
         
         let shareResult = <span></span>;
         switch (this.state.shareState) {
         case OpState.Loading:
-            shareResult = <span>{this.sharing[LANG]}</span>;
+            shareResult = <span>{text.sharing[LANG]}</span>;
             break;
         case OpState.Ready:
-            shareResult = <span>{this.ready[LANG]}</span>;
+            shareResult = <span>{text.ready[LANG]}</span>;
             break;
         case OpState.Failed:
-            shareResult = <span>{this.failed[LANG]}</span>;
+            shareResult = <span>{text.failed[LANG]}</span>;
             break;
         }
         
