@@ -5,9 +5,12 @@ import { PublicCause } from '@neoncity/core-sdk-js'
 import { isLocal } from '@neoncity/common-js'
 
 import * as config from './config'
+import { LANG } from './from-server'
 import { PublicCauseWidget } from './public-cause-widget'
 import { corePublicClient } from './services'
 import { OpState, PublicCausesState, StatePart } from './store'
+
+import * as commonText from './common.text'
 
 
 interface HomeViewProps {
@@ -40,9 +43,9 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
     
     render() {
 	if (this.props.isLoading) {
-	    return <div>Loading ...</div>;
+	    return <div>{commonText.loading[LANG]}</div>;
 	} else if (this.props.isFailed) {
-	    return <div>Failed {this.props.errorMessage}</div>;
+	    return <div>{commonText.loadingFailed[LANG]}</div>;
 	} else {
 	    const causes = (this.props.causes as PublicCause[]).map(
 	        c => <PublicCauseWidget key={c.id} cause={c} />
