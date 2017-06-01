@@ -10,3 +10,13 @@ export const loadingFailed: Message = {
     en: "Loading failed",
     ro: "Încarcarea a eșuat"
 };
+
+export const add: Message = {
+    en: "Add",
+    ro: "Adaugă"
+};
+
+export const remove: Message = {
+    en: "Remove",
+    ro: "Șterge"
+};

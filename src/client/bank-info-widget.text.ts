@@ -21,13 +21,3 @@ export const ibanInputPlaceholder: MessageWith0Arg = {
     ro: "IBAN-ul dumneavoastră"
 };
 
-export const add: Message = {
-    en: "Add",
-    ro: "Adaugă"
-};
-
-export const remove: Message = {
-    en: "Remove",
-    ro: "Șterge"
-};
-

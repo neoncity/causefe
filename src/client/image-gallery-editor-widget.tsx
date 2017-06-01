@@ -5,8 +5,12 @@ import { isLocal } from '@neoncity/common-js/env'
 import { Picture, PictureSet } from '@neoncity/core-sdk-js'
 
 import * as config from './config'
-import './image-gallery-editor-widget.less'
+import { LANG } from './from-server'
 import { UserInput, UserInputMaster } from './user-input'
+
+import * as commonText from './common.text'
+import './image-gallery-editor-widget.less'
+import * as text from './image-gallery-editor-widget.text'
 
 
 interface Props {
@@ -39,12 +43,12 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
         const picturesRegion = this.state.pictures.map((picture, pictureIndex) => {
             let modifiedRegion = <span></span>;
             if (picture.isModified()) {
-                modifiedRegion = <span>Modified</span>;
+                modifiedRegion = <span>{text.modified[LANG]}</span>;
             }
 
             let warningRegion = <span></span>;
             if (picture.isInvalid()) {
-                warningRegion = <span>Invalid image</span>;
+                warningRegion = <span>{text.invalidImage[LANG]}</span>;
             }
 
             return (
@@ -54,7 +58,7 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
                     <button
 		        type="button"
 		        onClick={_ => this._handleRemovePicture(pictureIndex)}>
-		    Remove
+		    {commonText.remove[LANG]}
 		    </button>
                 </p>
             );
@@ -62,17 +66,17 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
 
         let selectPictureErrorRegion = <span></span>;
         if (this.state.hasSelectPictureError) {
-            selectPictureErrorRegion = <span>There was an error adding the picture</span>;
+            selectPictureErrorRegion = <span>{text.errorAddingImage[LANG]}</span>;
         }
 
         return (
             <div>
-                <p>Pictures</p>
+                <p>{text.title[LANG]}</p>
                 <button
                     type="button"
 	            disabled={this.state.pictures.length >= PictureSet.MAX_NUMBER_OF_PICTURES}
 	            onClick={this._handleAddPicture.bind(this)}>
-		    Add
+                    {commonText.add[LANG]}
 	        </button>
                 {selectPictureErrorRegion}
                 {picturesRegion}

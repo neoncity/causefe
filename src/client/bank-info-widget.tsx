@@ -7,6 +7,7 @@ import { LANG } from './from-server'
 import { UserInput, UserInputMaster } from './user-input'
 
 import * as text from './bank-info-widget.text'
+import * as commonText from './common.text'
 
 
 interface BankInfoWidgetProps {
@@ -53,7 +54,7 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
                         onChange={e => this._handleIBANChange(ibanIndex, e)}
                         placeholder={text.ibanInputPlaceholder[LANG]} />
                     {modifiedRegion} {warningRegion}
-                    <button type="button" onClick={_ => this._handleRemoveIBAN(ibanIndex)}>{text.remove[LANG]}</button>
+                    <button type="button" onClick={_ => this._handleRemoveIBAN(ibanIndex)}>{commonText.remove[LANG]}</button>
                 </p>
             );
         });
@@ -65,7 +66,7 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
                     disabled={this.state.ibans.length > BankInfo.MAX_NUMBER_OF_IBANS}
                     type="button"
                     onClick={this._handleAddIBAN.bind(this)}>
-                    {text.add[LANG]}
+                    {commonText.add[LANG]}
                 </button>
                 {ibansRegion}
             </div>
