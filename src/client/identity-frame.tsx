@@ -1,7 +1,9 @@
 import * as React from 'react'
 
 import { showAuth0Lock } from './auth0'
-import { SESSION } from './from-server'
+import { LANG, SESSION } from './from-server'
+
+import * as text from './identity-frame.text'
 
 
 interface Props {
@@ -18,7 +20,7 @@ export class IdentityFrame extends React.Component<Props, undefined> {
     
     render() {
         if (!SESSION.hasUser()) {
-	    return <div>Should be logged in!</div>;
+	    return <div>{text.shouldBeLoggedIn[LANG]}</div>;
 	} else {
 	    return <div>{this.props.children}</div>;
 	}
