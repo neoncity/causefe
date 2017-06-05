@@ -33,13 +33,14 @@ async function main() {
     const sessionMarshaller = new (MarshalFrom(Session))();
     const app = express();
 
+    app.use('/real/auth-flow', newAuthFlowRouter(identityClient));
+    
     if (isLocal(config.ENV)) {
         const webpackDevMiddleware = theWebpackDevMiddleware(webpack(webpackConfig), {
 	    publicPath: webpackConfig.output.publicPath,
 	    serverSideRender: false
         });
 
-	app.use('/real/auth-flow', newAuthFlowRouter(identityClient));
 	app.get('/real/client/client.js', [newAuthInfoMiddleware(AuthInfoLevel.SessionId), newSessionMiddleware(SessionLevel.Session, config.ENV, identityClient)], (req: CauseFeRequest, res: express.Response) => {
 	    const jsIndexTemplate = (webpackDevMiddleware as any).fileSystem.readFileSync(path.join(process.cwd(), 'out', 'client', 'client.js'), 'utf-8');
 	    const jsIndex = Mustache.render(jsIndexTemplate, _buildTemplateData(req.session as Session));
@@ -80,7 +81,6 @@ async function main() {
             res.end();
         }));
     } else {
-	app.use('/real/auth-flow', newAuthFlowRouter(identityClient));
         // const jsIndexTemplate = fs.readFileSync(path.join(process.cwd(), 'out', 'client', 'client.js'), 'utf-8');
         // const htmlIndexTemplate = fs.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html'), 'utf-8');
 
