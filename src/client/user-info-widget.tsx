@@ -2,8 +2,9 @@ import * as React from 'react'
 
 import { User } from '@neoncity/identity-sdk-js'
 
-import { LANG, SESSION } from './from-server'
 import { showAuth0Lock } from './auth0'
+import * as config from './config'
+import { LANG, SESSION } from './from-server'
 
 import * as text from './user-info-widget.text'
 
@@ -22,7 +23,7 @@ export class UserInfoWidget extends React.Component<Props, undefined> {
     }
 
     private _handleLogoutClick() {
-        location.replace('/real/logout');
+        location.replace(config.LOGOUT_ROUTE);
     }
 
     private _handleLoginClick() {

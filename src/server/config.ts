@@ -9,6 +9,7 @@ export const IDENTITY_SERVICE_HOST:string = process.env.IDENTITY_SERVICE_HOST;
 export const CORE_SERVICE_HOST:string = process.env.CORE_SERVICE_HOST;
 export const IDENTITY_SERVICE_EXTERNAL_HOST:string = process.env.IDENTITY_SERVICE_EXTERNAL_HOST;
 export const CORE_SERVICE_EXTERNAL_HOST:string = process.env.CORE_SERVICE_EXTERNAL_HOST;
+export const LOGOUT_ROUTE:string = '/real/auth-flow/logout';
 
 export let AUTH0_CLIENT_ID: string;
 export let AUTH0_CLIENT_SECRET: string;

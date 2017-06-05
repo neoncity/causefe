@@ -5,8 +5,7 @@ import 'isomorphic-fetch'
 import * as HttpStatus from 'http-status-codes'
 import Mustache = require('mustache')
 import * as path from 'path'
-import { MarshalFrom, MarshalWith, OptionalOf } from 'raynor'
-import * as url from 'url'
+import { MarshalFrom } from 'raynor'
 import * as webpack from 'webpack'
 import * as theWebpackDevMiddleware from 'webpack-dev-middleware'
 
@@ -17,8 +16,6 @@ import {
     newSessionMiddleware,
     SessionLevel } from '@neoncity/common-server-js'
 import {
-    Auth0AccessTokenMarshaller,
-    Auth0AuthorizationCodeMarshaller,
     AuthInfo,
     IdentityClient,
     newIdentityClient,
@@ -26,41 +23,13 @@ import {
 
 import { CauseFeRequest } from './causefe-request'
 import * as config from './config'
-import { PostLoginRedirectInfo, PostLoginRedirectInfoMarshaller } from '../shared/auth-flow'
-
-
-export class Auth0AuthorizeRedirectInfo {
-    @MarshalWith(OptionalOf(Auth0AuthorizationCodeMarshaller), 'code')
-    authorizationCode: string|null;
-
-    @MarshalWith(PostLoginRedirectInfoMarshaller)
-    state: PostLoginRedirectInfo;
-}
-
-
-export class Auth0TokenExchangeResult {
-    @MarshalWith(Auth0AccessTokenMarshaller, 'access_token')
-    accessToken: string;
-}
+import { newAuthFlowRouter } from './auth-flow-router'
 
 
 async function main() {
-    const AUTHORIZE_OPTIONS: RequestInit = {
-	method: 'POST',
-	mode: 'cors',
-	cache: 'no-cache',
-	redirect: 'error',
-	referrer: 'client',
-	headers: {
-	    'Content-Type': 'application/json'
-	}
-    };
-
     const webpackConfig = require('../../webpack.config.js');
     const identityClient: IdentityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST);
     const authInfoMarshaller = new (MarshalFrom(AuthInfo))();
-    const auth0TokenExchangeResultMarshaller = new (MarshalFrom(Auth0TokenExchangeResult))();
-    const auth0AuthorizeRedirectInfoMarshaller = new (MarshalFrom(Auth0AuthorizeRedirectInfo))();
     const sessionMarshaller = new (MarshalFrom(Session))();
     const app = express();
 
@@ -70,107 +39,7 @@ async function main() {
 	    serverSideRender: false
         });
 
-        app.get('/real/login', [newAuthInfoMiddleware(AuthInfoLevel.SessionId), newSessionMiddleware(SessionLevel.Session, config.ENV, identityClient)], wrap(async (req: CauseFeRequest, res: express.Response) => {
-	    let redirectInfo: Auth0AuthorizeRedirectInfo|null = null;
-	    try {
-	    	redirectInfo = auth0AuthorizeRedirectInfoMarshaller.extract(url.parse(req.url, true).query);
-	    } catch (e) {
-	    	console.log(`Auth error - ${e.toString()}`);
-	    	if (isLocal(config.ENV)) {
-                    console.log(e);
-	    	}
-		
-	    	res.status(HttpStatus.INTERNAL_SERVER_ERROR);
-	    	res.end();
-	    	return;
-	    }
-	    
-	    const options = (Object as any).assign({}, AUTHORIZE_OPTIONS, {
-		body: JSON.stringify({
-		    grant_type: 'authorization_code',
-		    client_id: config.AUTH0_CLIENT_ID,
-		    client_secret: config.AUTH0_CLIENT_SECRET,
-		    code: redirectInfo.authorizationCode,
-		    redirect_uri: config.AUTH0_CALLBACK_URI
-		})
-	    });
-
-	    let rawResponse: Response;
-	    try {
-		rawResponse = await fetch(`https://${config.AUTH0_DOMAIN}/oauth/token`, options);
-	    } catch (e) {
-		console.log(`Auth service error - ${e.toString()}`);
-	    	if (isLocal(config.ENV)) {
-                    console.log(e);
-	    	}
-		
-	    	res.status(HttpStatus.INTERNAL_SERVER_ERROR);
-	    	res.end();
-	    	return;
-	    }
-
-	    let auth0TokenExchangeResult: Auth0TokenExchangeResult|null = null;
-	    if (rawResponse.ok) {
-		try {
-		    const jsonResponse = await rawResponse.json();
-		    auth0TokenExchangeResult = auth0TokenExchangeResultMarshaller.extract(jsonResponse);
-		} catch (e) {
-		    console.log(`Deserialization error - ${e.toString()}`);
-	    	    if (isLocal(config.ENV)) {
-			console.log(e);
-	    	    }
-		
-	    	    res.status(HttpStatus.INTERNAL_SERVER_ERROR);
-	    	    res.end();
-	    	    return;
-		}
-	    } else {
-		console.log('Auth error');
-	    	res.status(HttpStatus.INTERNAL_SERVER_ERROR);
-	    	res.end();
-	    	return;
-	    }
-
-	    let authInfo = new AuthInfo((req.authInfo as AuthInfo).sessionId, auth0TokenExchangeResult.accessToken);
-
-	    try {
-		authInfo = (await identityClient.withAuthInfo(authInfo).getOrCreateUserOnSession())[0];
-	    } catch (e) {
-		console.log(`Session creation error - ${e.toString()}`);
-	    	if (isLocal(config.ENV)) {
-		    console.log(e);
-	    	}
-		
-	    	res.status(HttpStatus.INTERNAL_SERVER_ERROR);
-	    	res.end();
-	    	return;		
-	    }
-	    
-	    res.cookie(AuthInfo.CookieName, authInfoMarshaller.pack(authInfo), {
-		expires: (req.session as Session).timeExpires,
-		httpOnly: true,
-		secure: !isLocal(config.ENV)
-	    });
-
-	    res.redirect(redirectInfo.state.path);
-        }));
-	app.get('/real/logout', [newAuthInfoMiddleware(AuthInfoLevel.SessionIdAndAuth0AccessToken), newSessionMiddleware(SessionLevel.SessionAndUser, config.ENV, identityClient)], wrap(async (req: CauseFeRequest, res: express.Response) => {
-	    try {
-		await identityClient.withAuthInfo(req.authInfo as AuthInfo).expireSession();
-	    } catch (e) {
-		console.log(`Session creation error - ${e.toString()}`);
-	    	if (isLocal(config.ENV)) {
-		    console.log(e);
-	    	}
-		
-	    	res.status(HttpStatus.INTERNAL_SERVER_ERROR);
-	    	res.end();
-	    	return;		
-	    }
-	    
-	    res.clearCookie(AuthInfo.CookieName, {httpOnly: true, secure: !isLocal(config.ENV)});
-	    res.redirect('/');
-	}));
+	app.use('/real/auth-flow', newAuthFlowRouter(identityClient));
 	app.get('/real/client/client.js', [newAuthInfoMiddleware(AuthInfoLevel.SessionId), newSessionMiddleware(SessionLevel.Session, config.ENV, identityClient)], (req: CauseFeRequest, res: express.Response) => {
 	    const jsIndexTemplate = (webpackDevMiddleware as any).fileSystem.readFileSync(path.join(process.cwd(), 'out', 'client', 'client.js'), 'utf-8');
 	    const jsIndex = Mustache.render(jsIndexTemplate, _buildTemplateData(req.session as Session));
@@ -211,6 +80,7 @@ async function main() {
             res.end();
         }));
     } else {
+	app.use('/real/auth-flow', newAuthFlowRouter(identityClient));
         // const jsIndexTemplate = fs.readFileSync(path.join(process.cwd(), 'out', 'client', 'client.js'), 'utf-8');
         // const htmlIndexTemplate = fs.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html'), 'utf-8');
 
