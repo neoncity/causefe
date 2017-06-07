@@ -22,7 +22,7 @@ import { newAuthFlowRouter } from './auth-flow-router'
 import { newBundlesRouter } from './bundles-router'
 import { CauseFeRequest } from './causefe-request'
 import * as config from './config'
-import { CompiledFiles, Files, WebpackDevFiles } from './files'
+import { CompiledBundles, Bundles, WebpackDevBundles } from './bundles'
 import { buildTemplateData } from './template-data'
 
 
@@ -32,15 +32,15 @@ async function main() {
     const authInfoMarshaller = new (MarshalFrom(AuthInfo))();
     const app = express();
 
-    const files: Files = isLocal(config.ENV)
-	  ? new WebpackDevFiles(theWebpackDevMiddleware(webpack(webpackConfig), {
-	      publicPath: '/', //webpackConfig.output.publicPath,
+    const bundles: Bundles = isLocal(config.ENV)
+	  ? new WebpackDevBundles(theWebpackDevMiddleware(webpack(webpackConfig), {
+	      publicPath: '/', //Different because we're mounting on /real/client to boot webpackConfig.output.publicPath,
 	      serverSideRender: false
           }))
-	  : new CompiledFiles();
+	  : new CompiledBundles();
 
     app.use('/real/auth-flow', newAuthFlowRouter(identityClient));
-    app.use('/real/client', newBundlesRouter(files, identityClient));
+    app.use('/real/client', newBundlesRouter(bundles, identityClient));
 
     app.get('*', [newAuthInfoMiddleware(AuthInfoLevel.None), newSessionMiddleware(SessionLevel.None, config.ENV, identityClient)], wrap(async (req: CauseFeRequest, res: express.Response) => {
 	if (req.authInfo == null || req.session == null) {
@@ -66,7 +66,7 @@ async function main() {
 	    }
 	}
 	    
-        const htmlIndex = Mustache.render(files.getHtmlIndexTemplate(), buildTemplateData(req.session as Session));
+        const htmlIndex = Mustache.render(bundles.getHtmlIndexTemplate(), buildTemplateData(req.session as Session));
 
         res.write(htmlIndex);
 	res.status(HttpStatus.OK);

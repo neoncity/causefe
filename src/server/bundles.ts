@@ -3,14 +3,14 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 
-export interface Files {
+export interface Bundles {
     getJsIndexTemplate(): string;
     getHtmlIndexTemplate(): string;
-    getOtherFilesMiddleware(): express.RequestHandler;
+    getOtherBundlesMiddleware(): express.RequestHandler;
 }
 
 
-export class WebpackDevFiles implements Files {
+export class WebpackDevBundles implements Bundles {
     private readonly _webpackDevMiddleware: any;
 
     constructor(webpackDevMiddleware: any) {
@@ -25,13 +25,13 @@ export class WebpackDevFiles implements Files {
 	return this._webpackDevMiddleware.fileSystem.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html'), 'utf-8');
     }
 
-    getOtherFilesMiddleware(): express.RequestHandler {
+    getOtherBundlesMiddleware(): express.RequestHandler {
 	return this._webpackDevMiddleware;
     }
 }
 
 
-export class CompiledFiles implements Files {
+export class CompiledBundles implements Bundles {
     private readonly _jsIndexTemplate: string;
     private readonly _htmlIndexTemplate: string;
 
@@ -48,7 +48,7 @@ export class CompiledFiles implements Files {
 	return this._htmlIndexTemplate;
     }
 
-    getOtherFilesMiddleware(): express.RequestHandler {
+    getOtherBundlesMiddleware(): express.RequestHandler {
 	return express.static(path.join(process.cwd(), 'out', 'client'));
     }
 }
