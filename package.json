@@ -1,6 +1,6 @@
 {
   "name": "@neoncity/causefe",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "The main frontend, where causes are managed and viewed.",
   "author": "NeonCity team",
   "scripts": {
