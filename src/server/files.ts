@@ -49,8 +49,6 @@ export class CompiledFiles implements Files {
     }
 
     getOtherFilesMiddleware(): express.RequestHandler {
-	return (_0: express.Request, _1: express.Response, next: express.NextFunction) => {
-	    next();
-	};
+	return express.static(path.join(process.cwd(), 'out', 'client'));
     }
 }
