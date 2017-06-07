@@ -1,10 +1,7 @@
 import { wrap } from 'async-middleware'
 import * as express from 'express'
-//import * as fs from 'fs'
-import 'isomorphic-fetch'
 import * as HttpStatus from 'http-status-codes'
 import Mustache = require('mustache')
-import * as path from 'path'
 import { MarshalFrom } from 'raynor'
 import * as webpack from 'webpack'
 import * as theWebpackDevMiddleware from 'webpack-dev-middleware'
@@ -21,9 +18,10 @@ import {
     newIdentityClient,
     Session } from '@neoncity/identity-sdk-js'
 
+import { newAuthFlowRouter } from './auth-flow-router'
 import { CauseFeRequest } from './causefe-request'
 import * as config from './config'
-import { newAuthFlowRouter } from './auth-flow-router'
+import { CompiledFiles, Files, WebpackDevFiles } from './files'
 
 
 async function main() {
@@ -33,71 +31,52 @@ async function main() {
     const sessionMarshaller = new (MarshalFrom(Session))();
     const app = express();
 
+    const files: Files = isLocal(config.ENV)
+	  ? new WebpackDevFiles(theWebpackDevMiddleware(webpack(webpackConfig), {
+	      publicPath: webpackConfig.output.publicPath,
+	      serverSideRender: false
+          }))
+	  : new CompiledFiles();
+
     app.use('/real/auth-flow', newAuthFlowRouter(identityClient));
-    
-    if (isLocal(config.ENV)) {
-        const webpackDevMiddleware = theWebpackDevMiddleware(webpack(webpackConfig), {
-	    publicPath: webpackConfig.output.publicPath,
-	    serverSideRender: false
-        });
 
-	app.get('/real/client/client.js', [newAuthInfoMiddleware(AuthInfoLevel.SessionId), newSessionMiddleware(SessionLevel.Session, config.ENV, identityClient)], (req: CauseFeRequest, res: express.Response) => {
-	    const jsIndexTemplate = (webpackDevMiddleware as any).fileSystem.readFileSync(path.join(process.cwd(), 'out', 'client', 'client.js'), 'utf-8');
-	    const jsIndex = Mustache.render(jsIndexTemplate, _buildTemplateData(req.session as Session));
-	    res.write(jsIndex);
-	    res.status(HttpStatus.OK);
-	    res.end();
-	});
-        app.use(webpackDevMiddleware);
-        app.get('*', [newAuthInfoMiddleware(AuthInfoLevel.None), newSessionMiddleware(SessionLevel.None, config.ENV, identityClient)], wrap(async (req: CauseFeRequest, res: express.Response) => {
-	    if (req.authInfo == null || req.session == null) {
-		try {
-		    const [authInfo, session] = await identityClient.getOrCreateSession();
-		    req.authInfo = authInfo;
-		    req.session = session;
+    app.get('/real/client/client.js', [newAuthInfoMiddleware(AuthInfoLevel.SessionId), newSessionMiddleware(SessionLevel.Session, config.ENV, identityClient)], (req: CauseFeRequest, res: express.Response) => {
+	const jsIndex = Mustache.render(files.getJsIndexTemplate(), _buildTemplateData(req.session as Session));
+	res.write(jsIndex);
+	res.status(HttpStatus.OK);
+	res.end();
+    });
+    app.use(files.getOtherFilesMiddleware());
+    app.get('*', [newAuthInfoMiddleware(AuthInfoLevel.None), newSessionMiddleware(SessionLevel.None, config.ENV, identityClient)], wrap(async (req: CauseFeRequest, res: express.Response) => {
+	if (req.authInfo == null || req.session == null) {
+	    try {
+		const [authInfo, session] = await identityClient.getOrCreateSession();
+		req.authInfo = authInfo;
+		req.session = session;
 
-		    res.cookie(AuthInfo.CookieName, authInfoMarshaller.pack(authInfo), {
-			expires: session.timeExpires,
-			httpOnly: true,
-			secure: !isLocal(config.ENV)
-		    });
-		} catch (e) {
-		    console.log(`Session creation error - ${e.toString()}`);
-	    	    if (isLocal(config.ENV)) {
-			console.log(e);
-	    	    }
-		    
-	    	    res.status(HttpStatus.INTERNAL_SERVER_ERROR);
-	    	    res.end();
-	    	    return;		    
-		}
+		res.cookie(AuthInfo.CookieName, authInfoMarshaller.pack(authInfo), {
+		    expires: session.timeExpires,
+		    httpOnly: true,
+		    secure: !isLocal(config.ENV)
+		});
+	    } catch (e) {
+		console.log(`Session creation error - ${e.toString()}`);
+	    	if (isLocal(config.ENV)) {
+		    console.log(e);
+	    	}
+		
+	    	res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+	    	res.end();
+	    	return;		    
 	    }
+	}
 	    
-	    const htmlIndexTemplate = (webpackDevMiddleware as any).fileSystem.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html'), 'utf-8');
-            const htmlIndex = Mustache.render(htmlIndexTemplate, _buildTemplateData(req.session as Session));
+        const htmlIndex = Mustache.render(files.getHtmlIndexTemplate(), _buildTemplateData(req.session as Session));
 
-            res.write(htmlIndex);
-	    res.status(HttpStatus.OK);
-            res.end();
-        }));
-    } else {
-        // const jsIndexTemplate = fs.readFileSync(path.join(process.cwd(), 'out', 'client', 'client.js'), 'utf-8');
-        // const htmlIndexTemplate = fs.readFileSync(path.join(process.cwd(), 'out', 'client', 'index.html'), 'utf-8');
-
-	// app.get('/real/client/client.js', (_: express.Request, res: express.Response) => {
-	//     const jsIndex = Mustache.render(jsIndexTemplate, _buildTemplateData());
-        //     res.write(jsIndex);
-	//     res.status(HttpStatus.OK);
-        //     res.end();
-        // });
-        // app.use('/real/client', express.static(path.join(process.cwd(), 'out', 'client')));
-        // app.get('*', [cookieParser(), newSessionMiddleware(config.ENV, identityClient)], wrap(async (_: CauseFeRequest, res: express.Response) => {
-        //     const htmlIndex = Mustache.render(htmlIndexTemplate, _buildTemplateData());
-        //     res.write(htmlIndex);
-	//     res.status(HttpStatus.OK);
-        //     res.end();
-        // }));
-    }
+        res.write(htmlIndex);
+	res.status(HttpStatus.OK);
+        res.end();
+    }));
 
     app.listen(config.PORT, config.ADDRESS, () => {
 	console.log(`Started ... ${config.ADDRESS}:${config.PORT}`);
