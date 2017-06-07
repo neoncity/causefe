@@ -9,4 +9,7 @@ export const SESSION:Session = sessionMarshaller.extract(JSON.parse('{{{ SESSION
 export let LANG:string = 'en';
 if (SESSION.hasUser()) {
     LANG = (SESSION.user as User).language;
+    if (LANG != 'en' && LANG != 'ro') {
+	LANG = 'en';
+    }
 }
