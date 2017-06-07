@@ -9,7 +9,7 @@ import { DonationForSessionWidget } from './donation-for-session-widget'
 import { LANG } from './from-server'
 import { corePrivateClient } from './services'
 import { ShareForSessionWidget } from './share-for-session-widget'
-import { AdminMyActionsState, OpState, StatePart } from './store'
+import { AdminMyActionsState, OpState, StatePart } from '../shared/store'
 
 import * as text from './admin-myactions-view.text'
 import * as commonText from './common.text'

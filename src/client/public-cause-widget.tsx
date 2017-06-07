@@ -9,7 +9,7 @@ import * as config from './config'
 import { LANG } from './from-server'
 import { ImageGalleryWidget } from './image-gallery-widget'
 import { corePublicClient } from './services'
-import { OpState } from './store'
+import { OpState } from '../shared/store'
 import { UserInput, UserInputMaster } from './user-input'
 import { causeLink } from './utils'
 

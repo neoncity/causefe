@@ -21,7 +21,7 @@ import { LANG } from './from-server'
 import { ImageGalleryEditorWidget } from './image-gallery-editor-widget'
 import './index.less'
 import { corePrivateClient, fileStorageService } from './services'
-import { AdminMyCauseState, OpState, StatePart } from './store'
+import { AdminMyCauseState, OpState, StatePart } from '../shared/store'
 import { UserInput, UserInputMaster } from './user-input'
 
 import * as text from './admin-mycause-view.text'

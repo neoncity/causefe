@@ -3,6 +3,10 @@ import * as express from 'express'
 import * as HttpStatus from 'http-status-codes'
 import Mustache = require('mustache')
 import { MarshalFrom } from 'raynor'
+import * as React from 'react'
+import * as ReactDOMServer from 'react-dom/server'
+import { Provider } from 'react-redux'
+import { match, RouterContext } from 'react-router'
 import * as webpack from 'webpack'
 import * as theWebpackDevMiddleware from 'webpack-dev-middleware'
 
@@ -19,11 +23,13 @@ import {
     Session } from '@neoncity/identity-sdk-js'
 
 import { newAuthFlowRouter } from './auth-flow-router'
+import { CompiledBundles, Bundles, WebpackDevBundles } from './bundles'
 import { newBundlesRouter } from './bundles-router'
 import { CauseFeRequest } from './causefe-request'
 import * as config from './config'
-import { CompiledBundles, Bundles, WebpackDevBundles } from './bundles'
 import { buildTemplateData } from './template-data'
+import { routesConfig } from '../shared/routes-config'
+import { store } from '../shared/store'
 
 
 async function main() {
@@ -65,12 +71,20 @@ async function main() {
 	    	return;		    
 	    }
 	}
-	    
-        const htmlIndex = Mustache.render(bundles.getHtmlIndexTemplate(), buildTemplateData(req.session as Session));
 
-        res.write(htmlIndex);
-	res.status(HttpStatus.OK);
-        res.end();
+	match({ routes: routesConfig, location: req.url}, (_err, _redirect, props) => {
+	    // TODO: handle err and redirect correctly.
+	    const coreHtml = ReactDOMServer.renderToString(
+		    <Provider store={store}>
+		        <RouterContext {...props} />
+		    </Provider>);
+
+            const htmlIndex = Mustache.render(bundles.getHtmlIndexTemplate(), buildTemplateData(req.session as Session));
+
+            res.write(htmlIndex + coreHtml);
+	    res.status(HttpStatus.OK);
+            res.end();	    
+	});
     }));
 
     app.listen(config.PORT, config.ADDRESS, () => {

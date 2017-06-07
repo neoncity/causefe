@@ -8,7 +8,7 @@ import * as config from './config'
 import { LANG } from './from-server'
 import { PublicCauseWidget } from './public-cause-widget'
 import { corePublicClient } from './services'
-import { OpState, PublicCausesState, StatePart } from './store'
+import { OpState, PublicCausesState, StatePart } from '../shared/store'
 
 import * as commonText from './common.text'
 

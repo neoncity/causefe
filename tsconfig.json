@@ -8,12 +8,13 @@
         "noUnusedParameters": true,
         "strictNullChecks": true,
         "sourceMap": true,
-        "declaration": true,
         "outDir": "./out/",
+	"jsx": "react",
         "experimentalDecorators": true
     },
     "include": [
+        "./src/client/**/*",
         "./src/server/**/*",
-        "./src/shared/**/*"	
+        "./src/shared/**/*"
     ]
 }

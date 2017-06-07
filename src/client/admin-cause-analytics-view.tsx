@@ -7,7 +7,7 @@ import { isLocal } from '@neoncity/common-js'
 import * as config from './config'
 import { LANG } from './from-server'
 import { corePrivateClient } from './services'
-import { AdminCauseAnalyticsState, OpState, StatePart } from './store'
+import { AdminCauseAnalyticsState, OpState, StatePart } from '../shared/store'
 
 import * as text from './admin-cause-analytics-view.text'
 import * as commonText from './common.text'

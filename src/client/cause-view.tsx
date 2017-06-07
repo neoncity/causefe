@@ -9,7 +9,7 @@ import * as config from './config'
 import { LANG } from './from-server'
 import { PublicCauseWidget } from './public-cause-widget'
 import { corePublicClient } from './services'
-import { OpState, PublicCauseDetailState, StatePart } from './store'
+import { OpState, PublicCauseDetailState, StatePart } from '../shared/store'
 import { causeLink } from './utils'
 
 import * as commonText from './common.text'
