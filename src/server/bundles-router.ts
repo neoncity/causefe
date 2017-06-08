@@ -16,7 +16,15 @@ export function newBundlesRouter(bundles: Bundles, identityClient: IdentityClien
 
     bundlesRouter.use(newAuthInfoMiddleware(AuthInfoLevel.SessionId));
     bundlesRouter.use(newSessionMiddleware(SessionLevel.Session, config.ENV, identityClient));
+    bundlesRouter.get('/client.js', (req: CauseFeRequest, res: express.Response) => {
+        const jsIndex = Mustache.render(bundles.getJsIndexTemplate(), config);
+        res.write(jsIndex);
+        res.status(HttpStatus.OK);
+        res.end();
+    });
+    
     bundlesRouter.use('/', bundles.getOtherBundlesMiddleware());
+
 
     return bundlesRouter;
 }

@@ -1,17 +1,17 @@
 import { createStore, combineReducers } from 'redux'
 
-import { Env } from '@neoncity/common-js'
 import { CauseAnalytics, PublicCause, PrivateCause, UserActionsOverview } from '@neoncity/core-sdk-js'
 import { Session } from '@neoncity/identity-sdk-js'
 
 
 export enum StatePart {
     Request = 0,
-    PublicCauses = 1,
-    PublicCauseDetail = 2,
-    AdminMyCause = 3,
-    AdminCauseAnalytics = 4,
-    AdminMyActions = 5
+    Services = 1,
+    PublicCauses = 2,
+    PublicCauseDetail = 3,
+    AdminMyCause = 4,
+    AdminCauseAnalytics = 5,
+    AdminMyActions = 6
 }
 
 
@@ -24,16 +24,12 @@ export enum OpState {
 
 
 export interface RequestState {
-    env: Env;
-    logoutRoute: string;
     session: Session;
     language: string;
 }
 
 
 const requestInitialState: RequestState = {
-    env: Env.Local,
-    logoutRoute: '',
     session: new Session(), // An empty session, not good for anything.
     language: 'en'
 };
@@ -41,6 +37,13 @@ const requestInitialState: RequestState = {
 
 function request(state=requestInitialState, _: any): RequestState {
     return state;
+}
+
+
+export interface ServicesState {
+    corePublicClient: CorePublicClient,
+    corePrivateClient: CorePrivateClient,
+    fileStorageClient: FileStorageClient
 }
 
 
