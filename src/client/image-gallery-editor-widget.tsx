@@ -9,7 +9,7 @@ import { LANG } from './from-server'
 import { UserInput, UserInputMaster } from './user-input'
 
 import * as commonText from './common.text'
-import './image-gallery-editor-widget.less'
+//import './image-gallery-editor-widget.less'
 import * as text from './image-gallery-editor-widget.text'
 
 

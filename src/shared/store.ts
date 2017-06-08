@@ -1,14 +1,17 @@
 import { createStore, combineReducers } from 'redux'
 
+import { Env } from '@neoncity/common-js'
 import { CauseAnalytics, PublicCause, PrivateCause, UserActionsOverview } from '@neoncity/core-sdk-js'
+import { Session } from '@neoncity/identity-sdk-js'
 
 
 export enum StatePart {
-    PublicCauses = 0,
-    PublicCauseDetail = 1,
-    AdminMyCause = 2,
-    AdminCauseAnalytics = 3,
-    AdminMyActions = 4
+    Request = 0,
+    PublicCauses = 1,
+    PublicCauseDetail = 2,
+    AdminMyCause = 3,
+    AdminCauseAnalytics = 4,
+    AdminMyActions = 5
 }
 
 
@@ -17,6 +20,27 @@ export enum OpState {
     Loading = 1,
     Ready = 2,
     Failed = 3
+}
+
+
+export interface RequestState {
+    env: Env;
+    logoutRoute: string;
+    session: Session;
+    language: string;
+}
+
+
+const requestInitialState: RequestState = {
+    env: Env.Local,
+    logoutRoute: '',
+    session: new Session(), // An empty session, not good for anything.
+    language: 'en'
+};
+
+
+function request(state=requestInitialState, _: any): RequestState {
+    return state;
 }
 
 
@@ -243,7 +267,8 @@ function adminMyActions(state=adminMyActionsInitialState, action: AdminMyActions
 }
 
 
-const reducers = combineReducers({
+export const reducers = combineReducers({
+    request: request,
     publicCauses: publicCauses,
     publicCauseDetail: publicCauseDetail,
     adminMyCause: adminMyCause,

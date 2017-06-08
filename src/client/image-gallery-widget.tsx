@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import { PictureSet } from '@neoncity/core-sdk-js'
 
-import './image-gallery-widget.less'
+//import './image-gallery-widget.less'
 
 
 interface Props {

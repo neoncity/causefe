@@ -14,6 +14,7 @@ import * as commonText from './common.text'
 
 
 interface HomeViewProps {
+    language: string;
     isLoading: boolean;
     isReady: boolean;
     isFailed: boolean;

@@ -1,15 +1,16 @@
-import { MarshalFrom } from 'raynor'
+export const LANG:string='en'
+// import { MarshalFrom } from 'raynor'
 
-import { Session, User } from '@neoncity/identity-sdk-js'
+// import { Session, User } from '@neoncity/identity-sdk-js'
 
 
-const sessionMarshaller = new (MarshalFrom(Session))();
+// const sessionMarshaller = new (MarshalFrom(Session))();
 
-export const SESSION:Session = sessionMarshaller.extract(JSON.parse('{{{ SESSION }}}'));
-export let LANG:string = 'en';
-if (SESSION.hasUser()) {
-    LANG = (SESSION.user as User).language;
-    if (LANG != 'en' && LANG != 'ro') {
-	LANG = 'en';
-    }
-}
+// export const SESSION:Session = sessionMarshaller.extract(JSON.parse('{{{ SESSION }}}'));
+// export let LANG:string = 'en';
+// if (SESSION.hasUser()) {
+//     LANG = (SESSION.user as User).language;
+//     if (LANG != 'en' && LANG != 'ro') {
+// 	LANG = 'en';
+//     }
+// }
