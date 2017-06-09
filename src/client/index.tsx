@@ -30,11 +30,13 @@ const fileStorageClient: FileStorageClient = new FileStorageService(config.FILES
 const initialState = initialStateMarshaller.extract((window as any).__NEONCITY_INITIAL_STATE);
 delete (window as any).__NEONCITY_INITIAL_STATE;
 const initialReduxState = {
-    session: initialState.session,
-    services: {
-	corePublicClient: corePublicClient,
-	corePrivateClient: corePrivateClient,
-	fileStorageClient: fileStorageClient
+    request: {
+	session: initialState.session,
+	services: {
+	    corePublicClient: corePublicClient,
+	    corePrivateClient: corePrivateClient,
+	    fileStorageClient: fileStorageClient
+	}
     }
 };
 

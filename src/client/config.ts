@@ -10,4 +10,4 @@ export const IDENTITY_SERVICE_EXTERNAL_HOST: string = '{{{ IDENTITY_SERVICE_EXTE
 export const CORE_SERVICE_EXTERNAL_HOST: string = '{{{ CORE_SERVICE_EXTERNAL_HOST }}}';
 export const FACEBOOK_APP_ID: string = '{{{ FACEBOOK_APP_ID }}}';
 export const LOGOUT_ROUTE: string = '{{{ LOGOUT_ROUTE }}}';
-export const LANG: string = '{{{ LANG }}}';
+export const LANG: string = 'en'; // {{{ LANG }}}';
