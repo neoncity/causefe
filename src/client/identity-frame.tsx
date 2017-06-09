@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { Session } from '@neoncity/identity-sdk-js'
 
 import { showAuth0Lock } from './auth0'
-import { LANG } from './from-server'
+import * as config from './config'
 
 import * as text from './identity-frame.text'
 
@@ -24,7 +24,7 @@ class _IdentityFrame extends React.Component<Props, undefined> {
     
     render() {
         if (!this.props.session.hasUser()) {
-	    return <div>{text.shouldBeLoggedIn[LANG]}</div>;
+	    return <div>{text.shouldBeLoggedIn[config.LANG]}</div>;
 	} else {
 	    return <div>{this.props.children}</div>;
 	}
@@ -34,7 +34,7 @@ class _IdentityFrame extends React.Component<Props, undefined> {
 
 function stateToProps(state: any) {
     return {
-	session: state.identity.session,
+	session: state.request.session,
     };
 }
 

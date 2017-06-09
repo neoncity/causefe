@@ -36,10 +36,9 @@
       }(document, 'script', 'facebook-jssdk'));
     </script>
     
-    <div id="app">{{{ appHtml }}}</div>
+    <div id="app">{{{ APP_HTML }}}</div>
     <script>
-      window.__NEONCITY_CONFIG = {{{ config }}};
-      window.__NEONCITY_INITIAL_STATE = {{{ initialState }}};
+      window.__NEONCITY_INITIAL_STATE = {{{ APP_INITIAL_STATE }}};
     </script>
     <script src="/real/client/client.js"></script>
   </body>

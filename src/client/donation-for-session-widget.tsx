@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 
 import { DonationForSession } from '@neoncity/core-sdk-js'
 
-import { LANG } from './from-server'
+import * as config from './config'
 import { causeLink } from './utils'
 
 import * as text from './donation-for-session-widget.text'
@@ -20,6 +20,6 @@ export class DonationForSessionWidget extends React.Component<Props, null> {
 	const cause = this.props.donationForSession.forCause;
 	const timeCreated = donation.timeCreated.toString();
 
-	return <p>{text.donated[LANG](donation.amount, cause.title, timeCreated)} <Link to={causeLink(cause)}>{text.details[LANG]}</Link></p>
+	return <p>{text.donated[config.LANG](donation.amount, cause.title, timeCreated)} <Link to={causeLink(cause)}>{text.details[config.LANG]}</Link></p>
     }
 }

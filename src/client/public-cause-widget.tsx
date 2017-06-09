@@ -3,12 +3,10 @@ import { Link } from 'react-router'
 import * as r from 'raynor'
 
 import { isLocal } from '@neoncity/common-js'
-import { CurrencyAmount, PublicCause } from '@neoncity/core-sdk-js'
+import { CorePublicClient, CurrencyAmount, PublicCause } from '@neoncity/core-sdk-js'
 
 import * as config from './config'
-import { LANG } from './from-server'
 import { ImageGalleryWidget } from './image-gallery-widget'
-import { corePublicClient } from './services'
 import { OpState } from '../shared/store'
 import { UserInput, UserInputMaster } from './user-input'
 import { causeLink } from './utils'
@@ -17,6 +15,7 @@ import * as text from './public-cause-widget.text'
 
 
 interface Props {
+    corePublicClient: CorePublicClient;
     cause: PublicCause;
 }
 
@@ -48,26 +47,26 @@ export class PublicCauseWidget extends React.Component<Props, State> {
         let donationResult = <span></span>;
         switch (this.state.donationState) {
         case OpState.Loading:
-            donationResult = <span>{text.donating[LANG]}</span>;
+            donationResult = <span>{text.donating[config.LANG]}</span>;
             break;
         case OpState.Ready:
-            donationResult = <span>{text.ready[LANG]}</span>;
+            donationResult = <span>{text.ready[config.LANG]}</span>;
             break;
         case OpState.Failed:
-            donationResult = <span>{text.failed[LANG]}</span>;
+            donationResult = <span>{text.failed[config.LANG]}</span>;
             break;
         } 
         
         let shareResult = <span></span>;
         switch (this.state.shareState) {
         case OpState.Loading:
-            shareResult = <span>{text.sharing[LANG]}</span>;
+            shareResult = <span>{text.sharing[config.LANG]}</span>;
             break;
         case OpState.Ready:
-            shareResult = <span>{text.ready[LANG]}</span>;
+            shareResult = <span>{text.ready[config.LANG]}</span>;
             break;
         case OpState.Failed:
-            shareResult = <span>{text.failed[LANG]}</span>;
+            shareResult = <span>{text.failed[config.LANG]}</span>;
             break;
         }
         
@@ -98,13 +97,13 @@ export class PublicCauseWidget extends React.Component<Props, State> {
 		    type="button" 
 		    disabled={!allValid}
 		    onClick={this._handleDonate.bind(this)}>
-                    {text.donate[LANG]}
+                    {text.donate[config.LANG]}
 		</button>
                 {donationResult}
                 <button
 		    type="button"
 		    onClick={this._handleShare.bind(this)}>
-                    {text.share[LANG]}
+                    {text.share[config.LANG]}
 		</button>
                 {shareResult}
 	    </div>
@@ -123,7 +122,7 @@ export class PublicCauseWidget extends React.Component<Props, State> {
             currencyAmount.amount = this.state.donationAmount.getValue();
             currencyAmount.currency = this.props.cause.goal.currency;
             
-            await corePublicClient.createDonation(this.props.cause.id, currencyAmount);
+            await this.props.corePublicClient.createDonation(this.props.cause.id, currencyAmount);
             this.setState({donationState: OpState.Ready});
         } catch (e) {
             if (isLocal(config.ENV)) {
@@ -161,7 +160,7 @@ export class PublicCauseWidget extends React.Component<Props, State> {
             }
 
             try {
-                await corePublicClient.createShare(this.props.cause.id, response.post_id as string);
+                await this.props.corePublicClient.createShare(this.props.cause.id, response.post_id as string);
                 this.setState({shareState: OpState.Ready});
             } catch (e) {
                 if (isLocal(config.ENV)) {

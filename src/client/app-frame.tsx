@@ -4,7 +4,7 @@ import { Link } from 'react-router'
 
 import { Session } from '@neoncity/identity-sdk-js'
 
-import { LANG } from './from-server'
+import * as config from './config'
 import { UserInfoWidget } from './user-info-widget'
 
 import * as text from './app-frame.text'
@@ -24,11 +24,11 @@ class _AppFrame extends React.Component<Props, undefined> {
         if (!this.props.session.hasUser()) {
             return (
                 <div>
-                    <div>{text.viewTitle[LANG]}</div>
+                    <div>{text.viewTitle[config.LANG]}</div>
                     <div>
-                        <Link to="/">{text.home[LANG]}</Link>
-                        <a href="/admin">{text.admin[LANG]}</a>
-                        <UserInfoWidget session={this.props.session} />
+                        <Link to="/">{text.home[config.LANG]}</Link>
+                        <a href="/admin">{text.admin[config.LANG]}</a>
+                        <UserInfoWidget />
                     </div>
                     {this.props.children}
                 </div>
@@ -36,11 +36,11 @@ class _AppFrame extends React.Component<Props, undefined> {
         } else {
             return (
                 <div>
-                    <div>{text.viewTitle[LANG]}</div>
+                    <div>{text.viewTitle[config.LANG]}</div>
                     <div>
-                        <Link to="/">{text.home[LANG]}</Link>
-                        <Link to="/admin">{text.admin[LANG]}</Link>
-                        <UserInfoWidget session={this.props.session} />
+                        <Link to="/">{text.home[config.LANG]}</Link>
+                        <Link to="/admin">{text.admin[config.LANG]}</Link>
+                        <UserInfoWidget />
                     </div>
                     {this.props.children}
                 </div>
@@ -52,7 +52,7 @@ class _AppFrame extends React.Component<Props, undefined> {
 
 function stateToProps(state: any) {
     return {
-	session: state.identity.session,
+	session: state.request.session,
     };
 }
 

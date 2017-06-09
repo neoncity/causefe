@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 
 import { ShareForSession } from '@neoncity/core-sdk-js'
 
-import { LANG } from './from-server'
+import * as config from './config'
 import { causeLink } from './utils'
 
 import * as text from './share-for-session-widget.text'
@@ -20,6 +20,6 @@ export class ShareForSessionWidget extends React.Component<Props, null> {
 	const cause = this.props.shareForSession.forCause;
 	const timeCreated = share.timeCreated.toString();
 	
-	return <p>{text.shared[LANG](cause.title, timeCreated)} <Link to={causeLink(cause)}>{text.details[LANG]}}</Link></p>;
+	return <p>{text.shared[config.LANG](cause.title, timeCreated)} <Link to={causeLink(cause)}>{text.details[config.LANG]}}</Link></p>;
     }
 }

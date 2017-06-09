@@ -5,10 +5,11 @@ import * as ReactDatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { connect } from 'react-redux'
 
-import { Currency, StandardCurrencies, CurrencyMarshaller } from '@neoncity/common-js/currency'
+import { Currency, StandardCurrencies, CurrencyMarshaller } from '@neoncity/common-js'
 import { isLocal } from '@neoncity/common-js/env'
 import { slugify } from '@neoncity/common-js/slugify'
 import { BankInfo,
+	 CorePrivateClient,
 	 CurrencyAmount,
 	 PictureSet,
 	 PrivateCause,
@@ -17,10 +18,9 @@ import { BankInfo,
 
 import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
-import { LANG } from './from-server'
 import { ImageGalleryEditorWidget } from './image-gallery-editor-widget'
 import './index.less'
-import { corePrivateClient, fileStorageService } from './services'
+import { FileStorageClient } from '../shared/file-storage'
 import { AdminMyCauseState, OpState, StatePart } from '../shared/store'
 import { UserInput, UserInputMaster } from './user-input'
 
@@ -31,6 +31,8 @@ const moment = require('moment')
 
 
 interface Props {
+    corePrivateClient: CorePrivateClient;
+    fileStorageClient: FileStorageClient;
     isLoading: boolean;
     isReady: boolean;
     isFailed: boolean;
@@ -92,7 +94,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
         this.props.onPrivateCauseLoading();
 
         try {
-            const privateCause = await corePrivateClient.getCause();
+            const privateCause = await this.props.corePrivateClient.getCause();
             this.props.onPrivateCauseReady(true, false, privateCause);
         } catch (e) {
             if (e.name == 'NoCauseForUserError') {
@@ -130,52 +132,52 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 
         let titleModifiedRegion = <span></span>;
         if (this.state.title.isModified()) {
-            titleModifiedRegion = <span>{text.modified[LANG]}</span>;
+            titleModifiedRegion = <span>{text.modified[config.LANG]}</span>;
         }
 
         let titleWarningRegion = <span></span>;
         if (this.state.title.isInvalid()) {
-            titleWarningRegion = <span>{text.invalidTitleValue[LANG]}</span>;
+            titleWarningRegion = <span>{text.invalidTitleValue[config.LANG]}</span>;
         }
 
         let slugModifiedRegion = <span></span>;
         if (this.state.slug.isModified()) {
-            slugModifiedRegion = <span>{text.modified[LANG]}</span>;
+            slugModifiedRegion = <span>{text.modified[config.LANG]}</span>;
         }
 
         let slugWarningRegion = <span></span>;
         if (this.state.slug.isInvalid()) {
-            slugWarningRegion = <span>{text.invalidSlugValue[LANG]}</span>;
+            slugWarningRegion = <span>{text.invalidSlugValue[config.LANG]}</span>;
         }
 
         let descriptionModifiedRegion = <span></span>;
         if (this.state.description.isModified()) {
-            descriptionModifiedRegion = <span>{text.modified[LANG]}</span>;
+            descriptionModifiedRegion = <span>{text.modified[config.LANG]}</span>;
         }
 
         let descriptionWarningRegion = <span></span>;
         if (this.state.description.isInvalid()) {
-            descriptionWarningRegion = <span>{text.invalidDescriptionValue[LANG]}</span>;
+            descriptionWarningRegion = <span>{text.invalidDescriptionValue[config.LANG]}</span>;
         }
 
         let goalAmountModifiedRegion = <span></span>;
         if (this.state.goalAmount.isModified()) {
-            goalAmountModifiedRegion = <span>{text.modified[LANG]}</span>;
+            goalAmountModifiedRegion = <span>{text.modified[config.LANG]}</span>;
         }
 
         let goalAmountWarningRegion = <span></span>;
         if (this.state.goalAmount.isInvalid()) {
-            goalAmountWarningRegion = <span>{text.invalidGoalAmountValue[LANG]}</span>;
+            goalAmountWarningRegion = <span>{text.invalidGoalAmountValue[config.LANG]}</span>;
         }
 
         let goalCurrencyModifiedRegion = <span></span>;
         if (this.state.goalCurrency.isModified()) {
-            goalCurrencyModifiedRegion = <span>{text.modified[LANG]}</span>;
+            goalCurrencyModifiedRegion = <span>{text.modified[config.LANG]}</span>;
         }
 
         let goalCurrencyWarningRegion = <span></span>;
         if (this.state.goalCurrency.isInvalid()) {
-            goalCurrencyWarningRegion = <span>{text.invalidGoalCurrencyValue[LANG]}</span>;
+            goalCurrencyWarningRegion = <span>{text.invalidGoalCurrencyValue[config.LANG]}</span>;
         }        
 	
         const editForm = (
@@ -188,7 +190,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                             type="text"
                             value={this.state.title.getUserInput()}
                             onChange={this._handleTitleChange.bind(this)}
-                            placeholder={text.causeTitlePlaceholder[LANG]} />
+                            placeholder={text.causeTitlePlaceholder[config.LANG]} />
                             {titleModifiedRegion} {titleWarningRegion}
                     </div>
                     <div>
@@ -197,7 +199,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                             id="admin-my-cause-slug"
                             value={this.state.slug.getValue()}
                             disabled={true}
-                            placeholder={text.causeUrlPlaceholder[LANG]} />
+                            placeholder={text.causeUrlPlaceholder[config.LANG]} />
                         {slugModifiedRegion} {slugWarningRegion}
                     </div>
                     <div>
@@ -207,7 +209,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                             type="text"
                             value={this.state.description.getUserInput()}
                             onChange={this._handleDescriptionChange.bind(this)}
-                            placeholder={text.causeDescriptionPlaceholder[LANG]} />
+                            placeholder={text.causeDescriptionPlaceholder[config.LANG]} />
                         {descriptionModifiedRegion} {descriptionWarningRegion}
                     </div>
                     <div>
@@ -244,7 +246,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                             onBankInfoChange={this._handleBankInfoChange.bind(this)} />
                         <ImageGalleryEditorWidget
                             pictureSet={this.state.pictureSet}
-                            selectPicture={pos => fileStorageService.selectImageWithWidget(pos)}
+                            selectPicture={pos => this.props.fileStorageClient.selectImageWithWidget(pos)}
                             onPictureSetChange={this._handlePictureSetChange.bind(this)} />
                     </div>
                 </form>
@@ -252,25 +254,25 @@ class _AdminMyCauseView extends React.Component<Props, State> {
         );
 	
 	if (this.props.isLoading) {
-	    return <div>{commonText.loading[LANG]}</div>;
+	    return <div>{commonText.loading[config.LANG]}</div>;
 	} else if (this.props.isFailed) {
-	    return <div>{commonText.loadingFailed[LANG]}</div>;
+	    return <div>{commonText.loadingFailed[config.LANG]}</div>;
 	} else if (!this.props.hasCause) {
 	    if (!this.state.showCreationFormIfNoControls) {
-		return <div>{text.noCause[LANG]} <button onClick={this._handleShowCreationForm.bind(this)}>{text.createCause[LANG]}</button> </div>;
+		return <div>{text.noCause[config.LANG]} <button onClick={this._handleShowCreationForm.bind(this)}>{text.createCause[config.LANG]}</button> </div>;
 	    } else {
 		return (
                     <div>
-                        {text.creationForm[LANG]} {editForm}
+                        {text.creationForm[config.LANG]} {editForm}
                         <div>
-                            <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>{text.reset[LANG]}</button>
-                            <button disabled={!this.state.modifiedGeneral || !allValid} onClick={this._handleCreate.bind(this)}>{text.create[LANG]}</button>
+                            <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>{text.reset[config.LANG]}</button>
+                            <button disabled={!this.state.modifiedGeneral || !allValid} onClick={this._handleCreate.bind(this)}>{text.create[config.LANG]}</button>
                         </div>
                     </div>
 		);
             }
 	} else if (this.props.causeIsDeleted) {
-	    return <div>{text.causeDeleted[LANG]}</div>;
+	    return <div>{text.causeDeleted[config.LANG]}</div>;
         } else {
             const cause = this.props.cause as PrivateCause;
             
@@ -279,11 +281,11 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                     {cause.title}
                     {editForm}
                     <div>
-                        <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>{text.reset[LANG]}</button>
-                    <button disabled={!this.state.modifiedGeneral || !allValid} onClick={this._handleUpdate.bind(this)}>{text.update[LANG]}</button>
+                        <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>{text.reset[config.LANG]}</button>
+                    <button disabled={!this.state.modifiedGeneral || !allValid} onClick={this._handleUpdate.bind(this)}>{text.update[config.LANG]}</button>
                     </div>
 		    <div>
-                        <button onClick={this._handleDelete.bind(this)}>{text.deleteCause[LANG]}</button>
+                        <button onClick={this._handleDelete.bind(this)}>{text.deleteCause[config.LANG]}</button>
 		    </div>
                 </div>
 	    );
@@ -377,7 +379,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	    goal.amount = this.state.goalAmount.getValue();
 	    goal.currency = this.state.goalCurrency.getValue();
 	    
-	    const privateCause = await corePrivateClient.createCause(
+	    const privateCause = await this.props.corePrivateClient.createCause(
 		this.state.title.getValue(),
 		this.state.description.getValue(),
 		this.state.pictureSet,
@@ -402,7 +404,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	    goal.amount = this.state.goalAmount.getValue();
 	    goal.currency = this.state.goalCurrency.getValue();
 	    
-	    const privateCause = await corePrivateClient.updateCause(
+	    const privateCause = await this.props.corePrivateClient.updateCause(
 		{
 		    title: this.state.title.getValue(),
 		    description: this.state.description.getValue(),
@@ -425,7 +427,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	this.props.onPrivateCauseLoading();
 
 	try {
-	    await corePrivateClient.deleteCause();
+	    await this.props.corePrivateClient.deleteCause();
 	    this.props.onPrivateCauseReady(true, true, null);
 	} catch (e) {
 	    if (isLocal(config.ENV)) {
@@ -440,6 +442,8 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 
 function stateToProps(state: any) {
     return {
+	corePrivateClient: state.request.services != null ? state.request.services.corePrivateClient : null,
+	fileStorageClient: state.request.services != null ? state.request.services.fileStorageClient : null,
 	isLoading: state.adminMyCause.type == OpState.Init || state.adminMyCause.type == OpState.Loading,
 	isReady: state.adminMyCause.type == OpState.Ready,
 	isFailed: state.adminMyCause.type == OpState.Failed,

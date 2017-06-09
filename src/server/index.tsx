@@ -34,8 +34,7 @@ import { CauseFeRequest } from './causefe-request'
 import * as config from './config'
 import { routesConfig } from '../shared/routes-config'
 import { OpState, reducers, StatePart } from '../shared/store'
-
-console.log('Here');
+import { InitialState } from '../shared/initial-state'
 
 
 async function main() {
@@ -43,6 +42,7 @@ async function main() {
     const identityClient: IdentityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST);
     const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.CORE_SERVICE_HOST);
     const authInfoMarshaller = new (MarshalFrom(AuthInfo))();
+    const initialStateMarshaller = new (MarshalFrom(InitialState))();
     const app = express();
 
     const bundles: Bundles = isLocal(config.ENV)
@@ -79,8 +79,6 @@ async function main() {
 	    }
 	}
 
-	console.log(JSON.stringify(req.session));
-
 	let causes: PublicCause[] = [];
 	try {
 	    causes = await corePublicClient.withAuthInfo(req.authInfo).getCauses();
@@ -97,15 +95,17 @@ async function main() {
 
 	match({ routes: routesConfig, location: req.url}, (_err, _redirect, props) => {
 	    const store = createStore(reducers, {
-		identity: {
-		    env: config.ENV,
-		    logoutRoute: config.LOGOUT_ROUTE,
+		request: {
 		    session: req.session as Session,
-		    language: 'en'
+		    services: null
 		}
 	    } as any, undefined);
 
 	    store.dispatch({part: StatePart.PublicCauses, type: OpState.Ready, causes: causes});
+
+	    const initialState = {
+		session: req.session as Session
+	    };
 	    
 	    // TODO: handle err and redirect correctly.
 	    const appHtml = ReactDOMServer.renderToString(
@@ -113,20 +113,11 @@ async function main() {
 		        <RouterContext {...props} />
 		    </Provider>);
 
-
             const htmlIndex = Mustache.render(bundles.getHtmlIndexTemplate(), (Object as any).assign({}, {
-		appHtml: appHtml,
-		config: JSON.stringify({
-		    ENV: config.ENV,
-		    AUTH0_CLIENT_ID: config.AUTH0_CLIENT_ID,
-		    AUTH0_DOMAIN: config.AUTH0_DOMAIN,
-		    FILESTACK_KEY: config.FILESTACK_KEY,
-		    IDENTITY_SERVICE_EXTERNAL_HOST: config.IDENTITY_SERVICE_EXTERNAL_HOST,
-		    CORE_SERVICE_EXTERNAL_HOST: config.CORE_SERVICE_EXTERNAL_HOST,
-		    FACEBOOK_APP_ID: config.FACEBOOK_APP_ID,
-		    LOGOUT_ROUTE: config.LOGOUT_ROUTE
-		}),
-		initialState: JSON.stringify(store.getState())}));
+		FACEBOOK_APP_ID: config.FACEBOOK_APP_ID,
+		APP_HTML: appHtml,
+		APP_INITIAL_STATE: JSON.stringify(initialStateMarshaller.pack(initialState))
+	    }));
 
             res.write(htmlIndex);
 	    res.status(HttpStatus.OK);

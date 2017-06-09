@@ -1,17 +1,24 @@
 import { createStore, combineReducers } from 'redux'
 
-import { CauseAnalytics, PublicCause, PrivateCause, UserActionsOverview } from '@neoncity/core-sdk-js'
+import {
+    CauseAnalytics,
+    CorePublicClient,
+    CorePrivateClient,
+    PublicCause,
+    PrivateCause,
+    UserActionsOverview } from '@neoncity/core-sdk-js'
 import { Session } from '@neoncity/identity-sdk-js'
+
+import { FileStorageClient } from './file-storage'
 
 
 export enum StatePart {
     Request = 0,
-    Services = 1,
-    PublicCauses = 2,
-    PublicCauseDetail = 3,
-    AdminMyCause = 4,
-    AdminCauseAnalytics = 5,
-    AdminMyActions = 6
+    PublicCauses = 1,
+    PublicCauseDetail = 2,
+    AdminMyCause = 3,
+    AdminCauseAnalytics = 4,
+    AdminMyActions = 5
 }
 
 
@@ -25,25 +32,22 @@ export enum OpState {
 
 export interface RequestState {
     session: Session;
-    language: string;
+    services: null|{
+	corePublicClient: CorePublicClient;
+	corePrivateClient: CorePrivateClient;
+	fileStorageClient: FileStorageClient;
+    };
 }
 
 
 const requestInitialState: RequestState = {
     session: new Session(), // An empty session, not good for anything.
-    language: 'en'
+    services: null
 };
 
 
 function request(state=requestInitialState, _: any): RequestState {
     return state;
-}
-
-
-export interface ServicesState {
-    corePublicClient: CorePublicClient,
-    corePrivateClient: CorePrivateClient,
-    fileStorageClient: FileStorageClient
 }
 
 

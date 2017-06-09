@@ -1,13 +1,11 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-import { UserActionsOverview } from '@neoncity/core-sdk-js'
+import { CorePrivateClient, UserActionsOverview } from '@neoncity/core-sdk-js'
 import { isLocal } from '@neoncity/common-js'
 
 import * as config from './config'
 import { DonationForSessionWidget } from './donation-for-session-widget'
-import { LANG } from './from-server'
-import { corePrivateClient } from './services'
 import { ShareForSessionWidget } from './share-for-session-widget'
 import { AdminMyActionsState, OpState, StatePart } from '../shared/store'
 
@@ -16,6 +14,7 @@ import * as commonText from './common.text'
 
 
 interface Props {
+    corePrivateClient: CorePrivateClient;
     isLoading: boolean;
     isReady: boolean;
     isFailed: boolean;
@@ -32,7 +31,7 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
 	this.props.onUserActionsOverviewLoading();
 
 	try {
-	    const userActionsOverview = await corePrivateClient.getUserActionsOverview();
+	    const userActionsOverview = await this.props.corePrivateClient.getUserActionsOverview();
 	    this.props.onUserActionsOverviewReady(userActionsOverview);
 	} catch (e) {
             if (isLocal(config.ENV)) {
@@ -45,9 +44,9 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
     
     render() {
 	if (this.props.isLoading) {
-	    return <div>{commonText.loading[LANG]}</div>;
+	    return <div>{commonText.loading[config.LANG]}</div>;
 	} else if (this.props.isFailed) {
-	    return <div>{commonText.loadingFailed[LANG]}</div>;
+	    return <div>{commonText.loadingFailed[config.LANG]}</div>;
 	} else {
 	    const donationWidgets = (this.props.userActionsOverview as UserActionsOverview)
 		  .donations
@@ -62,9 +61,9 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
 
 	    return (
                 <div>
-		    <h6>{text.donations[LANG]}</h6>
+		    <h6>{text.donations[config.LANG]}</h6>
 		    {donationWidgets}
-		    <h6>{text.shares[LANG]}</h6>
+		    <h6>{text.shares[config.LANG]}</h6>
 		    {shareWidgets}
 		</div>
 	    );
@@ -75,6 +74,7 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
 
 function stateToProps(state: any) {
     return {
+	corePrivateClient: state.request.services != null ? state.request.services.corePrivateClient : null,
 	isLoading: state.adminMyActions.type == OpState.Init || state.adminMyActions.type == OpState.Loading,
 	isReady: state.adminMyActions.type == OpState.Ready,
 	isFailed: state.adminMyActions.type == OpState.Failed,
