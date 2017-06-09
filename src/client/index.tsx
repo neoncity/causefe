@@ -14,7 +14,7 @@ import {
 import './index.less'
 import * as config from './config'
 import { routesConfig } from '../shared/routes-config'
-import { reducers } from '../shared/store'
+import { OpState, reducers, StatePart } from '../shared/store'
 import { FileStorageClient } from '../shared/file-storage'
 import { InitialState } from '../shared/initial-state'
 import { FileStorageService } from './file-storage-service'
@@ -37,6 +37,11 @@ const initialReduxState = {
 	    corePrivateClient: corePrivateClient,
 	    fileStorageClient: fileStorageClient
 	}
+    },
+    publicCauses: {
+        part: StatePart.PublicCauses,
+        type: OpState.Ready,
+        causes: initialState.publicCauses
     }
 };
 

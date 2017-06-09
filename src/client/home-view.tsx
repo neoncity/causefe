@@ -26,6 +26,7 @@ interface HomeViewProps {
 
 class _HomeView extends React.Component<HomeViewProps, undefined> {
     async componentDidMount() {
+        console.log(this.props.isReady);
 	this.props.onPublicCausesLoading();
 
 	try {

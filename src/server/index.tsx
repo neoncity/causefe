@@ -104,7 +104,8 @@ async function main() {
 	    store.dispatch({part: StatePart.PublicCauses, type: OpState.Ready, causes: causes});
 
 	    const initialState = {
-		session: req.session as Session
+		session: req.session as Session,
+                publicCauses: causes
 	    };
 	    
 	    // TODO: handle err and redirect correctly.
