@@ -6,6 +6,7 @@ node_js:
 env:
   global:
   - ENV=TEST
+  - CONTEXT=SERVER
   - ADDRESS=0.0.0.0
   - PORT=10000
   - IDENTITY_SERVICE_HOST=null

@@ -44,10 +44,20 @@ module.exports = {
 	}],
     },
     plugins: [
+        new webpack.DefinePlugin({
+            'process.env.CONTEXT': 'CLIENT',
+            'process.env.NODE_ENV': process.env.ENV === 'LOCAL' ? 'development' : 'production'
+        }),
+        // fs is needed in src/shared/config.ts on the server-side in the LOCAl env
+        // to load some value from a secrets.json file. Naturally, fs doesn't exist
+        // on the client side, so we need to fake it.
+        new webpack.NormalModuleReplacementPlugin(/^fs$/, function(result) {
+            result.request = './mock-fs';
+        }),
         failPlugin,
 	new CopyPlugin([
-	    {from: './src/client/static/index.html'},
-	    {from: './src/client/static/favicon.ico'}
+	    {from: './src/shared/static/index.html'},
+	    {from: './src/shared/static/favicon.ico'}
 	]),
 	new ExtractTextPlugin('client.css')
     ],

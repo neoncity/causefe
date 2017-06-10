@@ -9,6 +9,7 @@ import {
     UserActionsOverview } from '@neoncity/core-sdk-js'
 import { Session } from '@neoncity/identity-sdk-js'
 
+import { Auth0Client } from './auth0'
 import { FileStorageClient } from './file-storage'
 
 
@@ -36,6 +37,7 @@ export interface RequestState {
 	corePublicClient: CorePublicClient;
 	corePrivateClient: CorePrivateClient;
 	fileStorageClient: FileStorageClient;
+        auth0Client: Auth0Client;
     };
 }
 

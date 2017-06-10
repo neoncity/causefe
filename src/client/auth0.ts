@@ -1,32 +1,45 @@
 import Auth0Lock from 'auth0-lock'
-import { browserHistory } from 'react-router'
+import { History } from 'history'
 
-import * as config from './config'
-
+import { Auth0Client } from '../shared/auth0'
 import { PostLoginRedirectInfo, PostLoginRedirectInfoMarshaller } from '../shared/auth-flow'
 
-const postLoginRedirectInfoMarshaller = new PostLoginRedirectInfoMarshaller();
 
+export class Auth0Service implements Auth0Client {
+    private readonly _postLoginRedirectInfoMarshaller: PostLoginRedirectInfoMarshaller;
+    private readonly _history: History;
+    private readonly _auth0ClientId: string;
+    private readonly _auth0Domain: string;
+    private readonly _auth0CallbackUri: string;
 
-export function showAuth0Lock(canDismiss: boolean = true) {
-    const currentLocation = browserHistory.getCurrentLocation();
-    const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
-    const postLoginInfoSer = postLoginRedirectInfoMarshaller.pack(postLoginInfo);
+    constructor(history: History, auth0ClientId: string, auth0Domain: string, auth0CallbackUri: string) {
+        this._postLoginRedirectInfoMarshaller = new PostLoginRedirectInfoMarshaller();
+        this._history = history;
+        this._auth0ClientId = auth0ClientId;
+        this._auth0Domain = auth0Domain;
+        this._auth0CallbackUri = auth0CallbackUri;
+    }
+    
+    showLock(canDismiss: boolean = true): void {
+        const currentLocation = this._history.getCurrentLocation();
+        const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
+        const postLoginInfoSer = this._postLoginRedirectInfoMarshaller.pack(postLoginInfo);
 
-    const auth0: Auth0LockStatic = new Auth0Lock(
-	config.AUTH0_CLIENT_ID,
-	config.AUTH0_DOMAIN, {
-            closable: canDismiss,
-            auth: {
-		redirect: true,
-		redirectUrl: config.AUTH0_CALLBACK_URI,
-		responseType: 'code',
-		params: {
-                    state: postLoginInfoSer
-		}
-            }
-	}
-    );
+        const auth0: Auth0LockStatic = new Auth0Lock(
+	    this._auth0ClientId,
+	    this._auth0Domain, {
+                closable: canDismiss,
+                auth: {
+		    redirect: true,
+		    redirectUrl: this._auth0CallbackUri,
+		    responseType: 'code',
+		    params: {
+                        state: postLoginInfoSer
+		    }
+                }
+	    }
+        );
 
-    auth0.show();
+        auth0.show();        
+    }
 }

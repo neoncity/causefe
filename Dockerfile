@@ -38,6 +38,7 @@ COPY . /neoncity
 # Setup the runtime environment for the application.
 
 ENV ENV LOCAL
+ENV CONTEXT SERVER
 ENV ADDRESS 0.0.0.0
 ENV PORT 10000
 ENV IDENTITY_SERVICE_HOST neoncity-identity:10000

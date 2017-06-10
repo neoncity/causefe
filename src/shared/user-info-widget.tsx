@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 
 import { Session, User } from '@neoncity/identity-sdk-js'
 
-import { showAuth0Lock } from './auth0'
 import * as config from './config'
+import { Auth0Client } from '../shared/auth0'
 
 import * as text from './user-info-widget.text'
 
@@ -12,6 +12,7 @@ import * as text from './user-info-widget.text'
 interface Props {
     session: Session;
     logoutRoute: string;
+    auth0Client: Auth0Client;
 }
 
 
@@ -29,7 +30,7 @@ export class _UserInfoWidget extends React.Component<Props, undefined> {
     }
 
     private _handleLoginClick() {
-	showAuth0Lock();
+        this.props.auth0Client.showLock(true);
     }
 }
 
@@ -37,7 +38,8 @@ export class _UserInfoWidget extends React.Component<Props, undefined> {
 function stateToProps(state: any) {
     return {
 	session: state.request.session,
-	logoutRoute: state.request.logoutRoute
+	logoutRoute: state.request.logoutRoute,
+        auth0Client: state.request.services.auth0Client
     };
 }
 

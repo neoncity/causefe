@@ -3,14 +3,15 @@ import { connect } from 'react-redux'
 
 import { Session } from '@neoncity/identity-sdk-js'
 
-import { showAuth0Lock } from './auth0'
 import * as config from './config'
+import { Auth0Client } from '../shared/auth0'
 
 import * as text from './identity-frame.text'
 
 
 interface Props {
     session: Session;
+    auth0Client: Auth0Client;
     children: React.ReactNode;
 }
 
@@ -18,7 +19,7 @@ interface Props {
 class _IdentityFrame extends React.Component<Props, undefined> {
     componentDidMount() {
 	if (!this.props.session.hasUser()) {
-	    showAuth0Lock();
+            this.props.auth0Client.showLock(false);
 	}
     }
     
@@ -35,6 +36,7 @@ class _IdentityFrame extends React.Component<Props, undefined> {
 function stateToProps(state: any) {
     return {
 	session: state.request.session,
+        auth0Client: state.request.services.auth0Client
     };
 }
 

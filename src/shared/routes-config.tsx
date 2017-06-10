@@ -1,15 +1,15 @@
 import * as React from 'react'
 import { Route, IndexRoute, IndexRedirect } from 'react-router'
 
-import { AdminAccountView } from '../client/admin-account-view'
-import { AdminCauseAnalyticsView } from '../client/admin-cause-analytics-view'
-import { AdminFrame } from '../client/admin-frame'
-import { AdminMyActionsView } from '../client/admin-myactions-view'
-import { AdminMyCauseView } from '../client/admin-mycause-view'
-import { AppFrame } from '../client/app-frame'
-import { CauseView } from '../client/cause-view'
-import { HomeView } from '../client/home-view'
-import { IdentityFrame } from '../client/identity-frame'
+import { AdminAccountView } from './admin-account-view'
+import { AdminCauseAnalyticsView } from './admin-cause-analytics-view'
+import { AdminFrame } from './admin-frame'
+import { AdminMyActionsView } from './admin-myactions-view'
+import { AdminMyCauseView } from './admin-mycause-view'
+import { AppFrame } from './app-frame'
+import { CauseView } from './cause-view'
+import { HomeView } from './home-view'
+import { IdentityFrame } from './identity-frame'
 
 
 export const routesConfig =
