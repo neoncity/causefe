@@ -37,7 +37,7 @@ export class _UserInfoWidget extends React.Component<Props, undefined> {
 function stateToProps(state: any) {
     return {
 	session: state.request.session,
-        auth0Client: state.request.services.auth0Client
+        auth0Client: state.request.services != null ? state.request.services.auth0Client : null
     };
 }
 

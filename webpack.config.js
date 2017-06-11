@@ -45,8 +45,8 @@ module.exports = {
     },
     plugins: [
         new webpack.DefinePlugin({
-            'process.env.CONTEXT': 'CLIENT',
-            'process.env.NODE_ENV': process.env.ENV === 'LOCAL' ? 'development' : 'production'
+            'process.env.CONTEXT': '"CLIENT"',
+            'process.env.NODE_ENV': process.env.ENV === 'LOCAL' ? '"development"' : '"production"'
         }),
         // fs is needed in src/shared/config.ts on the server-side in the LOCAl env
         // to load some value from a secrets.json file. Naturally, fs doesn't exist

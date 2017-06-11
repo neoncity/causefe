@@ -33,6 +33,7 @@ import { newAuthFlowRouter } from './auth-flow-router'
 import { CompiledBundles, Bundles, WebpackDevBundles } from './bundles'
 import { newBundlesRouter } from './bundles-router'
 import { CauseFeRequest } from './causefe-request'
+import { newNamespaceMiddleware } from './namespace-middleware'
 import * as config from '../shared/config'
 import { routesConfig } from '../shared/routes-config'
 import { OpState, reducers, StatePart } from '../shared/store'
@@ -54,6 +55,9 @@ async function main() {
           }))
 	  : new CompiledBundles();
 
+    const namespace = createNamespace('neoncity.request');
+
+    app.use(newNamespaceMiddleware(namespace))
     app.use('/real/auth-flow', newAuthFlowRouter(identityClient));
     app.use('/real/client', newBundlesRouter(bundles, identityClient));
 
@@ -109,8 +113,7 @@ async function main() {
 		session: req.session as Session,
                 publicCauses: causes
 	    };
-
-            const namespace = createNamespace('neoncity.request');
+            
             namespace.set('LANG', (req.session as Session).hasUser() ? ((req.session as Session).user as User).language : 'en');
 	    
 	    // TODO: handle err and redirect correctly.
