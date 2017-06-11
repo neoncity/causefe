@@ -13,7 +13,6 @@
         "experimentalDecorators": true
     },
     "include": [
-        "./src/client/**/*",
         "./src/server/**/*",
         "./src/shared/**/*"
     ]

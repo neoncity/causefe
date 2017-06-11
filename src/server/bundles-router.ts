@@ -10,7 +10,7 @@ import {
 import { IdentityClient, Session, User } from '@neoncity/identity-sdk-js'
 
 import { CauseFeRequest } from './causefe-request'
-import * as config from './config'
+import * as config from '../shared/config'
 import { Bundles } from './bundles'
 
 

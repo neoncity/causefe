@@ -12,7 +12,7 @@ import {
     CorePublicClient } from '@neoncity/core-sdk-js'
 
 import { Auth0Service } from './auth0'
-import * as config from './config'
+import * as config from '../shared/config'
 import './index.less'
 import { routesConfig } from '../shared/routes-config'
 import { OpState, reducers, StatePart } from '../shared/store'
