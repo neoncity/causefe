@@ -47,26 +47,26 @@ export class PublicCauseWidget extends React.Component<Props, State> {
         let donationResult = <span></span>;
         switch (this.state.donationState) {
         case OpState.Loading:
-            donationResult = <span>{text.donating[config.LANG]}</span>;
+            donationResult = <span>{text.donating[config.LANG()]}</span>;
             break;
         case OpState.Ready:
-            donationResult = <span>{text.ready[config.LANG]}</span>;
+            donationResult = <span>{text.ready[config.LANG()]}</span>;
             break;
         case OpState.Failed:
-            donationResult = <span>{text.failed[config.LANG]}</span>;
+            donationResult = <span>{text.failed[config.LANG()]}</span>;
             break;
         } 
         
         let shareResult = <span></span>;
         switch (this.state.shareState) {
         case OpState.Loading:
-            shareResult = <span>{text.sharing[config.LANG]}</span>;
+            shareResult = <span>{text.sharing[config.LANG()]}</span>;
             break;
         case OpState.Ready:
-            shareResult = <span>{text.ready[config.LANG]}</span>;
+            shareResult = <span>{text.ready[config.LANG()]}</span>;
             break;
         case OpState.Failed:
-            shareResult = <span>{text.failed[config.LANG]}</span>;
+            shareResult = <span>{text.failed[config.LANG()]}</span>;
             break;
         }
         
@@ -97,13 +97,13 @@ export class PublicCauseWidget extends React.Component<Props, State> {
 		    type="button" 
 		    disabled={!allValid}
 		    onClick={this._handleDonate.bind(this)}>
-                    {text.donate[config.LANG]}
+                    {text.donate[config.LANG()]}
 		</button>
                 {donationResult}
                 <button
 		    type="button"
 		    onClick={this._handleShare.bind(this)}>
-                    {text.share[config.LANG]}
+                    {text.share[config.LANG()]}
 		</button>
                 {shareResult}
 	    </div>

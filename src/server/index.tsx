@@ -1,4 +1,5 @@
 import { wrap } from 'async-middleware'
+import { createNamespace } from 'continuation-local-storage'
 import * as express from 'express'
 import * as HttpStatus from 'http-status-codes'
 import Mustache = require('mustache')
@@ -25,7 +26,8 @@ import {
     AuthInfo,
     IdentityClient,
     newIdentityClient,
-    Session } from '@neoncity/identity-sdk-js'
+    Session,
+    User } from '@neoncity/identity-sdk-js'
 
 import { newAuthFlowRouter } from './auth-flow-router'
 import { CompiledBundles, Bundles, WebpackDevBundles } from './bundles'
@@ -107,6 +109,9 @@ async function main() {
 		session: req.session as Session,
                 publicCauses: causes
 	    };
+
+            const namespace = createNamespace('neoncity.request');
+            namespace.set('LANG', (req.session as Session).hasUser() ? ((req.session as Session).user as User).language : 'en');
 	    
 	    // TODO: handle err and redirect correctly.
 	    const appHtml = ReactDOMServer.renderToString(

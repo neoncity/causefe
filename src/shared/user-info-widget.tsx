@@ -18,9 +18,9 @@ interface Props {
 export class _UserInfoWidget extends React.Component<Props, undefined> {
     render() {
 	if (this.props.session.hasUser()) {
-	    return <p>{text.user[config.LANG]((this.props.session.user as User).name)} <button onClick={this._handleLogoutClick.bind(this)}>{text.logout[config.LANG]}</button></p>;
+	    return <p>{text.user[config.LANG()]((this.props.session.user as User).name)} <button onClick={this._handleLogoutClick.bind(this)}>{text.logout[config.LANG()]}</button></p>;
 	} else {
-	    return <p><button onClick={this._handleLoginClick.bind(this)}>{text.login[config.LANG]}</button></p>;
+	    return <p><button onClick={this._handleLoginClick.bind(this)}>{text.login[config.LANG()]}</button></p>;
 	}
     }
 

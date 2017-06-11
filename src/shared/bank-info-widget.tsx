@@ -38,12 +38,12 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
         const ibansRegion = this.state.ibans.map((iban, ibanIndex) => {
             let modifiedRegion = <span></span>;
             if (iban.isModified()) {
-                modifiedRegion = <span>{text.modified[config.LANG]}</span>;
+                modifiedRegion = <span>{text.modified[config.LANG()]}</span>;
             }
             
             let warningRegion = <span></span>;
             if (iban.isInvalid()) {
-                warningRegion = <span>{text.invalidIBAN[config.LANG]}</span>;
+                warningRegion = <span>{text.invalidIBAN[config.LANG()]}</span>;
             }
             
             return (
@@ -52,21 +52,21 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
                         type="text"
                         value={iban.getUserInput()}
                         onChange={e => this._handleIBANChange(ibanIndex, e)}
-                        placeholder={text.ibanInputPlaceholder[config.LANG]} />
+                        placeholder={text.ibanInputPlaceholder[config.LANG()]} />
                     {modifiedRegion} {warningRegion}
-                    <button type="button" onClick={_ => this._handleRemoveIBAN(ibanIndex)}>{commonText.remove[config.LANG]}</button>
+                    <button type="button" onClick={_ => this._handleRemoveIBAN(ibanIndex)}>{commonText.remove[config.LANG()]}</button>
                 </p>
             );
         });
         
         return (
             <div>
-                <p>{text.widgetTitle[config.LANG]}</p>
+                <p>{text.widgetTitle[config.LANG()]}</p>
                 <button
                     disabled={this.state.ibans.length > BankInfo.MAX_NUMBER_OF_IBANS}
                     type="button"
                     onClick={this._handleAddIBAN.bind(this)}>
-                    {commonText.add[config.LANG]}
+                    {commonText.add[config.LANG()]}
                 </button>
                 {ibansRegion}
             </div>

@@ -57,9 +57,9 @@ class _CauseView extends React.Component<Props, undefined> {
     
     render() {
         if (this.props.isLoading) {
-            return <div>{commonText.loading[config.LANG]}</div>;
+            return <div>{commonText.loading[config.LANG()]}</div>;
         } else if (this.props.isFailed) {
-            return <div>{commonText.loadingFailed[config.LANG]}</div>;
+            return <div>{commonText.loadingFailed[config.LANG()]}</div>;
         } else {
             return (
                 <PublicCauseWidget

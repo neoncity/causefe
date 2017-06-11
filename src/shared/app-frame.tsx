@@ -24,10 +24,10 @@ class _AppFrame extends React.Component<Props, undefined> {
         if (!this.props.session.hasUser()) {
             return (
                 <div>
-                    <div>{text.viewTitle[config.LANG]}</div>
+                    <div>{text.viewTitle[config.LANG()]}</div>
                     <div>
-                        <Link to="/">{text.home[config.LANG]}</Link>
-                        <a href="/admin">{text.admin[config.LANG]}</a>
+                        <Link to="/">{text.home[config.LANG()]}</Link>
+                        <a href="/admin">{text.admin[config.LANG()]}</a>
                         <UserInfoWidget />
                     </div>
                     {this.props.children}
@@ -36,10 +36,10 @@ class _AppFrame extends React.Component<Props, undefined> {
         } else {
             return (
                 <div>
-                    <div>{text.viewTitle[config.LANG]}</div>
+                    <div>{text.viewTitle[config.LANG()]}</div>
                     <div>
-                        <Link to="/">{text.home[config.LANG]}</Link>
-                        <Link to="/admin">{text.admin[config.LANG]}</Link>
+                        <Link to="/">{text.home[config.LANG()]}</Link>
+                        <Link to="/admin">{text.admin[config.LANG()]}</Link>
                         <UserInfoWidget />
                     </div>
                     {this.props.children}

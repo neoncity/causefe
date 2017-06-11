@@ -25,7 +25,7 @@ class _IdentityFrame extends React.Component<Props, undefined> {
     
     render() {
         if (!this.props.session.hasUser()) {
-	    return <div>{text.shouldBeLoggedIn[config.LANG]}</div>;
+	    return <div>{text.shouldBeLoggedIn[config.LANG()]}</div>;
 	} else {
 	    return <div>{this.props.children}</div>;
 	}

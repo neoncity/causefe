@@ -44,9 +44,9 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
     
     render() {
 	if (this.props.isLoading) {
-	    return <div>{commonText.loading[config.LANG]}</div>;
+	    return <div>{commonText.loading[config.LANG()]}</div>;
 	} else if (this.props.isFailed) {
-	    return <div>{commonText.loadingFailed[config.LANG]}</div>;
+	    return <div>{commonText.loadingFailed[config.LANG()]}</div>;
 	} else {
 	    const donationWidgets = (this.props.userActionsOverview as UserActionsOverview)
 		  .donations
@@ -61,9 +61,9 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
 
 	    return (
                 <div>
-		    <h6>{text.donations[config.LANG]}</h6>
+		    <h6>{text.donations[config.LANG()]}</h6>
 		    {donationWidgets}
-		    <h6>{text.shares[config.LANG]}</h6>
+		    <h6>{text.shares[config.LANG()]}</h6>
 		    {shareWidgets}
 		</div>
 	    );

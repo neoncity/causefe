@@ -54,6 +54,9 @@ module.exports = {
         new webpack.NormalModuleReplacementPlugin(/^fs$/, function(result) {
             result.request = './mock-fs';
         }),
+        new webpack.NormalModuleReplacementPlugin(/^continuation-local-storage$/, function(result) {
+            result.request = './mock-continuation-local-storage';
+        }),        
         failPlugin,
 	new CopyPlugin([
 	    {from: './src/shared/static/index.html'},

@@ -1,4 +1,6 @@
 import { Env, parseEnv, isLocal } from '@neoncity/common-js'
+import { readFileSync } from 'fs'
+import { getNamespace } from 'continuation-local-storage'
 
 
 export let ENV:Env;
@@ -15,11 +17,9 @@ export let AUTH0_DOMAIN: string;
 export let AUTH0_CALLBACK_URI: string;
 export let FILESTACK_KEY: string;
 export let FACEBOOK_APP_ID:string;
-export let LANG:string;
+export let LANG:() => string;
 
 if (process.env.CONTEXT == 'SERVER') {
-    const readFileSync = require('fs').readFileSync;
-
     ENV = parseEnv(process.env.ENV);
     ADDRESS = process.env.ADDRESS;
     PORT = parseInt(process.env.PORT, 10);
@@ -28,7 +28,12 @@ if (process.env.CONTEXT == 'SERVER') {
     IDENTITY_SERVICE_EXTERNAL_HOST = process.env.IDENTITY_SERVICE_EXTERNAL_HOST;
     CORE_SERVICE_EXTERNAL_HOST = process.env.CORE_SERVICE_EXTERNAL_HOST;
     LOGOUT_ROUTE = '/real/auth-flow/logout';
-    LANG = 'en';
+
+    LANG = () => {
+        const namespace = getNamespace('neoncity.request');
+        const lang = namespace.get('LANG');
+        return lang;
+    }
 
     if (isLocal(ENV)) {
         const secrets = JSON.parse(readFileSync(process.env.SECRETS_PATH, 'utf-8'));
@@ -57,5 +62,5 @@ if (process.env.CONTEXT == 'SERVER') {
     CORE_SERVICE_EXTERNAL_HOST = '{{{ CORE_SERVICE_EXTERNAL_HOST }}}';
     FACEBOOK_APP_ID = '{{{ FACEBOOK_APP_ID }}}';
     LOGOUT_ROUTE = '{{{ LOGOUT_ROUTE }}}';
-    LANG = '{{{ LANG }}}';
+    LANG = () => '{{{ LANG }}}';
 }

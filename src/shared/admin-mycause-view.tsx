@@ -130,52 +130,52 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 
         let titleModifiedRegion = <span></span>;
         if (this.state.title.isModified()) {
-            titleModifiedRegion = <span>{text.modified[config.LANG]}</span>;
+            titleModifiedRegion = <span>{text.modified[config.LANG()]}</span>;
         }
 
         let titleWarningRegion = <span></span>;
         if (this.state.title.isInvalid()) {
-            titleWarningRegion = <span>{text.invalidTitleValue[config.LANG]}</span>;
+            titleWarningRegion = <span>{text.invalidTitleValue[config.LANG()]}</span>;
         }
 
         let slugModifiedRegion = <span></span>;
         if (this.state.slug.isModified()) {
-            slugModifiedRegion = <span>{text.modified[config.LANG]}</span>;
+            slugModifiedRegion = <span>{text.modified[config.LANG()]}</span>;
         }
 
         let slugWarningRegion = <span></span>;
         if (this.state.slug.isInvalid()) {
-            slugWarningRegion = <span>{text.invalidSlugValue[config.LANG]}</span>;
+            slugWarningRegion = <span>{text.invalidSlugValue[config.LANG()]}</span>;
         }
 
         let descriptionModifiedRegion = <span></span>;
         if (this.state.description.isModified()) {
-            descriptionModifiedRegion = <span>{text.modified[config.LANG]}</span>;
+            descriptionModifiedRegion = <span>{text.modified[config.LANG()]}</span>;
         }
 
         let descriptionWarningRegion = <span></span>;
         if (this.state.description.isInvalid()) {
-            descriptionWarningRegion = <span>{text.invalidDescriptionValue[config.LANG]}</span>;
+            descriptionWarningRegion = <span>{text.invalidDescriptionValue[config.LANG()]}</span>;
         }
 
         let goalAmountModifiedRegion = <span></span>;
         if (this.state.goalAmount.isModified()) {
-            goalAmountModifiedRegion = <span>{text.modified[config.LANG]}</span>;
+            goalAmountModifiedRegion = <span>{text.modified[config.LANG()]}</span>;
         }
 
         let goalAmountWarningRegion = <span></span>;
         if (this.state.goalAmount.isInvalid()) {
-            goalAmountWarningRegion = <span>{text.invalidGoalAmountValue[config.LANG]}</span>;
+            goalAmountWarningRegion = <span>{text.invalidGoalAmountValue[config.LANG()]}</span>;
         }
 
         let goalCurrencyModifiedRegion = <span></span>;
         if (this.state.goalCurrency.isModified()) {
-            goalCurrencyModifiedRegion = <span>{text.modified[config.LANG]}</span>;
+            goalCurrencyModifiedRegion = <span>{text.modified[config.LANG()]}</span>;
         }
 
         let goalCurrencyWarningRegion = <span></span>;
         if (this.state.goalCurrency.isInvalid()) {
-            goalCurrencyWarningRegion = <span>{text.invalidGoalCurrencyValue[config.LANG]}</span>;
+            goalCurrencyWarningRegion = <span>{text.invalidGoalCurrencyValue[config.LANG()]}</span>;
         }        
 	
         const editForm = (
@@ -188,7 +188,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                             type="text"
                             value={this.state.title.getUserInput()}
                             onChange={this._handleTitleChange.bind(this)}
-                            placeholder={text.causeTitlePlaceholder[config.LANG]} />
+                            placeholder={text.causeTitlePlaceholder[config.LANG()]} />
                             {titleModifiedRegion} {titleWarningRegion}
                     </div>
                     <div>
@@ -197,7 +197,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                             id="admin-my-cause-slug"
                             value={this.state.slug.getValue()}
                             disabled={true}
-                            placeholder={text.causeUrlPlaceholder[config.LANG]} />
+                            placeholder={text.causeUrlPlaceholder[config.LANG()]} />
                         {slugModifiedRegion} {slugWarningRegion}
                     </div>
                     <div>
@@ -207,7 +207,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                             type="text"
                             value={this.state.description.getUserInput()}
                             onChange={this._handleDescriptionChange.bind(this)}
-                            placeholder={text.causeDescriptionPlaceholder[config.LANG]} />
+                            placeholder={text.causeDescriptionPlaceholder[config.LANG()]} />
                         {descriptionModifiedRegion} {descriptionWarningRegion}
                     </div>
                     <div>
@@ -252,25 +252,25 @@ class _AdminMyCauseView extends React.Component<Props, State> {
         );
 	
 	if (this.props.isLoading) {
-	    return <div>{commonText.loading[config.LANG]}</div>;
+	    return <div>{commonText.loading[config.LANG()]}</div>;
 	} else if (this.props.isFailed) {
-	    return <div>{commonText.loadingFailed[config.LANG]}</div>;
+	    return <div>{commonText.loadingFailed[config.LANG()]}</div>;
 	} else if (!this.props.hasCause) {
 	    if (!this.state.showCreationFormIfNoControls) {
-		return <div>{text.noCause[config.LANG]} <button onClick={this._handleShowCreationForm.bind(this)}>{text.createCause[config.LANG]}</button> </div>;
+		return <div>{text.noCause[config.LANG()]} <button onClick={this._handleShowCreationForm.bind(this)}>{text.createCause[config.LANG()]}</button> </div>;
 	    } else {
 		return (
                     <div>
-                        {text.creationForm[config.LANG]} {editForm}
+                        {text.creationForm[config.LANG()]} {editForm}
                         <div>
-                            <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>{text.reset[config.LANG]}</button>
-                            <button disabled={!this.state.modifiedGeneral || !allValid} onClick={this._handleCreate.bind(this)}>{text.create[config.LANG]}</button>
+                            <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>{text.reset[config.LANG()]}</button>
+                            <button disabled={!this.state.modifiedGeneral || !allValid} onClick={this._handleCreate.bind(this)}>{text.create[config.LANG()]}</button>
                         </div>
                     </div>
 		);
             }
 	} else if (this.props.causeIsDeleted) {
-	    return <div>{text.causeDeleted[config.LANG]}</div>;
+	    return <div>{text.causeDeleted[config.LANG()]}</div>;
         } else {
             const cause = this.props.cause as PrivateCause;
             
@@ -279,11 +279,11 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                     {cause.title}
                     {editForm}
                     <div>
-                        <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>{text.reset[config.LANG]}</button>
-                    <button disabled={!this.state.modifiedGeneral || !allValid} onClick={this._handleUpdate.bind(this)}>{text.update[config.LANG]}</button>
+                        <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>{text.reset[config.LANG()]}</button>
+                    <button disabled={!this.state.modifiedGeneral || !allValid} onClick={this._handleUpdate.bind(this)}>{text.update[config.LANG()]}</button>
                     </div>
 		    <div>
-                        <button onClick={this._handleDelete.bind(this)}>{text.deleteCause[config.LANG]}</button>
+                        <button onClick={this._handleDelete.bind(this)}>{text.deleteCause[config.LANG()]}</button>
 		    </div>
                 </div>
 	    );

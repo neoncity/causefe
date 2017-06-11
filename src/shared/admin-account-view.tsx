@@ -11,6 +11,6 @@ interface Props {
 
 export class AdminAccountView extends React.Component<Props, undefined> {
     render() {
-        return <div>{text.viewTitle[config.LANG]}</div>;
+        return <div>{text.viewTitle[config.LANG()]}</div>;
     }
 }

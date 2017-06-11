@@ -15,11 +15,11 @@ export class AdminFrame extends React.Component<Props, undefined> {
     render() {
         return (
             <div>
-                <div>{text.viewTitle[config.LANG]}</div>
-                <Link to="/admin/my-cause">{text.myCause[config.LANG]}</Link>
-                <Link to="/admin/cause-analytics">{text.causeAnalytics[config.LANG]}</Link>
-                <Link to="/admin/my-actions">{text.myActions[config.LANG]}</Link>
-                <Link to="/admin/account">{text.account[config.LANG]}</Link>
+                <div>{text.viewTitle[config.LANG()]}</div>
+                <Link to="/admin/my-cause">{text.myCause[config.LANG()]}</Link>
+                <Link to="/admin/cause-analytics">{text.causeAnalytics[config.LANG()]}</Link>
+                <Link to="/admin/my-actions">{text.myActions[config.LANG()]}</Link>
+                <Link to="/admin/account">{text.account[config.LANG()]}</Link>
                 {this.props.children}
             </div>
         );

@@ -47,22 +47,22 @@ class _AdminCauseAnalyticsView extends React.Component<Props, undefined> {
     
     render() {
         if (this.props.isLoading) {
-            return <div>{commonText.loading[config.LANG]}</div>;
+            return <div>{commonText.loading[config.LANG()]}</div>;
 	} else if (this.props.isFailed) {
-	    return <div>{commonText.loadingFailed[config.LANG]}</div>;
+	    return <div>{commonText.loadingFailed[config.LANG()]}</div>;
 	} else if (!this.props.hasCause) {
-            return <div>{text.noCause[config.LANG]}</div>;
+            return <div>{text.noCause[config.LANG()]}</div>;
 	} else {
             const causeAnalytics = this.props.causeAnalytics as CauseAnalytics;
             
             return (
                 <div>
-                    <p>{text.daysLeft[config.LANG](causeAnalytics.daysLeft)}</p>
-                    <p>{text.donorsCount[config.LANG](causeAnalytics.donorsCount)}</p>
-                    <p>{text.donationsCount[config.LANG](causeAnalytics.donationsCount)}</p>
-                    <p>{text.donatedAmount[config.LANG](causeAnalytics.amountDonated.amount, causeAnalytics.amountDonated.currency.toString())}</p>
-                    <p>{text.sharersCount[config.LANG](causeAnalytics.sharersCount)}</p>
-                    <p>{text.sharesCount[config.LANG](causeAnalytics.sharesCount)}</p>
+                    <p>{text.daysLeft[config.LANG()](causeAnalytics.daysLeft)}</p>
+                    <p>{text.donorsCount[config.LANG()](causeAnalytics.donorsCount)}</p>
+                    <p>{text.donationsCount[config.LANG()](causeAnalytics.donationsCount)}</p>
+                    <p>{text.donatedAmount[config.LANG()](causeAnalytics.amountDonated.amount, causeAnalytics.amountDonated.currency.toString())}</p>
+                    <p>{text.sharersCount[config.LANG()](causeAnalytics.sharersCount)}</p>
+                    <p>{text.sharesCount[config.LANG()](causeAnalytics.sharesCount)}</p>
                 </div>
             );
         }
