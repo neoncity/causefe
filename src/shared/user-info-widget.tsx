@@ -11,7 +11,6 @@ import * as text from './user-info-widget.text'
 
 interface Props {
     session: Session;
-    logoutRoute: string;
     auth0Client: Auth0Client;
 }
 
@@ -26,7 +25,7 @@ export class _UserInfoWidget extends React.Component<Props, undefined> {
     }
 
     private _handleLogoutClick() {
-        location.replace(this.props.logoutRoute);
+        location.replace(config.LOGOUT_ROUTE);
     }
 
     private _handleLoginClick() {
@@ -38,7 +37,6 @@ export class _UserInfoWidget extends React.Component<Props, undefined> {
 function stateToProps(state: any) {
     return {
 	session: state.request.session,
-	logoutRoute: state.request.logoutRoute,
         auth0Client: state.request.services.auth0Client
     };
 }
