@@ -26,8 +26,7 @@ import {
     AuthInfo,
     IdentityClient,
     newIdentityClient,
-    Session,
-    User } from '@neoncity/identity-sdk-js'
+    Session } from '@neoncity/identity-sdk-js'
 
 import { newAuthFlowRouter } from './auth-flow-router'
 import { CompiledBundles, Bundles, WebpackDevBundles } from './bundles'
@@ -38,6 +37,7 @@ import * as config from '../shared/config'
 import { routesConfig } from '../shared/routes-config'
 import { OpState, reducers, StatePart } from '../shared/store'
 import { InitialState } from '../shared/initial-state'
+import { inferLanguage } from '../shared/utils'
 
 
 async function main() {
@@ -55,7 +55,7 @@ async function main() {
           }))
 	  : new CompiledBundles();
 
-    const namespace = createNamespace('neoncity.request');
+    const namespace = createNamespace(config.CLS_NAMESPACE_NAME);
 
     app.use(newNamespaceMiddleware(namespace))
     app.use('/real/auth-flow', newAuthFlowRouter(identityClient));
@@ -102,7 +102,6 @@ async function main() {
 	match({ routes: routesConfig, location: req.url}, (_err, _redirect, props) => {
 	    const store = createStore(reducers, {
 		request: {
-		    session: req.session as Session,
 		    services: null
 		}
 	    } as any, undefined);
@@ -110,11 +109,11 @@ async function main() {
 	    store.dispatch({part: StatePart.PublicCauses, type: OpState.Ready, causes: causes});
 
 	    const initialState = {
-		session: req.session as Session,
                 publicCauses: causes
 	    };
             
-            namespace.set('LANG', (req.session as Session).hasUser() ? ((req.session as Session).user as User).language : 'en');
+            namespace.set('SESSION', req.session as Session);
+            namespace.set('LANG', inferLanguage(req.session as Session));
 	    
 	    // TODO: handle err and redirect correctly.
 	    const appHtml = ReactDOMServer.renderToString(

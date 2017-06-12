@@ -7,7 +7,6 @@ import {
     PublicCause,
     PrivateCause,
     UserActionsOverview } from '@neoncity/core-sdk-js'
-import { Session } from '@neoncity/identity-sdk-js'
 
 import { Auth0Client } from './auth0'
 import { FileStorageClient } from './file-storage'
@@ -32,7 +31,6 @@ export enum OpState {
 
 
 export interface RequestState {
-    session: Session;
     services: null|{
 	corePublicClient: CorePublicClient;
 	corePrivateClient: CorePrivateClient;
@@ -43,7 +41,6 @@ export interface RequestState {
 
 
 const requestInitialState: RequestState = {
-    session: new Session(), // An empty session, not good for anything.
     services: null
 };
 

@@ -1,20 +1,24 @@
 import * as express from 'express'
 import * as HttpStatus from 'http-status-codes'
 import Mustache = require('mustache')
+import { MarshalFrom } from 'raynor'
 
 import {
     AuthInfoLevel,
     newAuthInfoMiddleware,
     newSessionMiddleware,
     SessionLevel } from '@neoncity/common-server-js'
-import { IdentityClient, Session, User } from '@neoncity/identity-sdk-js'
+import { IdentityClient, Session } from '@neoncity/identity-sdk-js'
 
+import { Bundles } from './bundles'
 import { CauseFeRequest } from './causefe-request'
 import * as config from '../shared/config'
-import { Bundles } from './bundles'
+import { inferLanguage } from '../shared/utils'
 
 
 export function newBundlesRouter(bundles: Bundles, identityClient: IdentityClient): express.Router {
+    const sessionMarshaller = new (MarshalFrom(Session))();
+    
     const bundlesRouter = express.Router();
 
     bundlesRouter.use(newAuthInfoMiddleware(AuthInfoLevel.SessionId));
@@ -24,6 +28,7 @@ export function newBundlesRouter(bundles: Bundles, identityClient: IdentityClien
 	const session = req.session as Session;
         const jsIndex = Mustache.render(bundles.getJsIndexTemplate(), {
 	    ENV: config.ENV,
+            CONTEXT: config.CONTEXT,
 	    AUTH0_CLIENT_ID: config.AUTH0_CLIENT_ID,
 	    AUTH0_DOMAIN: config.AUTH0_DOMAIN,
 	    AUTH0_CALLBACK_URI: config.AUTH0_CALLBACK_URI,
@@ -32,7 +37,8 @@ export function newBundlesRouter(bundles: Bundles, identityClient: IdentityClien
 	    CORE_SERVICE_EXTERNAL_HOST: config.CORE_SERVICE_EXTERNAL_HOST,
 	    FACEBOOK_APP_ID: config.FACEBOOK_APP_ID,
 	    LOGOUT_ROUTE: config.LOGOUT_ROUTE,
-	    LANG: session.hasUser() ? (session.user as User).language : 'en'
+	    LANG: inferLanguage(session),
+            SESSION: JSON.stringify(sessionMarshaller.pack(session))
 	});
 	
         res.write(jsIndex);
@@ -41,7 +47,6 @@ export function newBundlesRouter(bundles: Bundles, identityClient: IdentityClien
     });
     
     bundlesRouter.use('/', bundles.getOtherBundlesMiddleware());
-
 
     return bundlesRouter;
 }

@@ -34,7 +34,6 @@ const initialState = initialStateMarshaller.extract((window as any).__NEONCITY_I
 delete (window as any).__NEONCITY_INITIAL_STATE;
 const initialReduxState = {
     request: {
-	session: initialState.session,
 	services: {
 	    corePublicClient: corePublicClient,
 	    corePrivateClient: corePrivateClient,

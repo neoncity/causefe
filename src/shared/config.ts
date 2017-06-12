@@ -1,9 +1,16 @@
-import { Env, parseEnv, isLocal } from '@neoncity/common-js'
-import { readFileSync } from 'fs'
 import { getNamespace } from 'continuation-local-storage'
+import { readFileSync } from 'fs'
+import { MarshalFrom } from 'raynor'
+
+import { Context, Env, parseContext, parseEnv, isLocal, isServer } from '@neoncity/common-js'
+import { Session } from '@neoncity/identity-sdk-js'
+
+
+export const CLS_NAMESPACE_NAME:string = 'neoncity.request';
 
 
 export let ENV:Env;
+export let CONTEXT:Context;
 export let ADDRESS:string;
 export let PORT:number;
 export let IDENTITY_SERVICE_HOST:string;
@@ -18,9 +25,11 @@ export let AUTH0_CALLBACK_URI: string;
 export let FILESTACK_KEY: string;
 export let FACEBOOK_APP_ID:string;
 export let LANG:() => string;
+export let SESSION:() => Session;
 
-if (process.env.CONTEXT == 'SERVER') {
+if (isServer(parseContext(process.env.CONTEXT))) {
     ENV = parseEnv(process.env.ENV);
+    CONTEXT = parseContext(process.env.CONTEXT);
     ADDRESS = process.env.ADDRESS;
     PORT = parseInt(process.env.PORT, 10);
     IDENTITY_SERVICE_HOST = process.env.IDENTITY_SERVICE_HOST;
@@ -30,10 +39,16 @@ if (process.env.CONTEXT == 'SERVER') {
     LOGOUT_ROUTE = '/real/auth-flow/logout';
 
     LANG = () => {
-        const namespace = getNamespace('neoncity.request');
+        const namespace = getNamespace(CLS_NAMESPACE_NAME);
         const lang = namespace.get('LANG');
         return lang;
-    }
+    };
+
+    SESSION = () => {
+        const namespace = getNamespace(CLS_NAMESPACE_NAME);
+        const session = namespace.get('SESSION');
+        return session;
+    };
 
     if (isLocal(ENV)) {
         const secrets = JSON.parse(readFileSync(process.env.SECRETS_PATH, 'utf-8'));
@@ -53,7 +68,13 @@ if (process.env.CONTEXT == 'SERVER') {
         FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID;
     }    
 } else {
-    ENV = parseInt('{{{ ENV }}}');
+    const sessionMarshaller = new (MarshalFrom(Session))();
+
+    const RAW_SESSION_FROM_SERVER = '{{{ SESSION }}}';
+    const SESSION_FROM_SERVER = sessionMarshaller.extract(JSON.parse(RAW_SESSION_FROM_SERVER));
+    
+    ENV = parseInt('{{{ ENV }}}') as Env;
+    CONTEXT = parseInt('{{{ CONTEXT }}}') as Context;
     AUTH0_CLIENT_ID = '{{{ AUTH0_CLIENT_ID }}}';
     AUTH0_DOMAIN = '{{{ AUTH0_DOMAIN }}}';
     AUTH0_CALLBACK_URI = '{{{ AUTH0_CALLBACK_URI }}}';
@@ -63,4 +84,5 @@ if (process.env.CONTEXT == 'SERVER') {
     FACEBOOK_APP_ID = '{{{ FACEBOOK_APP_ID }}}';
     LOGOUT_ROUTE = '{{{ LOGOUT_ROUTE }}}';
     LANG = () => '{{{ LANG }}}';
+    SESSION = () => SESSION_FROM_SERVER;
 }

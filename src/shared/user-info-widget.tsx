@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-import { Session, User } from '@neoncity/identity-sdk-js'
+import { User } from '@neoncity/identity-sdk-js'
 
 import * as config from './config'
 import { Auth0Client } from '../shared/auth0'
@@ -10,15 +10,15 @@ import * as text from './user-info-widget.text'
 
 
 interface Props {
-    session: Session;
     auth0Client: Auth0Client;
 }
 
 
 export class _UserInfoWidget extends React.Component<Props, undefined> {
     render() {
-	if (this.props.session.hasUser()) {
-	    return <p>{text.user[config.LANG()]((this.props.session.user as User).name)} <button onClick={this._handleLogoutClick.bind(this)}>{text.logout[config.LANG()]}</button></p>;
+        const session = config.SESSION();
+	if (session.hasUser()) {
+	    return <p>{text.user[config.LANG()]((session.user as User).name)} <button onClick={this._handleLogoutClick.bind(this)}>{text.logout[config.LANG()]}</button></p>;
 	} else {
 	    return <p><button onClick={this._handleLoginClick.bind(this)}>{text.login[config.LANG()]}</button></p>;
 	}
@@ -36,7 +36,6 @@ export class _UserInfoWidget extends React.Component<Props, undefined> {
 
 function stateToProps(state: any) {
     return {
-	session: state.request.session,
         auth0Client: state.request.services != null ? state.request.services.auth0Client : null
     };
 }
