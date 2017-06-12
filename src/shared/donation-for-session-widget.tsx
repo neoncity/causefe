@@ -18,7 +18,7 @@ export class DonationForSessionWidget extends React.Component<Props, null> {
     render() {
 	const donation = this.props.donationForSession;
 	const cause = this.props.donationForSession.forCause;
-	const timeCreated = donation.timeCreated.toString();
+	const timeCreated = donation.timeCreated.toUTCString();
 
 	return <p>{text.donated[config.LANG()](donation.amount, cause.title, timeCreated)} <Link to={causeLink(cause)}>{text.details[config.LANG()]}</Link></p>
     }
