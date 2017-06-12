@@ -36,8 +36,8 @@ export let AUTH0_DOMAIN: string;
 export let AUTH0_CALLBACK_URI: string;
 export let FILESTACK_KEY: string;
 export let FACEBOOK_APP_ID:string;
-export let LANG:() => string;
 export let SESSION:() => Session;
+export let LANG:() => string;
 export let CORE_PUBLIC_CLIENT:() => CorePublicClient;
 export let CORE_PRIVATE_CLIENT:() => CorePrivateClient;
 export let FILE_STORAGE_CLIENT:() => FileStorageClient;
@@ -55,16 +55,16 @@ if (isServer(parseContext(process.env.CONTEXT))) {
     CORE_SERVICE_EXTERNAL_HOST = process.env.CORE_SERVICE_EXTERNAL_HOST;
     LOGOUT_ROUTE = '/real/auth-flow/logout';
 
-    LANG = () => {
-        const namespace = getNamespace(CLS_NAMESPACE_NAME);
-        const lang = namespace.get('LANG');
-        return lang;
-    };
-
     SESSION = () => {
         const namespace = getNamespace(CLS_NAMESPACE_NAME);
         const session = namespace.get('SESSION');
         return session;
+    };
+
+    LANG = () => {
+        const namespace = getNamespace(CLS_NAMESPACE_NAME);
+        const lang = namespace.get('LANG');
+        return lang;
     };
 
     CORE_PUBLIC_CLIENT = () => {
@@ -125,8 +125,8 @@ if (isServer(parseContext(process.env.CONTEXT))) {
     CORE_SERVICE_EXTERNAL_HOST = clientConfig.coreServiceExternalHost;
     FACEBOOK_APP_ID = clientConfig.facebookAppId;
     LOGOUT_ROUTE = clientConfig.logoutRoute;
-    LANG = () => clientConfig.language;
     SESSION = () => clientConfig.session;
+    LANG = () => clientConfig.language;
 
     CORE_PUBLIC_CLIENT = () => {
         if (corePublicClient == null) {

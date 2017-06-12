@@ -49,11 +49,12 @@ async function main() {
     const app = express();
 
     const bundles: Bundles = isLocal(config.ENV)
-	  ? new WebpackDevBundles(theWebpackDevMiddleware(webpack(webpackConfig), {
-	      publicPath: '/', //Different because we're mounting on /real/client to boot webpackConfig.output.publicPath,
-	      serverSideRender: false
+          ? new WebpackDevBundles(theWebpackDevMiddleware(webpack(webpackConfig), {
+              //Different because we're mounting on /real/client to boot webpackConfig.output.publicPath,              
+              publicPath: '/',
+              serverSideRender: false
           }))
-	  : new CompiledBundles();
+          : new CompiledBundles();
 
     const namespace = createNamespace(config.CLS_NAMESPACE_NAME);
 
@@ -62,92 +63,115 @@ async function main() {
     app.use('/real/client', bundles.getOtherBundlesRouter());
 
     app.get('*', [newAuthInfoMiddleware(AuthInfoLevel.None), newSessionMiddleware(SessionLevel.None, config.ENV, identityClient)], wrap(async (req: CauseFeRequest, res: express.Response) => {
-	if (req.authInfo == null || req.session == null) {
-	    try {
-		const [authInfo, session] = await identityClient.getOrCreateSession();
-		req.authInfo = authInfo;
-		req.session = session;
+        if (req.authInfo == null || req.session == null) {
+            try {
+                const [authInfo, session] = await identityClient.getOrCreateSession();
+                req.authInfo = authInfo;
+                req.session = session;
 
-		res.cookie(AuthInfo.CookieName, authInfoMarshaller.pack(authInfo), {
-		    expires: session.timeExpires,
-		    httpOnly: true,
-		    secure: !isLocal(config.ENV)
-		});
-	    } catch (e) {
-		console.log(`Session creation error - ${e.toString()}`);
-	    	if (isLocal(config.ENV)) {
-		    console.log(e);
-	    	}
-		
-	    	res.status(HttpStatus.INTERNAL_SERVER_ERROR);
-	    	res.end();
-	    	return;		    
-	    }
-	}
+                res.cookie(AuthInfo.CookieName, authInfoMarshaller.pack(authInfo), {
+                    expires: session.timeExpires,
+                    httpOnly: true,
+                    secure: !isLocal(config.ENV)
+                });
+            } catch (e) {
+                console.log(`Session creation error - ${e.toString()}`);
+                if (isLocal(config.ENV)) {
+                    console.log(e);
+                }
+                
+                res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+                res.end();
+                return;
+            }
+        }
 
-        const language = inferLanguage(req.session as Session);
+        const session = req.session as Session;
+        const language = inferLanguage(session);
 
-	let causes: PublicCause[] = [];
-	try {
-	    causes = await corePublicClient.withAuthInfo(req.authInfo).getCauses();
-	} catch (e) {
-	    console.log(`Session creation error - ${e.toString()}`);
-	    if (isLocal(config.ENV)) {
-		console.log(e);
-	    }
-	    
-	    res.status(HttpStatus.INTERNAL_SERVER_ERROR);
-	    res.end();
-	    return;
-	}
+        let causes: PublicCause[]|null = null;
+        try {
+            causes = await corePublicClient.withAuthInfo(req.authInfo).getCauses();
+        } catch (e) {
+            console.log(`Cannot retrieve causes server-side - ${e.toString()}`);
+            if (isLocal(config.ENV)) {
+                console.log(e);
+            }
+        }
 
-	match({ routes: routesConfig, location: req.url}, (_err, _redirect, props) => {
-	    const store = createStore(reducers);
-	    store.dispatch({part: StatePart.PublicCauses, type: OpState.Ready, causes: causes});
+        match({ routes: routesConfig, location: req.url}, (err, redirect, props) => {
+            if (err) {
+                console.log(`Some sort of error during matching - ${err.toString()}`);
+                if (isLocal(config.ENV)) {
+                    console.log(err);
+                }
+
+                res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+                res.end();
+                return;
+            }
+
+            if (redirect) {
+                res.redirect(redirect.pathname + redirect.search);
+                return;
+            }
+
+            if (!props) {
+                res.status(HttpStatus.NOT_FOUND);
+                res.end();
+                return;
+            }
+
+            const store = createStore(reducers);
+
+            // Will work even if causes is not null. Client-side will re-query for it.
+            if (causes != null) {
+                store.dispatch({part: StatePart.PublicCauses, type: OpState.Ready, causes: causes});
+            }
 
             const clientConfig = {
-	        env: config.ENV,
+                env: config.ENV,
                 context: config.CONTEXT,
-	        auth0ClientId: config.AUTH0_CLIENT_ID,
-	        auth0Domain: config.AUTH0_DOMAIN,
-	        auth0CallbackUri: config.AUTH0_CALLBACK_URI,
-	        fileStackKey: config.FILESTACK_KEY,
-	        identityServiceExternalHost: config.IDENTITY_SERVICE_EXTERNAL_HOST,
-	        coreServiceExternalHost: config.CORE_SERVICE_EXTERNAL_HOST,
-	        facebookAppId: config.FACEBOOK_APP_ID,
-	        logoutRoute: config.LOGOUT_ROUTE,
-	        language: language,
-                session: req.session as Session
+                auth0ClientId: config.AUTH0_CLIENT_ID,
+                auth0Domain: config.AUTH0_DOMAIN,
+                auth0CallbackUri: config.AUTH0_CALLBACK_URI,
+                fileStackKey: config.FILESTACK_KEY,
+                identityServiceExternalHost: config.IDENTITY_SERVICE_EXTERNAL_HOST,
+                coreServiceExternalHost: config.CORE_SERVICE_EXTERNAL_HOST,
+                facebookAppId: config.FACEBOOK_APP_ID,
+                logoutRoute: config.LOGOUT_ROUTE,
+                session: session,
+                language: language
             };
 
-	    const initialState = {
+            const initialState = {
                 publicCauses: causes
-	    };
+            };
             
-            namespace.set('SESSION', req.session as Session);
-            namespace.set('LANG', inferLanguage(req.session as Session));
-	    
-	    // TODO: handle err and redirect correctly.
-	    const appHtml = ReactDOMServer.renderToString(
-		    <Provider store={store}>
-		        <RouterContext {...props} />
-		    </Provider>);
+            namespace.set('SESSION', session);
+            namespace.set('LANG', language);
+            
+            const appHtml = ReactDOMServer.renderToString(
+                <Provider store={store}>
+                    <RouterContext {...props} />
+                </Provider>
+            );
 
             const htmlIndex = Mustache.render(bundles.getHtmlIndexTemplate(), {
-		FACEBOOK_APP_ID: config.FACEBOOK_APP_ID,
-		APP_HTML: appHtml,
+                FACEBOOK_APP_ID: config.FACEBOOK_APP_ID,
+                APP_HTML: appHtml,
                 CLIENT_CONFIG: JSON.stringify(clientConfigMarshaller.pack(clientConfig)),
-		CLIENT_INITIAL_STATE: JSON.stringify(clientInitialStateMarshaller.pack(initialState))
-	    });
+                CLIENT_INITIAL_STATE: JSON.stringify(clientInitialStateMarshaller.pack(initialState))
+            });
 
             res.write(htmlIndex);
-	    res.status(HttpStatus.OK);
-            res.end();	    
-	});
+            res.status(HttpStatus.OK);
+            res.end();      
+        });
     }));
 
     app.listen(config.PORT, config.ADDRESS, () => {
-	console.log(`Started ... ${config.ADDRESS}:${config.PORT}`);
+        console.log(`Started ... ${config.ADDRESS}:${config.PORT}`);
     });
 }
 
