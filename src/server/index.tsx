@@ -30,13 +30,12 @@ import {
 
 import { newAuthFlowRouter } from './auth-flow-router'
 import { CompiledBundles, Bundles, WebpackDevBundles } from './bundles'
-import { newBundlesRouter } from './bundles-router'
 import { CauseFeRequest } from './causefe-request'
 import { newNamespaceMiddleware } from './namespace-middleware'
 import * as config from '../shared/config'
 import { routesConfig } from '../shared/routes-config'
 import { OpState, reducers, StatePart } from '../shared/store'
-import { InitialState } from '../shared/initial-state'
+import { ClientConfig, ClientInitialState } from '../shared/client-data'
 import { inferLanguage } from '../shared/utils'
 
 
@@ -45,7 +44,8 @@ async function main() {
     const identityClient: IdentityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST);
     const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.CORE_SERVICE_HOST);
     const authInfoMarshaller = new (MarshalFrom(AuthInfo))();
-    const initialStateMarshaller = new (MarshalFrom(InitialState))();
+    const clientConfigMarshaller = new (MarshalFrom(ClientConfig))();
+    const clientInitialStateMarshaller = new (MarshalFrom(ClientInitialState))();
     const app = express();
 
     const bundles: Bundles = isLocal(config.ENV)
@@ -59,7 +59,7 @@ async function main() {
 
     app.use(newNamespaceMiddleware(namespace))
     app.use('/real/auth-flow', newAuthFlowRouter(identityClient));
-    app.use('/real/client', newBundlesRouter(bundles, identityClient));
+    app.use('/real/client', bundles.getOtherBundlesRouter());
 
     app.get('*', [newAuthInfoMiddleware(AuthInfoLevel.None), newSessionMiddleware(SessionLevel.None, config.ENV, identityClient)], wrap(async (req: CauseFeRequest, res: express.Response) => {
 	if (req.authInfo == null || req.session == null) {
@@ -85,6 +85,8 @@ async function main() {
 	    }
 	}
 
+        const language = inferLanguage(req.session as Session);
+
 	let causes: PublicCause[] = [];
 	try {
 	    causes = await corePublicClient.withAuthInfo(req.authInfo).getCauses();
@@ -103,6 +105,21 @@ async function main() {
 	    const store = createStore(reducers);
 	    store.dispatch({part: StatePart.PublicCauses, type: OpState.Ready, causes: causes});
 
+            const clientConfig = {
+	        env: config.ENV,
+                context: config.CONTEXT,
+	        auth0ClientId: config.AUTH0_CLIENT_ID,
+	        auth0Domain: config.AUTH0_DOMAIN,
+	        auth0CallbackUri: config.AUTH0_CALLBACK_URI,
+	        fileStackKey: config.FILESTACK_KEY,
+	        identityServiceExternalHost: config.IDENTITY_SERVICE_EXTERNAL_HOST,
+	        coreServiceExternalHost: config.CORE_SERVICE_EXTERNAL_HOST,
+	        facebookAppId: config.FACEBOOK_APP_ID,
+	        logoutRoute: config.LOGOUT_ROUTE,
+	        language: language,
+                session: req.session as Session
+            };
+
 	    const initialState = {
                 publicCauses: causes
 	    };
@@ -116,11 +133,12 @@ async function main() {
 		        <RouterContext {...props} />
 		    </Provider>);
 
-            const htmlIndex = Mustache.render(bundles.getHtmlIndexTemplate(), (Object as any).assign({}, {
+            const htmlIndex = Mustache.render(bundles.getHtmlIndexTemplate(), {
 		FACEBOOK_APP_ID: config.FACEBOOK_APP_ID,
 		APP_HTML: appHtml,
-		APP_INITIAL_STATE: JSON.stringify(initialStateMarshaller.pack(initialState))
-	    }));
+                CLIENT_CONFIG: JSON.stringify(clientConfigMarshaller.pack(clientConfig)),
+		CLIENT_INITIAL_STATE: JSON.stringify(clientInitialStateMarshaller.pack(initialState))
+	    });
 
             res.write(htmlIndex);
 	    res.status(HttpStatus.OK);

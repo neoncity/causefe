@@ -18,11 +18,11 @@ import { routesConfig } from '../shared/routes-config'
 import { OpState, reducers, StatePart } from '../shared/store'
 import { Auth0Client } from '../shared/auth0'
 import { FileStorageClient } from '../shared/file-storage'
-import { InitialState } from '../shared/initial-state'
+import { ClientInitialState } from '../shared/client-data'
 import { FileStorageService } from './file-storage-service'
 
 
-const initialStateMarshaller = new (MarshalFrom(InitialState))();
+const clientInitialStateMarshaller = new (MarshalFrom(ClientInitialState))();
 
 
 const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.CORE_SERVICE_EXTERNAL_HOST);
@@ -32,17 +32,17 @@ const auth0Client: Auth0Client = new Auth0Service(browserHistory, config.AUTH0_C
 
 config.setServices(corePublicClient, corePrivateClient, fileStorageClient, auth0Client);
 
-const initialState = initialStateMarshaller.extract((window as any).__NEONCITY_INITIAL_STATE);
+const clientInitialState = clientInitialStateMarshaller.extract((window as any).__NEONCITY_CLIENT_INITIAL_STATE);
 delete (window as any).__NEONCITY_INITIAL_STATE;
-const initialReduxState = {
+const initialState = {
     publicCauses: {
         part: StatePart.PublicCauses,
         type: OpState.Ready,
-        causes: initialState.publicCauses
+        causes: clientInitialState.publicCauses
     }
 };
 
-const store = createStore(reducers, initialReduxState, undefined);
+const store = createStore(reducers, initialState, undefined);
 
 ReactDOM.render(
     <Provider store={store}>

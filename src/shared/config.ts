@@ -14,8 +14,9 @@ import {
     CorePrivateClient } from '@neoncity/core-sdk-js'
 import { Session } from '@neoncity/identity-sdk-js'
 
-import { FileStorageClient } from './file-storage'
 import { Auth0Client } from './auth0'
+import { FileStorageClient } from './file-storage'
+import { ClientConfig } from '../shared/client-data'
 
 
 export const CLS_NAMESPACE_NAME:string = 'neoncity.request';
@@ -104,28 +105,28 @@ if (isServer(parseContext(process.env.CONTEXT))) {
         FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID;
     }    
 } else {
-    const sessionMarshaller = new (MarshalFrom(Session))();
+    const clientConfigMarshaller = new (MarshalFrom(ClientConfig))();
 
-    const RAW_SESSION_FROM_SERVER = '{{{ SESSION }}}';
-    const SESSION_FROM_SERVER = sessionMarshaller.extract(JSON.parse(RAW_SESSION_FROM_SERVER));
+    const clientConfig = clientConfigMarshaller.extract((window as any).__NEONCITY_CLIENT_CONFIG);
+    delete (window as any).__NEONCITY_CLIENT_CONFIG;
 
     let corePublicClient: CorePublicClient|null = null;
     let corePrivateClient: CorePrivateClient|null = null;
     let fileStorageClient: FileStorageClient|null = null;
     let auth0Client: Auth0Client|null = null;
     
-    ENV = parseInt('{{{ ENV }}}') as Env;
-    CONTEXT = parseInt('{{{ CONTEXT }}}') as Context;
-    AUTH0_CLIENT_ID = '{{{ AUTH0_CLIENT_ID }}}';
-    AUTH0_DOMAIN = '{{{ AUTH0_DOMAIN }}}';
-    AUTH0_CALLBACK_URI = '{{{ AUTH0_CALLBACK_URI }}}';
-    FILESTACK_KEY = '{{{ FILESTACK_KEY }}}';
-    IDENTITY_SERVICE_EXTERNAL_HOST = '{{{ IDENTITY_SERVICE_EXTERNAL_HOST }}}';
-    CORE_SERVICE_EXTERNAL_HOST = '{{{ CORE_SERVICE_EXTERNAL_HOST }}}';
-    FACEBOOK_APP_ID = '{{{ FACEBOOK_APP_ID }}}';
-    LOGOUT_ROUTE = '{{{ LOGOUT_ROUTE }}}';
-    LANG = () => '{{{ LANG }}}';
-    SESSION = () => SESSION_FROM_SERVER;
+    ENV = clientConfig.env;
+    CONTEXT = clientConfig.context;
+    AUTH0_CLIENT_ID = clientConfig.auth0ClientId;
+    AUTH0_DOMAIN = clientConfig.auth0Domain;
+    AUTH0_CALLBACK_URI = clientConfig.auth0CallbackUri;
+    FILESTACK_KEY = clientConfig.fileStackKey;
+    IDENTITY_SERVICE_EXTERNAL_HOST = clientConfig.identityServiceExternalHost;
+    CORE_SERVICE_EXTERNAL_HOST = clientConfig.coreServiceExternalHost;
+    FACEBOOK_APP_ID = clientConfig.facebookAppId;
+    LOGOUT_ROUTE = clientConfig.logoutRoute;
+    LANG = () => clientConfig.language;
+    SESSION = () => clientConfig.session;
 
     CORE_PUBLIC_CLIENT = () => {
         if (corePublicClient == null) {
