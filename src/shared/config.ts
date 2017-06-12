@@ -2,7 +2,14 @@ import { getNamespace } from 'continuation-local-storage'
 import { readFileSync } from 'fs'
 import { MarshalFrom } from 'raynor'
 
-import { Context, Env, parseContext, parseEnv, isLocal, isServer } from '@neoncity/common-js'
+import {
+    Context,
+    Env,
+    isLocal,
+    isServer,
+    parseContext,
+    parseEnv } from '@neoncity/common-js'
+import { CorePublicClient } from '@neoncity/core-sdk-js'
 import { Session } from '@neoncity/identity-sdk-js'
 
 
@@ -26,6 +33,8 @@ export let FILESTACK_KEY: string;
 export let FACEBOOK_APP_ID:string;
 export let LANG:() => string;
 export let SESSION:() => Session;
+export let CORE_PUBLIC_CLIENT:() => CorePublicClient;
+export let setServices:(corePublicClient: CorePublicClient) => void;
 
 if (isServer(parseContext(process.env.CONTEXT))) {
     ENV = parseEnv(process.env.ENV);
@@ -50,6 +59,14 @@ if (isServer(parseContext(process.env.CONTEXT))) {
         return session;
     };
 
+    CORE_PUBLIC_CLIENT = () => {
+        throw new Error('Should not be invoked');
+    };
+
+    setServices = (_corePublicClient: CorePublicClient) => {
+        throw new Error('Should not be invoked');
+    };
+
     if (isLocal(ENV)) {
         const secrets = JSON.parse(readFileSync(process.env.SECRETS_PATH, 'utf-8'));
 
@@ -72,6 +89,8 @@ if (isServer(parseContext(process.env.CONTEXT))) {
 
     const RAW_SESSION_FROM_SERVER = '{{{ SESSION }}}';
     const SESSION_FROM_SERVER = sessionMarshaller.extract(JSON.parse(RAW_SESSION_FROM_SERVER));
+
+    let corePublicClient: CorePublicClient|null = null;
     
     ENV = parseInt('{{{ ENV }}}') as Env;
     CONTEXT = parseInt('{{{ CONTEXT }}}') as Context;
@@ -85,4 +104,16 @@ if (isServer(parseContext(process.env.CONTEXT))) {
     LOGOUT_ROUTE = '{{{ LOGOUT_ROUTE }}}';
     LANG = () => '{{{ LANG }}}';
     SESSION = () => SESSION_FROM_SERVER;
+
+    CORE_PUBLIC_CLIENT = () => {
+        if (corePublicClient == null) {
+            throw new Error('Core public client not provided');
+        }
+
+        return corePublicClient;
+    };
+
+    setServices = (corePublicClient: CorePublicClient) => {
+        corePublicClient = corePublicClient;
+    };
 }

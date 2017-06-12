@@ -2,7 +2,6 @@ import { createStore, combineReducers } from 'redux'
 
 import {
     CauseAnalytics,
-    CorePublicClient,
     CorePrivateClient,
     PublicCause,
     PrivateCause,
@@ -32,7 +31,6 @@ export enum OpState {
 
 export interface RequestState {
     services: null|{
-	corePublicClient: CorePublicClient;
 	corePrivateClient: CorePrivateClient;
 	fileStorageClient: FileStorageClient;
         auth0Client: Auth0Client;

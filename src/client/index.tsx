@@ -30,12 +30,13 @@ const corePrivateClient: CorePrivateClient = newCorePrivateClient(config.ENV, co
 const fileStorageClient: FileStorageClient = new FileStorageService(config.FILESTACK_KEY);
 const auth0Client: Auth0Client = new Auth0Service(browserHistory, config.AUTH0_CLIENT_ID, config.AUTH0_DOMAIN, config.AUTH0_CALLBACK_URI);
 
+config.setServices(corePublicClient);
+
 const initialState = initialStateMarshaller.extract((window as any).__NEONCITY_INITIAL_STATE);
 delete (window as any).__NEONCITY_INITIAL_STATE;
 const initialReduxState = {
     request: {
 	services: {
-	    corePublicClient: corePublicClient,
 	    corePrivateClient: corePrivateClient,
 	    fileStorageClient: fileStorageClient,
             auth0Client: auth0Client

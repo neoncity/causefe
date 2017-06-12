@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import * as r from 'raynor'
 
 import { isLocal } from '@neoncity/common-js'
-import { CorePublicClient, CurrencyAmount, PublicCause } from '@neoncity/core-sdk-js'
+import { CurrencyAmount, PublicCause } from '@neoncity/core-sdk-js'
 
 import * as config from './config'
 import { ImageGalleryWidget } from './image-gallery-widget'
@@ -15,7 +15,6 @@ import * as text from './public-cause-widget.text'
 
 
 interface Props {
-    corePublicClient: CorePublicClient;
     cause: PublicCause;
 }
 
@@ -122,7 +121,7 @@ export class PublicCauseWidget extends React.Component<Props, State> {
             currencyAmount.amount = this.state.donationAmount.getValue();
             currencyAmount.currency = this.props.cause.goal.currency;
             
-            await this.props.corePublicClient.createDonation(this.props.cause.id, currencyAmount);
+            await config.CORE_PUBLIC_CLIENT().createDonation(this.props.cause.id, currencyAmount);
             this.setState({donationState: OpState.Ready});
         } catch (e) {
             if (isLocal(config.ENV)) {
@@ -160,7 +159,7 @@ export class PublicCauseWidget extends React.Component<Props, State> {
             }
 
             try {
-                await this.props.corePublicClient.createShare(this.props.cause.id, response.post_id as string);
+                await config.CORE_PUBLIC_CLIENT().createShare(this.props.cause.id, response.post_id as string);
                 this.setState({shareState: OpState.Ready});
             } catch (e) {
                 if (isLocal(config.ENV)) {

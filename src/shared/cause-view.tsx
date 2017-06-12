@@ -2,7 +2,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { browserHistory } from 'react-router'
 
-import { CorePublicClient, PublicCause } from '@neoncity/core-sdk-js'
+import { PublicCause } from '@neoncity/core-sdk-js'
 import { isLocal } from '@neoncity/common-js'
 
 import * as config from './config'
@@ -20,7 +20,6 @@ interface Params {
 
 
 interface Props {
-    corePublicClient: CorePublicClient;
     isLoading: boolean;
     isReady: boolean;
     isFailed: boolean;
@@ -39,7 +38,7 @@ class _CauseView extends React.Component<Props, undefined> {
 
         try {
             const causeId = parseInt(this.props.params.causeId);
-            const cause = await this.props.corePublicClient.getCause(causeId);
+            const cause = await config.CORE_PUBLIC_CLIENT().getCause(causeId);
             this.props.onPublicCauseDetailReady(cause);
             // Also update the URL to be causeLink(cause), but it should do no navigation.
             // Users might access this as /c/$id/$firstSlug, but the actual slug assigned
@@ -62,9 +61,7 @@ class _CauseView extends React.Component<Props, undefined> {
             return <div>{commonText.loadingFailed[config.LANG()]}</div>;
         } else {
             return (
-                <PublicCauseWidget
-		    corePublicClient={this.props.corePublicClient}
-		    cause={this.props.cause as PublicCause} />
+                <PublicCauseWidget cause={this.props.cause as PublicCause} />
             );
         }
     }
@@ -73,7 +70,6 @@ class _CauseView extends React.Component<Props, undefined> {
 
 function stateToProps(state: any) {
     return {
-	corePublicClient: state.request.services != null ? state.request.services.corePublicClient : null,
 	isLoading: state.publicCauseDetail.type == OpState.Init || state.publicCauseDetail.type == OpState.Loading,
 	isReady: state.publicCauseDetail.type == OpState.Ready,
 	isFailed: state.publicCauseDetail.type == OpState.Failed,
