@@ -9,12 +9,15 @@ import {
     isServer,
     parseContext,
     parseEnv } from '@neoncity/common-js'
-import { CorePublicClient } from '@neoncity/core-sdk-js'
+import {
+    CorePublicClient,
+    CorePrivateClient } from '@neoncity/core-sdk-js'
 import { Session } from '@neoncity/identity-sdk-js'
+
+import { FileStorageClient } from './file-storage'
 
 
 export const CLS_NAMESPACE_NAME:string = 'neoncity.request';
-
 
 export let ENV:Env;
 export let CONTEXT:Context;
@@ -34,7 +37,9 @@ export let FACEBOOK_APP_ID:string;
 export let LANG:() => string;
 export let SESSION:() => Session;
 export let CORE_PUBLIC_CLIENT:() => CorePublicClient;
-export let setServices:(corePublicClient: CorePublicClient) => void;
+export let CORE_PRIVATE_CLIENT:() => CorePrivateClient;
+export let FILE_STORAGE_CLIENT:() => FileStorageClient;
+export let setServices:(corePublicClient: CorePublicClient, corePrivateClient: CorePrivateClient, fileStorageClient: FileStorageClient) => void;
 
 if (isServer(parseContext(process.env.CONTEXT))) {
     ENV = parseEnv(process.env.ENV);
@@ -63,7 +68,15 @@ if (isServer(parseContext(process.env.CONTEXT))) {
         throw new Error('Should not be invoked');
     };
 
-    setServices = (_corePublicClient: CorePublicClient) => {
+    CORE_PRIVATE_CLIENT = () => {
+        throw new Error('Should not be invoked');
+    };
+
+    FILE_STORAGE_CLIENT = () => {
+        throw new Error('Should not be invoked');
+    };
+
+    setServices = (_corePublicClient: CorePublicClient, _corePrivateClient: CorePrivateClient, _fileStorageClient: FileStorageClient) => {
         throw new Error('Should not be invoked');
     };
 
@@ -91,6 +104,8 @@ if (isServer(parseContext(process.env.CONTEXT))) {
     const SESSION_FROM_SERVER = sessionMarshaller.extract(JSON.parse(RAW_SESSION_FROM_SERVER));
 
     let corePublicClient: CorePublicClient|null = null;
+    let corePrivateClient: CorePrivateClient|null = null;
+    let fileStorageClient: FileStorageClient|null = null;
     
     ENV = parseInt('{{{ ENV }}}') as Env;
     CONTEXT = parseInt('{{{ CONTEXT }}}') as Context;
@@ -113,7 +128,25 @@ if (isServer(parseContext(process.env.CONTEXT))) {
         return corePublicClient;
     };
 
-    setServices = (corePublicClient: CorePublicClient) => {
+    CORE_PRIVATE_CLIENT = () => {
+        if (corePrivateClient == null) {
+            throw new Error('Core private client not provided');
+        }
+
+        return corePrivateClient;
+    };
+
+    FILE_STORAGE_CLIENT = () => {
+        if (fileStorageClient == null) {
+            throw new Error('File storage client not provided');
+        }
+
+        return fileStorageClient;
+    };    
+
+    setServices = (corePublicClient: CorePublicClient, corePrivateClient: CorePrivateClient, fileStorageClient: FileStorageClient) => {
         corePublicClient = corePublicClient;
+        corePrivateClient = corePrivateClient;
+        fileStorageClient = fileStorageClient;
     };
 }

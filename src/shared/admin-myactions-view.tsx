@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-import { CorePrivateClient, UserActionsOverview } from '@neoncity/core-sdk-js'
+import { UserActionsOverview } from '@neoncity/core-sdk-js'
 import { isLocal } from '@neoncity/common-js'
 
 import * as config from './config'
@@ -14,7 +14,6 @@ import * as commonText from './common.text'
 
 
 interface Props {
-    corePrivateClient: CorePrivateClient;
     isLoading: boolean;
     isReady: boolean;
     isFailed: boolean;
@@ -31,7 +30,7 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
 	this.props.onUserActionsOverviewLoading();
 
 	try {
-	    const userActionsOverview = await this.props.corePrivateClient.getUserActionsOverview();
+	    const userActionsOverview = await config.CORE_PRIVATE_CLIENT().getUserActionsOverview();
 	    this.props.onUserActionsOverviewReady(userActionsOverview);
 	} catch (e) {
             if (isLocal(config.ENV)) {
@@ -74,7 +73,6 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
 
 function stateToProps(state: any) {
     return {
-	corePrivateClient: state.request.services != null ? state.request.services.corePrivateClient : null,
 	isLoading: state.adminMyActions.type == OpState.Init || state.adminMyActions.type == OpState.Loading,
 	isReady: state.adminMyActions.type == OpState.Ready,
 	isFailed: state.adminMyActions.type == OpState.Failed,

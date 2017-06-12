@@ -2,13 +2,11 @@ import { createStore, combineReducers } from 'redux'
 
 import {
     CauseAnalytics,
-    CorePrivateClient,
     PublicCause,
     PrivateCause,
     UserActionsOverview } from '@neoncity/core-sdk-js'
 
 import { Auth0Client } from './auth0'
-import { FileStorageClient } from './file-storage'
 
 
 export enum StatePart {
@@ -31,8 +29,6 @@ export enum OpState {
 
 export interface RequestState {
     services: null|{
-	corePrivateClient: CorePrivateClient;
-	fileStorageClient: FileStorageClient;
         auth0Client: Auth0Client;
     };
 }

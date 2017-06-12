@@ -8,7 +8,6 @@ import { Currency, StandardCurrencies, CurrencyMarshaller } from '@neoncity/comm
 import { isLocal } from '@neoncity/common-js/env'
 import { slugify } from '@neoncity/common-js/slugify'
 import { BankInfo,
-	 CorePrivateClient,
 	 CurrencyAmount,
 	 PictureSet,
 	 PrivateCause,
@@ -18,7 +17,6 @@ import { BankInfo,
 import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
 import { ImageGalleryEditorWidget } from './image-gallery-editor-widget'
-import { FileStorageClient } from '../shared/file-storage'
 import { AdminMyCauseState, OpState, StatePart } from '../shared/store'
 import { UserInput, UserInputMaster } from './user-input'
 
@@ -29,8 +27,6 @@ const moment = require('moment')
 
 
 interface Props {
-    corePrivateClient: CorePrivateClient;
-    fileStorageClient: FileStorageClient;
     isLoading: boolean;
     isReady: boolean;
     isFailed: boolean;
@@ -92,7 +88,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
         this.props.onPrivateCauseLoading();
 
         try {
-            const privateCause = await this.props.corePrivateClient.getCause();
+            const privateCause = await config.CORE_PRIVATE_CLIENT().getCause();
             this.props.onPrivateCauseReady(true, false, privateCause);
         } catch (e) {
             if (e.name == 'NoCauseForUserError') {
@@ -244,7 +240,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                             onBankInfoChange={this._handleBankInfoChange.bind(this)} />
                         <ImageGalleryEditorWidget
                             pictureSet={this.state.pictureSet}
-                            selectPicture={pos => this.props.fileStorageClient.selectImageWithWidget(pos)}
+                            selectPicture={pos => config.FILE_STORAGE_CLIENT().selectImageWithWidget(pos)}
                             onPictureSetChange={this._handlePictureSetChange.bind(this)} />
                     </div>
                 </form>
@@ -377,7 +373,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	    goal.amount = this.state.goalAmount.getValue();
 	    goal.currency = this.state.goalCurrency.getValue();
 	    
-	    const privateCause = await this.props.corePrivateClient.createCause(
+	    const privateCause = await config.CORE_PRIVATE_CLIENT().createCause(
 		this.state.title.getValue(),
 		this.state.description.getValue(),
 		this.state.pictureSet,
@@ -402,7 +398,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	    goal.amount = this.state.goalAmount.getValue();
 	    goal.currency = this.state.goalCurrency.getValue();
 	    
-	    const privateCause = await this.props.corePrivateClient.updateCause(
+	    const privateCause = await config.CORE_PRIVATE_CLIENT().updateCause(
 		{
 		    title: this.state.title.getValue(),
 		    description: this.state.description.getValue(),
@@ -425,7 +421,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	this.props.onPrivateCauseLoading();
 
 	try {
-	    await this.props.corePrivateClient.deleteCause();
+	    await config.CORE_PRIVATE_CLIENT().deleteCause();
 	    this.props.onPrivateCauseReady(true, true, null);
 	} catch (e) {
 	    if (isLocal(config.ENV)) {
@@ -440,8 +436,6 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 
 function stateToProps(state: any) {
     return {
-	corePrivateClient: state.request.services != null ? state.request.services.corePrivateClient : null,
-	fileStorageClient: state.request.services != null ? state.request.services.fileStorageClient : null,
 	isLoading: state.adminMyCause.type == OpState.Init || state.adminMyCause.type == OpState.Loading,
 	isReady: state.adminMyCause.type == OpState.Ready,
 	isFailed: state.adminMyCause.type == OpState.Failed,

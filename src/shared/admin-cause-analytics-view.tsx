@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-import { CauseAnalytics, CorePrivateClient } from '@neoncity/core-sdk-js'
+import { CauseAnalytics } from '@neoncity/core-sdk-js'
 import { isLocal } from '@neoncity/common-js'
 
 import * as config from './config'
@@ -12,7 +12,6 @@ import * as commonText from './common.text'
 
 
 interface Props {
-    corePrivateClient: CorePrivateClient;
     isLoading: boolean;
     isReady: boolean;
     isFailed: boolean;
@@ -30,7 +29,7 @@ class _AdminCauseAnalyticsView extends React.Component<Props, undefined> {
         this.props.onCauseAnalyticsLoading();
 
         try {
-            const causeAnalytics = await this.props.corePrivateClient.getCauseAnalytics();
+            const causeAnalytics = await config.CORE_PRIVATE_CLIENT().getCauseAnalytics();
             this.props.onCauseAnalyticsReady(true, causeAnalytics);
         } catch (e) {
             if (e.name == 'NoCauseForUserError') {
@@ -72,7 +71,6 @@ class _AdminCauseAnalyticsView extends React.Component<Props, undefined> {
 
 function stateToProps(state: any) {
     return {
-	corePrivateClient: state.request.services != null ? state.request.services.corePrivateClient : null,
         isLoading: state.adminCauseAnalytics.type == OpState.Init || state.adminCauseAnalytics.type == OpState.Loading,
         isReady: state.adminCauseAnalytics.type == OpState.Ready,
         isFailed: state.adminCauseAnalytics.type == OpState.Failed,
