@@ -15,6 +15,7 @@ import {
 import { Session } from '@neoncity/identity-sdk-js'
 
 import { FileStorageClient } from './file-storage'
+import { Auth0Client } from './auth0'
 
 
 export const CLS_NAMESPACE_NAME:string = 'neoncity.request';
@@ -39,7 +40,8 @@ export let SESSION:() => Session;
 export let CORE_PUBLIC_CLIENT:() => CorePublicClient;
 export let CORE_PRIVATE_CLIENT:() => CorePrivateClient;
 export let FILE_STORAGE_CLIENT:() => FileStorageClient;
-export let setServices:(corePublicClient: CorePublicClient, corePrivateClient: CorePrivateClient, fileStorageClient: FileStorageClient) => void;
+export let AUTH0_CLIENT:() => Auth0Client;
+export let setServices:(corePublicClient: CorePublicClient, corePrivateClient: CorePrivateClient, fileStorageClient: FileStorageClient, auth0Client: Auth0Client) => void;
 
 if (isServer(parseContext(process.env.CONTEXT))) {
     ENV = parseEnv(process.env.ENV);
@@ -76,7 +78,11 @@ if (isServer(parseContext(process.env.CONTEXT))) {
         throw new Error('Should not be invoked');
     };
 
-    setServices = (_corePublicClient: CorePublicClient, _corePrivateClient: CorePrivateClient, _fileStorageClient: FileStorageClient) => {
+    AUTH0_CLIENT = () => {
+        throw new Error('Should not be invoked');
+    };
+
+    setServices = (_corePublicClient: CorePublicClient, _corePrivateClient: CorePrivateClient, _fileStorageClient: FileStorageClient, _auth0Client: Auth0Client) => {
         throw new Error('Should not be invoked');
     };
 
@@ -106,6 +112,7 @@ if (isServer(parseContext(process.env.CONTEXT))) {
     let corePublicClient: CorePublicClient|null = null;
     let corePrivateClient: CorePrivateClient|null = null;
     let fileStorageClient: FileStorageClient|null = null;
+    let auth0Client: Auth0Client|null = null;
     
     ENV = parseInt('{{{ ENV }}}') as Env;
     CONTEXT = parseInt('{{{ CONTEXT }}}') as Context;
@@ -142,11 +149,20 @@ if (isServer(parseContext(process.env.CONTEXT))) {
         }
 
         return fileStorageClient;
-    };    
+    };
 
-    setServices = (corePublicClient: CorePublicClient, corePrivateClient: CorePrivateClient, fileStorageClient: FileStorageClient) => {
-        corePublicClient = corePublicClient;
-        corePrivateClient = corePrivateClient;
-        fileStorageClient = fileStorageClient;
+    AUTH0_CLIENT = () => {
+        if (auth0Client == null) {
+            throw new Error('Auth0 client not provided');
+        }
+
+        return auth0Client;
+    };
+
+    setServices = (newCorePublicClient: CorePublicClient, newCorePrivateClient: CorePrivateClient, newFileStorageClient: FileStorageClient, newAuth0Client: Auth0Client) => {
+        corePublicClient = newCorePublicClient;
+        corePrivateClient = newCorePrivateClient;
+        fileStorageClient = newFileStorageClient;
+        auth0Client = newAuth0Client;
     };
 }

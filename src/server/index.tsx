@@ -100,12 +100,7 @@ async function main() {
 	}
 
 	match({ routes: routesConfig, location: req.url}, (_err, _redirect, props) => {
-	    const store = createStore(reducers, {
-		request: {
-		    services: null
-		}
-	    } as any, undefined);
-
+	    const store = createStore(reducers);
 	    store.dispatch({part: StatePart.PublicCauses, type: OpState.Ready, causes: causes});
 
 	    const initialState = {

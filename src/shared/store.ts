@@ -6,16 +6,13 @@ import {
     PrivateCause,
     UserActionsOverview } from '@neoncity/core-sdk-js'
 
-import { Auth0Client } from './auth0'
-
 
 export enum StatePart {
-    Request = 0,
-    PublicCauses = 1,
-    PublicCauseDetail = 2,
-    AdminMyCause = 3,
-    AdminCauseAnalytics = 4,
-    AdminMyActions = 5
+    PublicCauses = 0,
+    PublicCauseDetail = 1,
+    AdminMyCause = 2,
+    AdminCauseAnalytics = 3,
+    AdminMyActions = 4
 }
 
 
@@ -24,23 +21,6 @@ export enum OpState {
     Loading = 1,
     Ready = 2,
     Failed = 3
-}
-
-
-export interface RequestState {
-    services: null|{
-        auth0Client: Auth0Client;
-    };
-}
-
-
-const requestInitialState: RequestState = {
-    services: null
-};
-
-
-function request(state=requestInitialState, _: any): RequestState {
-    return state;
 }
 
 
@@ -268,7 +248,6 @@ function adminMyActions(state=adminMyActionsInitialState, action: AdminMyActions
 
 
 export const reducers = combineReducers({
-    request: request,
     publicCauses: publicCauses,
     publicCauseDetail: publicCauseDetail,
     adminMyCause: adminMyCause,

@@ -1,20 +1,17 @@
 import * as React from 'react'
-import { connect } from 'react-redux'
 
 import { User } from '@neoncity/identity-sdk-js'
 
 import * as config from './config'
-import { Auth0Client } from '../shared/auth0'
 
 import * as text from './user-info-widget.text'
 
 
 interface Props {
-    auth0Client: Auth0Client;
 }
 
 
-export class _UserInfoWidget extends React.Component<Props, undefined> {
+export class UserInfoWidget extends React.Component<Props, undefined> {
     render() {
         const session = config.SESSION();
 	if (session.hasUser()) {
@@ -29,21 +26,6 @@ export class _UserInfoWidget extends React.Component<Props, undefined> {
     }
 
     private _handleLoginClick() {
-        this.props.auth0Client.showLock(true);
+        config.AUTH0_CLIENT().showLock(true);
     }
 }
-
-
-function stateToProps(state: any) {
-    return {
-        auth0Client: state.request.services != null ? state.request.services.auth0Client : null
-    };
-}
-
-
-function dispatchToProps(_dispatch: (newState: any) => void) {
-    return {}
-}
-
-
-export const UserInfoWidget = connect(stateToProps, dispatchToProps)(_UserInfoWidget);
