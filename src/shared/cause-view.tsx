@@ -20,12 +20,14 @@ interface Params {
 
 
 interface Props {
+    isPreloaded: boolean;
     isLoading: boolean;
     isReady: boolean;
     isFailed: boolean;
     params: Params;
     cause: PublicCause|null;
     errorMessage: string|null;
+    onPublicCauseDetailDonePreload: () => void;
     onPublicCauseDetailLoading: () => void;
     onPublicCauseDetailReady: (cause: PublicCause) => void;
     onPublicCauseDetailFailed: (errorMessage: string) => void;
@@ -34,6 +36,10 @@ interface Props {
 
 class _CauseView extends React.Component<Props, undefined> {
     async componentDidMount() {
+        if (this.props.isPreloaded) {
+            return;
+        }
+        
 	this.props.onPublicCauseDetailLoading();
 
         try {
@@ -53,6 +59,10 @@ class _CauseView extends React.Component<Props, undefined> {
             this.props.onPublicCauseDetailFailed('Could not load public cause detail');
         }
     }
+
+    async componentWillUnmount() {
+        this.props.onPublicCauseDetailDonePreload();
+    }    
     
     render() {
         if (this.props.isLoading) {
@@ -70,10 +80,11 @@ class _CauseView extends React.Component<Props, undefined> {
 
 function stateToProps(state: any) {
     return {
+        isPreloaded: state.publicCauseDetail.type == OpState.Preloaded,
 	isLoading: state.publicCauseDetail.type == OpState.Init || state.publicCauseDetail.type == OpState.Loading,
 	isReady: state.publicCauseDetail.type == OpState.Ready,
 	isFailed: state.publicCauseDetail.type == OpState.Failed,
-	cause: state.publicCauseDetail.type == OpState.Ready ? state.publicCauseDetail.cause : null,
+	cause: (state.publicCauseDetail.type == OpState.Ready || state.publicCauseDetail.type == OpState.Preloaded) ? state.publicCauseDetail.cause : null,
 	errorMessage: state.publicCauseDetail.type == OpState.Failed ? state.publicCauseDetail.errorMessage : null,
     };
 }
@@ -81,6 +92,7 @@ function stateToProps(state: any) {
 
 function dispatchToProps(dispatch: (newState: PublicCauseDetailState) => void) {
     return {
+        onPublicCauseDetailDonePreload: () => dispatch({part: StatePart.PublicCauseDetail, type: OpState.Init}),
 	onPublicCauseDetailLoading: () => dispatch({part: StatePart.PublicCauseDetail, type: OpState.Loading}),
 	onPublicCauseDetailReady: (cause: PublicCause) => dispatch({part: StatePart.PublicCauseDetail, type: OpState.Ready, cause: cause}),
 	onPublicCauseDetailFailed: (errorMessage: string) => dispatch({part: StatePart.PublicCauseDetail, type: OpState.Failed, errorMessage: errorMessage})

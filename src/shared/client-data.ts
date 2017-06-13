@@ -53,4 +53,7 @@ export class ClientConfig {
 export class ClientInitialState {
     @MarshalWith(OptionalOf(ArrayOf(MarshalFrom(PublicCause))))
     publicCauses: PublicCause[]|null;
+
+    @MarshalWith(OptionalOf(MarshalFrom(PublicCause)))
+    publicCauseDetail: PublicCause|null;
 }

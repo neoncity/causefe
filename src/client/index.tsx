@@ -34,13 +34,24 @@ config.setServices(corePublicClient, corePrivateClient, fileStorageClient, auth0
 
 const clientInitialState = clientInitialStateMarshaller.extract((window as any).__NEONCITY_CLIENT_INITIAL_STATE);
 delete (window as any).__NEONCITY_INITIAL_STATE;
-const initialState = {
-    publicCauses: {
+
+const initialState = {} as any;
+
+if (clientInitialState.publicCauses != null) {
+    initialState.publicCauses = {
         part: StatePart.PublicCauses,
         type: OpState.Preloaded,
         causes: clientInitialState.publicCauses
-    }
-};
+    };
+}
+
+if (clientInitialState.publicCauseDetail != null) {
+    initialState.publicCauseDetail = {
+        part: StatePart.PublicCauseDetail,
+        type: OpState.Preloaded,
+        cause: clientInitialState.publicCauseDetail
+    };
+}
 
 const store = createStore(reducers, initialState, undefined);
 

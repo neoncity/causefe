@@ -79,6 +79,11 @@ interface PublicCauseDetailInit {
     part: StatePart.PublicCauseDetail;
     type: OpState.Init;
 }
+interface PublicCauseDetailPreloaded {
+    part: StatePart.PublicCauseDetail;
+    type: OpState.Preloaded;
+    cause: PublicCause;
+}
 interface PublicCauseDetailLoading {
     part: StatePart.PublicCauseDetail;
     type: OpState.Loading;
@@ -94,7 +99,7 @@ interface PublicCauseDetailFailed {
     errorMessage: string;
 }
 
-export type PublicCauseDetailState = PublicCauseDetailInit | PublicCauseDetailLoading | PublicCauseDetailReady | PublicCauseDetailFailed;
+export type PublicCauseDetailState = PublicCauseDetailInit | PublicCauseDetailPreloaded | PublicCauseDetailLoading | PublicCauseDetailReady | PublicCauseDetailFailed;
 
 const publicCauseDetailInitialState: PublicCauseDetailState = {
     part: StatePart.PublicCauseDetail,
@@ -109,6 +114,7 @@ function publicCauseDetail(state=publicCauseDetailInitialState, action: PublicCa
     
     switch (action.type) {
     case OpState.Init:
+    case OpState.Preloaded:
     case OpState.Loading:
     case OpState.Ready:
     case OpState.Failed:
