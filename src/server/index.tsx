@@ -8,7 +8,7 @@ import * as React from 'react'
 import * as ReactDOMServer from 'react-dom/server'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
-import { match, RouterContext } from 'react-router'
+import { match, RouterContext, RouterState } from 'react-router'
 import * as webpack from 'webpack'
 import * as theWebpackDevMiddleware from 'webpack-dev-middleware'
 
@@ -64,33 +64,17 @@ async function main() {
     app.use('/real/auth-flow', newAuthFlowRouter(identityClient));
     app.use('/real/client', bundles.getOtherBundlesRouter());
 
-    const appRouter = express.Router();
-
-    appRouter.use(newAuthInfoMiddleware(AuthInfoLevel.None));
-    appRouter.use(newSessionMiddleware(SessionLevel.None, config.ENV, identityClient));
-    appRouter.use(newEnsureSessionMiddleware(config.ENV, identityClient));
-    appRouter.use(newServerSideRenderingMatchMiddleware(config.ENV, routesConfig));
-
-    appRouter.get('/', wrap(async (req: CauseFeRequest, res: express.Response) => {
-        const session = req.session as Session;
+    function serverSideRender(session: Session, initialState: ClientInitialState, ssrRouterState: RouterState): string {
         const language = inferLanguage(session);
-
-        let causes: PublicCause[]|null = null;
-        try {
-            causes = await corePublicClient.withAuthInfo(req.authInfo as AuthInfo).getCauses();
-        } catch (e) {
-            console.log(`Cannot retrieve causes server-side - ${e.toString()}`);
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
-        }
-
         const store = createStore(reducers);
 
-        // Will work even if causes is not null. Client-side will re-query for it.
-        if (causes != null) {
-            store.dispatch({part: StatePart.PublicCauses, type: OpState.Preloaded, causes: causes});
+        if (initialState.publicCauses != null) {
+            store.dispatch({part: StatePart.PublicCauses, type: OpState.Preloaded, causes: initialState.publicCauses});
         }
+
+        if (initialState.publicCauseDetail != null) {
+            store.dispatch({part: StatePart.PublicCauseDetail, type: OpState.Preloaded, cause: initialState.publicCauseDetail});
+        }    
 
         const clientConfig = {
             env: config.ENV,
@@ -107,36 +91,56 @@ async function main() {
             language: language
         };
 
-        const initialState = {
-            publicCauses: causes,
-            publicCauseDetail: null
-        };
-            
         namespace.set('SESSION', session);
         namespace.set('LANG', language);
-            
+        
         const appHtml = ReactDOMServer.renderToString(
             <Provider store={store}>
-                <RouterContext {...(req.ssrRouterState as any)} />
+                <RouterContext {...(ssrRouterState as any)} />
             </Provider>
         );
 
-        const htmlIndex = Mustache.render(bundles.getHtmlIndexTemplate(), {
+        return Mustache.render(bundles.getHtmlIndexTemplate(), {
             FACEBOOK_APP_ID: config.FACEBOOK_APP_ID,
             APP_HTML: appHtml,
             CLIENT_CONFIG: JSON.stringify(clientConfigMarshaller.pack(clientConfig)),
             CLIENT_INITIAL_STATE: JSON.stringify(clientInitialStateMarshaller.pack(initialState))
-        });
+        });    
+    }    
 
-        res.write(htmlIndex);
+    const appRouter = express.Router();
+
+    appRouter.use(newAuthInfoMiddleware(AuthInfoLevel.None));
+    appRouter.use(newSessionMiddleware(SessionLevel.None, config.ENV, identityClient));
+    appRouter.use(newEnsureSessionMiddleware(config.ENV, identityClient));
+    appRouter.use(newServerSideRenderingMatchMiddleware(config.ENV, routesConfig));
+
+    appRouter.get('/', wrap(async (req: CauseFeRequest, res: express.Response) => {
+        let causes: PublicCause[]|null = null;
+        try {
+            causes = await corePublicClient.withAuthInfo(req.authInfo as AuthInfo).getCauses();
+        } catch (e) {
+            console.log(`Cannot retrieve causes server-side - ${e.toString()}`);
+            if (isLocal(config.ENV)) {
+                console.log(e);
+            }
+        }
+
+        const initialState = {
+            publicCauses: causes,
+            publicCauseDetail: null
+        };
+
+        res.write(serverSideRender(
+            req.session as Session,
+            initialState,
+            req.ssrRouterState
+        ));
         res.status(HttpStatus.OK);
         res.end();      
     }));
 
     appRouter.get('/c/:causeId(\\d+)/:causeSlug', wrap(async (req: CauseFeRequest, res: express.Response) => {
-        const session = req.session as Session;
-        const language = inferLanguage(session);
-
         let cause: PublicCause|null = null;
         try {
             const causeId = parseInt(req.params['causeId']);
@@ -148,50 +152,16 @@ async function main() {
             }
         }
 
-        const store = createStore(reducers);
-
-        // Will work even if causes is not null. Client-side will re-query for it.
-        if (cause != null) {
-            store.dispatch({part: StatePart.PublicCauseDetail, type: OpState.Preloaded, cause: cause});
-        }
-
-        const clientConfig = {
-            env: config.ENV,
-            context: config.CONTEXT,
-            auth0ClientId: config.AUTH0_CLIENT_ID,
-            auth0Domain: config.AUTH0_DOMAIN,
-            auth0CallbackUri: config.AUTH0_CALLBACK_URI,
-            fileStackKey: config.FILESTACK_KEY,
-            identityServiceExternalHost: config.IDENTITY_SERVICE_EXTERNAL_HOST,
-            coreServiceExternalHost: config.CORE_SERVICE_EXTERNAL_HOST,
-            facebookAppId: config.FACEBOOK_APP_ID,
-            logoutRoute: config.LOGOUT_ROUTE,
-            session: session,
-            language: language
-        };
-
         const initialState = {
             publicCauses: null,
             publicCauseDetail: cause
         };
-            
-        namespace.set('SESSION', session);
-        namespace.set('LANG', language);
-            
-        const appHtml = ReactDOMServer.renderToString(
-            <Provider store={store}>
-                <RouterContext {...(req.ssrRouterState as any)} />
-            </Provider>
-        );
 
-        const htmlIndex = Mustache.render(bundles.getHtmlIndexTemplate(), {
-            FACEBOOK_APP_ID: config.FACEBOOK_APP_ID,
-            APP_HTML: appHtml,
-            CLIENT_CONFIG: JSON.stringify(clientConfigMarshaller.pack(clientConfig)),
-            CLIENT_INITIAL_STATE: JSON.stringify(clientInitialStateMarshaller.pack(initialState))
-        });
-
-        res.write(htmlIndex);
+        res.write(serverSideRender(
+            req.session as Session,
+            initialState,
+            req.ssrRouterState
+        ));
         res.status(HttpStatus.OK);
         res.end();      
     }));    
