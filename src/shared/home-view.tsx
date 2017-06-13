@@ -12,11 +12,13 @@ import * as commonText from './common.text'
 
 
 interface HomeViewProps {
+    isPreloaded: boolean;
     isLoading: boolean;
     isReady: boolean;
     isFailed: boolean;
     causes: PublicCause[]|null;
     errorMessage: string|null;
+    onPublicCausesDonePreload: () => void;
     onPublicCausesLoading: () => void;
     onPublicCausesReady: (causes: PublicCause[]) => void;
     onPublicCausesFailed: (errorMessage: string) => void;
@@ -25,7 +27,10 @@ interface HomeViewProps {
 
 class _HomeView extends React.Component<HomeViewProps, undefined> {
     async componentDidMount() {
-        console.log(this.props.isReady);
+        if (this.props.isPreloaded) {
+            return;
+        }
+        
 	this.props.onPublicCausesLoading();
 
 	try {
@@ -38,6 +43,10 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
             
 	    this.props.onPublicCausesFailed('Could not load public causes');
 	}
+    }
+
+    async componentWillUnmount() {
+        this.props.onPublicCausesDonePreload();
     }
     
     render() {
@@ -58,10 +67,11 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
 
 function stateToProps(state: any) {
     return {
+        isPreloaded: state.publicCauses.type == OpState.Preloaded,
 	isLoading: state.publicCauses.type == OpState.Init || state.publicCauses.type == OpState.Loading,
 	isReady: state.publicCauses.type == OpState.Ready,
 	isFailed: state.publicCauses.type == OpState.Failed,
-	causes: state.publicCauses.type == OpState.Ready ? state.publicCauses.causes : null,
+	causes: (state.publicCauses.type == OpState.Ready || state.publicCauses.type == OpState.Preloaded) ? state.publicCauses.causes : null,
 	errorMessage: state.publicCauses.type == OpState.Failed ? state.publicCauses.errorMessage : null,
     };
 }
@@ -69,6 +79,7 @@ function stateToProps(state: any) {
 
 function dispatchToProps(dispatch: (newState: PublicCausesState) => void) {
     return {
+        onPublicCausesDonePreload: () => dispatch({part: StatePart.PublicCauses, type: OpState.Init}),
 	onPublicCausesLoading: () => dispatch({part: StatePart.PublicCauses, type: OpState.Loading}),
 	onPublicCausesReady: (causes: PublicCause[]) => dispatch({part: StatePart.PublicCauses, type: OpState.Ready, causes: causes}),
 	onPublicCausesFailed: (errorMessage: string) => dispatch({part: StatePart.PublicCauses, type: OpState.Failed, errorMessage: errorMessage})

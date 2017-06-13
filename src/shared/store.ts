@@ -18,15 +18,21 @@ export enum StatePart {
 
 export enum OpState {
     Init = 0,
-    Loading = 1,
-    Ready = 2,
-    Failed = 3
+    Preloaded = 1,
+    Loading = 2,
+    Ready = 3,
+    Failed = 4
 }
 
 
 interface PublicCausesInit {
     part: StatePart.PublicCauses;
     type: OpState.Init;
+}
+interface PublicCausesPreloaded {
+    part: StatePart.PublicCauses;
+    type: OpState.Preloaded;
+    causes: PublicCause[];
 }
 interface PublicCausesLoading {
     part: StatePart.PublicCauses;
@@ -43,7 +49,7 @@ interface PublicCausesFailed {
     errorMessage: string;
 }
 
-export type PublicCausesState = PublicCausesInit | PublicCausesLoading | PublicCausesReady | PublicCausesFailed;
+export type PublicCausesState = PublicCausesInit | PublicCausesPreloaded | PublicCausesLoading | PublicCausesReady | PublicCausesFailed;
 
 const publicCausesInitialState: PublicCausesState = {
     part: StatePart.PublicCauses,
@@ -57,6 +63,7 @@ function publicCauses(state=publicCausesInitialState, action: PublicCausesState)
     }
     
     switch (action.type) {
+    case OpState.Preloaded:
     case OpState.Init:
     case OpState.Loading:
     case OpState.Ready:

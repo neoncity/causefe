@@ -37,7 +37,7 @@ delete (window as any).__NEONCITY_INITIAL_STATE;
 const initialState = {
     publicCauses: {
         part: StatePart.PublicCauses,
-        type: OpState.Ready,
+        type: OpState.Preloaded,
         causes: clientInitialState.publicCauses
     }
 };
