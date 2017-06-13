@@ -16,7 +16,7 @@ module.exports = {
     },
     module: {
         loaders: [{
-            test: /\.(tsx?|text)$/,
+            test: /\.(tsx?)$/,
             include: [
                 path.resolve(__dirname, 'src', 'client'),
                 path.resolve(__dirname, 'src', 'shared')
@@ -54,6 +54,7 @@ module.exports = {
         new webpack.NormalModuleReplacementPlugin(/^fs$/, function(result) {
             result.request = './mock-fs';
         }),
+        // Ditto for continuation-local-storage.
         new webpack.NormalModuleReplacementPlugin(/^continuation-local-storage$/, function(result) {
             result.request = './mock-continuation-local-storage';
         }),        
@@ -68,7 +69,8 @@ module.exports = {
         extensions: ['', '.js', '.ts', '.tsx', '.css', '.less'],
         root: [
             path.resolve(__dirname, 'src', 'client'),
-            path.resolve(__dirname, 'src', 'shared'),	    
+            path.resolve(__dirname, 'src', 'shared'),
+            path.resolve(__dirname, 'node_modules')
         ]
     },
     devtool: 'source-map'
