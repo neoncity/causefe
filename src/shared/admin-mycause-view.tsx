@@ -374,6 +374,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	    goal.currency = this.state.goalCurrency.getValue();
 	    
 	    const privateCause = await config.CORE_PRIVATE_CLIENT().createCause(
+                config.SESSION(),
 		this.state.title.getValue(),
 		this.state.description.getValue(),
 		this.state.pictureSet,
@@ -399,6 +400,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	    goal.currency = this.state.goalCurrency.getValue();
 	    
 	    const privateCause = await config.CORE_PRIVATE_CLIENT().updateCause(
+                config.SESSION(),
 		{
 		    title: this.state.title.getValue(),
 		    description: this.state.description.getValue(),
@@ -421,7 +423,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	this.props.onPrivateCauseLoading();
 
 	try {
-	    await config.CORE_PRIVATE_CLIENT().deleteCause();
+	    await config.CORE_PRIVATE_CLIENT().deleteCause(config.SESSION());
 	    this.props.onPrivateCauseReady(true, true, null);
 	} catch (e) {
 	    if (isLocal(config.ENV)) {

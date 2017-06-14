@@ -121,7 +121,7 @@ export class PublicCauseWidget extends React.Component<Props, State> {
             currencyAmount.amount = this.state.donationAmount.getValue();
             currencyAmount.currency = this.props.cause.goal.currency;
             
-            await config.CORE_PUBLIC_CLIENT().createDonation(this.props.cause.id, currencyAmount);
+            await config.CORE_PUBLIC_CLIENT().createDonation(config.SESSION(), this.props.cause.id, currencyAmount);
             this.setState({donationState: OpState.Ready});
         } catch (e) {
             if (isLocal(config.ENV)) {
@@ -159,7 +159,7 @@ export class PublicCauseWidget extends React.Component<Props, State> {
             }
 
             try {
-                await config.CORE_PUBLIC_CLIENT().createShare(this.props.cause.id, response.post_id as string);
+                await config.CORE_PUBLIC_CLIENT().createShare(config.SESSION(), this.props.cause.id, response.post_id as string);
                 this.setState({shareState: OpState.Ready});
             } catch (e) {
                 if (isLocal(config.ENV)) {
