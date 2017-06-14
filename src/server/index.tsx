@@ -8,7 +8,7 @@ import * as React from 'react'
 import * as ReactDOMServer from 'react-dom/server'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
-import { match, RouterContext, RouterState } from 'react-router'
+import { RouterContext, RouterState } from 'react-router'
 import * as webpack from 'webpack'
 import * as theWebpackDevMiddleware from 'webpack-dev-middleware'
 
@@ -45,7 +45,6 @@ async function main() {
     const webpackConfig = require('../../webpack.config.js');
     const identityClient: IdentityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST);
     const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.CORE_SERVICE_HOST);
-    const authInfoMarshaller = new (MarshalFrom(AuthInfo))();
     const clientConfigMarshaller = new (MarshalFrom(ClientConfig))();
     const clientInitialStateMarshaller = new (MarshalFrom(ClientInitialState))();
     const app = express();
@@ -164,126 +163,24 @@ async function main() {
         ));
         res.status(HttpStatus.OK);
         res.end();      
-    }));    
+    }));
+
+    appRouter.get('*', wrap(async (req: CauseFeRequest, res: express.Response) => {
+        const initialState = {
+            publicCauses: null,
+            publicCauseDetail: null
+        };
+
+        res.write(serverSideRender(
+            req.session as Session,
+            initialState,
+            req.ssrRouterState
+        ));
+        res.status(HttpStatus.OK);
+        res.end();      
+    }));        
 
     app.use('/', appRouter);
-
-    app.get('*', [newAuthInfoMiddleware(AuthInfoLevel.None), newSessionMiddleware(SessionLevel.None, config.ENV, identityClient)], wrap(async (req: CauseFeRequest, res: express.Response) => {
-        if (req.authInfo == null || req.session == null) {
-            try {
-                const [authInfo, session] = await identityClient.getOrCreateSession();
-                req.authInfo = authInfo;
-                req.session = session;
-
-                res.cookie(AuthInfo.CookieName, authInfoMarshaller.pack(authInfo), {
-                    expires: session.timeExpires,
-                    httpOnly: true,
-                    secure: !isLocal(config.ENV)
-                });
-            } catch (e) {
-                console.log(`Session creation error - ${e.toString()}`);
-                if (isLocal(config.ENV)) {
-                    console.log(e);
-                }
-                
-                res.status(HttpStatus.INTERNAL_SERVER_ERROR);
-                res.end();
-                return;
-            }
-        }
-
-        match({ routes: routesConfig, location: req.url}, async (err, redirect, props) => {
-            if (err) {
-                console.log(`Some sort of error during matching - ${err.toString()}`);
-                if (isLocal(config.ENV)) {
-                    console.log(err);
-                }
-
-                res.status(HttpStatus.INTERNAL_SERVER_ERROR);
-                res.end();
-                return;
-            }
-
-            if (redirect) {
-                res.redirect(redirect.pathname + redirect.search);
-                return;
-            }
-
-            if (!props) {
-                res.status(HttpStatus.NOT_FOUND);
-                res.end();
-                return;
-            }
-
-            console.log(props);
-
-            const session = req.session as Session;
-            const language = inferLanguage(session);
-
-            let causes: PublicCause[]|null = null;
-            let causeDetail: PublicCause|null = null;
-            
-            try {
-                causes = await corePublicClient.withAuthInfo(req.authInfo as AuthInfo).getCauses();
-            } catch (e) {
-                console.log(`Cannot retrieve causes server-side - ${e.toString()}`);
-                if (isLocal(config.ENV)) {
-                    console.log(e);
-                }
-            }
-
-            const store = createStore(reducers);
-
-            // Will work even if causes is not null. Client-side will re-query for it.
-            if (causes != null) {
-                store.dispatch({part: StatePart.PublicCauses, type: OpState.Preloaded, causes: causes});
-            }
-
-            if (causeDetail != null) {
-                store.dispatch({part: StatePart.PublicCauseDetail, type: OpState.Preloaded, cause: causeDetail});
-            }
-
-            const clientConfig = {
-                env: config.ENV,
-                context: config.CONTEXT,
-                auth0ClientId: config.AUTH0_CLIENT_ID,
-                auth0Domain: config.AUTH0_DOMAIN,
-                auth0CallbackUri: config.AUTH0_CALLBACK_URI,
-                fileStackKey: config.FILESTACK_KEY,
-                identityServiceExternalHost: config.IDENTITY_SERVICE_EXTERNAL_HOST,
-                coreServiceExternalHost: config.CORE_SERVICE_EXTERNAL_HOST,
-                facebookAppId: config.FACEBOOK_APP_ID,
-                logoutRoute: config.LOGOUT_ROUTE,
-                session: session,
-                language: language
-            };
-
-            const initialState = {
-                publicCauses: causes,
-                publicCauseDetail: causeDetail
-            };
-            
-            namespace.set('SESSION', session);
-            namespace.set('LANG', language);
-            
-            const appHtml = ReactDOMServer.renderToString(
-                <Provider store={store}>
-                    <RouterContext {...props} />
-                </Provider>
-            );
-
-            const htmlIndex = Mustache.render(bundles.getHtmlIndexTemplate(), {
-                FACEBOOK_APP_ID: config.FACEBOOK_APP_ID,
-                APP_HTML: appHtml,
-                CLIENT_CONFIG: JSON.stringify(clientConfigMarshaller.pack(clientConfig)),
-                CLIENT_INITIAL_STATE: JSON.stringify(clientInitialStateMarshaller.pack(initialState))
-            });
-
-            res.write(htmlIndex);
-            res.status(HttpStatus.OK);
-            res.end();      
-        });
-    }));
 
     app.listen(config.PORT, config.ADDRESS, () => {
         console.log(`Started ... ${config.ADDRESS}:${config.PORT}`);
