@@ -16,7 +16,7 @@ export function newEnsureSessionMiddleware(env: Env, identityClient: IdentityCli
     return wrap(async (req: CauseFeRequest, res: express.Response, next: express.NextFunction) => {
         if (req.authInfo == null || req.session == null) {
             try {
-                const [authInfo, session] = await identityClient.withContext(req.authInfo as AuthInfo /* force it here */, config.ORIGIN).getOrCreateSession();
+                const [authInfo, session] = await identityClient.withContext(null, config.ORIGIN).getOrCreateSession();
                 req.authInfo = authInfo;
                 req.session = session;
 
