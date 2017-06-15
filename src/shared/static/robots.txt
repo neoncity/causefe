@@ -1,2 +1,3 @@
+Sitemap: {{{ HOME_URI }}}/sitemap.xml
 UserAgent: *
 Disallow: /admin/

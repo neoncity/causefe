@@ -112,13 +112,29 @@ async function main() {
     const siteInfoRouter = express.Router();
 
     siteInfoRouter.get('/robots.txt', (_req: CauseFeRequest, res: express.Response) => {
-        res.write(bundles.getRobotsTxt());
+        res.type('.txt');
+        res.write(Mustache.render(bundles.getRobotsTxt(), { HOME_URI: config.ORIGIN }));
         res.status(HttpStatus.OK);
         res.end();
     });
 
     siteInfoRouter.get('/humans.txt', (_req: CauseFeRequest, res: express.Response) => {
+        res.type('.txt');
         res.write(bundles.getHumansTxt());
+        res.status(HttpStatus.OK);
+        res.end();
+    });
+
+    siteInfoRouter.get('/sitemap.xml', (_req: CauseFeRequest, res: express.Response) => {
+        res.type('.xml');
+        res.write(Mustache.render(bundles.getSitemapXml(), {
+            HOME_URI: config.ORIGIN,
+            HOME_LAST_MOD: new Date().toISOString(),
+            CAUSES: [{
+                PATH: '1/10',
+                LAST_MOD: new Date().toISOString()
+            }]
+        }));
         res.status(HttpStatus.OK);
         res.end();
     });

@@ -63,7 +63,8 @@ module.exports = {
 	    {from: './src/shared/static/index.html'},
 	    {from: './src/shared/static/favicon.ico'},
 	    {from: './src/shared/static/humans.txt'},
-	    {from: './src/shared/static/robots.txt'}
+	    {from: './src/shared/static/robots.txt'},
+	    {from: './src/shared/static/sitemap.xml'}
 	]),
 	new ExtractTextPlugin('client.css')
     ],
