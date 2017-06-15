@@ -179,8 +179,17 @@ async function main() {
         ));
         res.status(HttpStatus.OK);
         res.end();      
-    }));        
+    }));
 
+    const siteInfoRouter = express.Router();
+
+    siteInfoRouter.get('/robots.txt', (_req: CauseFeRequest, res: express.Response) => {
+        res.write(bundles.getRobotsTxt());
+        res.status(HttpStatus.OK);
+        res.end();
+    });
+
+    app.use('/', siteInfoRouter);
     app.use('/', appRouter);
 
     app.listen(config.PORT, config.ADDRESS, () => {

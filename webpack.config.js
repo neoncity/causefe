@@ -61,7 +61,8 @@ module.exports = {
         failPlugin,
 	new CopyPlugin([
 	    {from: './src/shared/static/index.html'},
-	    {from: './src/shared/static/favicon.ico'}
+	    {from: './src/shared/static/favicon.ico'},
+	    {from: './src/shared/static/robots.txt'}
 	]),
 	new ExtractTextPlugin('client.css')
     ],
