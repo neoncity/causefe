@@ -107,7 +107,21 @@ async function main() {
             CLIENT_CONFIG: serializeJavascript(clientConfigMarshaller.pack(clientConfig), {isJSON: true}),
             CLIENT_INITIAL_STATE: serializeJavascript(clientInitialStateMarshaller.pack(initialState), {isJSON: true})
         });    
-    }    
+    }
+
+    const siteInfoRouter = express.Router();
+
+    siteInfoRouter.get('/robots.txt', (_req: CauseFeRequest, res: express.Response) => {
+        res.write(bundles.getRobotsTxt());
+        res.status(HttpStatus.OK);
+        res.end();
+    });
+
+    siteInfoRouter.get('/humans.txt', (_req: CauseFeRequest, res: express.Response) => {
+        res.write(bundles.getHumansTxt());
+        res.status(HttpStatus.OK);
+        res.end();
+    });
 
     const appRouter = express.Router();
 
@@ -181,14 +195,6 @@ async function main() {
         res.status(HttpStatus.OK);
         res.end();      
     }));
-
-    const siteInfoRouter = express.Router();
-
-    siteInfoRouter.get('/robots.txt', (_req: CauseFeRequest, res: express.Response) => {
-        res.write(bundles.getRobotsTxt());
-        res.status(HttpStatus.OK);
-        res.end();
-    });
 
     app.use('/', siteInfoRouter);
     app.use('/', appRouter);
