@@ -1,5 +1,6 @@
 import * as r from 'raynor'
 import { ExtractError, MarshalFrom, MarshalWith } from 'raynor'
+import * as serializeJavascript from 'serialize-javascript'
 
 
 class AllowedRoutesMarshaller extends r.AbsolutePathMarshaller {
@@ -40,7 +41,7 @@ export class PostLoginRedirectInfoMarshaller extends r.BaseStringMarshaller<Post
 
     unbuild(redirectInfo: PostLoginRedirectInfo) {
 	const redirectInfoRaw = PostLoginRedirectInfoMarshaller._objectMarshaller.pack(redirectInfo);
-	const redirectInfoSer = JSON.stringify(redirectInfoRaw);
+	const redirectInfoSer = serializeJavascript(redirectInfoRaw, {isJSON: true});
 	return encodeURIComponent(redirectInfoSer);
     }
 }

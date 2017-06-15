@@ -9,6 +9,7 @@ import * as ReactDOMServer from 'react-dom/server'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import { RouterContext, RouterState } from 'react-router'
+import * as serializeJavascript from 'serialize-javascript'
 import * as webpack from 'webpack'
 import * as theWebpackDevMiddleware from 'webpack-dev-middleware'
 
@@ -102,8 +103,8 @@ async function main() {
         return Mustache.render(bundles.getHtmlIndexTemplate(), {
             FACEBOOK_APP_ID: config.FACEBOOK_APP_ID,
             APP_HTML: appHtml,
-            CLIENT_CONFIG: JSON.stringify(clientConfigMarshaller.pack(clientConfig)),
-            CLIENT_INITIAL_STATE: JSON.stringify(clientInitialStateMarshaller.pack(initialState))
+            CLIENT_CONFIG: serializeJavascript(clientConfigMarshaller.pack(clientConfig), {isJSON: true}),
+            CLIENT_INITIAL_STATE: serializeJavascript(clientInitialStateMarshaller.pack(initialState), {isJSON: true})
         });    
     }    
 
