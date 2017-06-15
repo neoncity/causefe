@@ -29,6 +29,7 @@ export let IDENTITY_SERVICE_HOST:string;
 export let CORE_SERVICE_HOST:string;
 export let IDENTITY_SERVICE_EXTERNAL_HOST:string;
 export let CORE_SERVICE_EXTERNAL_HOST:string;
+export let ORIGIN:string;
 export let LOGOUT_ROUTE:string;
 export let AUTH0_CLIENT_ID: string;
 export let AUTH0_CLIENT_SECRET: string;
@@ -53,6 +54,7 @@ if (isServer(parseContext(process.env.CONTEXT))) {
     CORE_SERVICE_HOST = process.env.CORE_SERVICE_HOST;
     IDENTITY_SERVICE_EXTERNAL_HOST = process.env.IDENTITY_SERVICE_EXTERNAL_HOST;
     CORE_SERVICE_EXTERNAL_HOST = process.env.CORE_SERVICE_EXTERNAL_HOST;
+    ORIGIN = process.env.ORIGIN;
     LOGOUT_ROUTE = '/real/auth-flow/logout';
 
     SESSION = () => {

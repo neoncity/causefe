@@ -42,6 +42,7 @@ import { inferLanguage } from '../shared/utils'
 import { newServerSideRenderingMatchMiddleware } from './ssr-match-middleware'
 
 
+
 async function main() {
     const webpackConfig = require('../../webpack.config.js');
     const identityClient: IdentityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST);
@@ -111,14 +112,14 @@ async function main() {
     const appRouter = express.Router();
 
     appRouter.use(newAuthInfoMiddleware(AuthInfoLevel.None));
-    appRouter.use(newSessionMiddleware(SessionLevel.None, config.ENV, identityClient));
+    appRouter.use(newSessionMiddleware(SessionLevel.None, config.ENV, config.ORIGIN, identityClient));
     appRouter.use(newEnsureSessionMiddleware(config.ENV, identityClient));
     appRouter.use(newServerSideRenderingMatchMiddleware(config.ENV, routesConfig));
 
     appRouter.get('/', wrap(async (req: CauseFeRequest, res: express.Response) => {
         let causes: PublicCause[]|null = null;
         try {
-            causes = await corePublicClient.withAuthInfo(req.authInfo as AuthInfo).getCauses();
+            causes = await corePublicClient.withContext(req.authInfo as AuthInfo, config.ORIGIN).getCauses();
         } catch (e) {
             console.log(`Cannot retrieve causes server-side - ${e.toString()}`);
             if (isLocal(config.ENV)) {
@@ -144,7 +145,7 @@ async function main() {
         let cause: PublicCause|null = null;
         try {
             const causeId = parseInt(req.params['causeId']);
-            cause = await corePublicClient.withAuthInfo(req.authInfo as AuthInfo).getCause(causeId);
+            cause = await corePublicClient.withContext(req.authInfo as AuthInfo, config.ORIGIN).getCause(causeId);
         } catch (e) {
             console.log(`Cannot retrieve causes server-side - ${e.toString()}`);
             if (isLocal(config.ENV)) {
