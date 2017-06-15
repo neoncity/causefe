@@ -20,8 +20,9 @@ import {
     newSessionMiddleware,
     SessionLevel } from '@neoncity/common-server-js'
 import {
-    newCorePublicClient,
+    CauseSummary,
     CorePublicClient,
+    newCorePublicClient,
     PublicCause } from '@neoncity/core-sdk-js'
 import {
     AuthInfo,
@@ -38,7 +39,7 @@ import * as config from '../shared/config'
 import { routesConfig } from '../shared/routes-config'
 import { OpState, reducers, StatePart } from '../shared/store'
 import { ClientConfig, ClientInitialState } from '../shared/client-data'
-import { inferLanguage } from '../shared/utils'
+import { causeLink,inferLanguage } from '../shared/utils'
 import { newServerSideRenderingMatchMiddleware } from './ssr-match-middleware'
 
 
@@ -125,19 +126,32 @@ async function main() {
         res.end();
     });
 
-    siteInfoRouter.get('/sitemap.xml', (_req: CauseFeRequest, res: express.Response) => {
-        res.type('.xml');
+    siteInfoRouter.get('/sitemap.xml', wrap(async (_req: CauseFeRequest, res: express.Response) => {
+        let allCauseSummaries: CauseSummary[]|null = null;
+        try {
+            allCauseSummaries = await corePublicClient.withContext(null, config.ORIGIN).getAllCauseSummaries();
+        } catch (e) {
+            console.log(`Cannot retrieve causes server-side - ${e.toString()}`);
+            if (isLocal(config.ENV)) {
+                console.log(e);
+            }
+
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+            res.end();
+        }
+        
+        res.type('.xml; charset=utf-8');
         res.write(Mustache.render(bundles.getSitemapXml(), {
             HOME_URI: config.ORIGIN,
             HOME_LAST_MOD: new Date().toISOString(),
-            CAUSES: [{
-                PATH: '1/10',
-                LAST_MOD: new Date().toISOString()
-            }]
+            CAUSES: (allCauseSummaries as CauseSummary[]).map(summary => ({
+                PATH: causeLink(summary),
+                LAST_MOD: summary.timeLastUpdated.toISOString()
+            }))
         }));
         res.status(HttpStatus.OK);
         res.end();
-    });
+    }));
 
     const appRouter = express.Router();
 

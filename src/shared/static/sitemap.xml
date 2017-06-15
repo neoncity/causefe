@@ -13,7 +13,7 @@
 
   {{#CAUSES}}
   <url>
-    <loc>{{{HOME_URI}}}/{{{ PATH }}}</loc>
+    <loc>{{{HOME_URI}}}{{{ PATH }}}</loc>
     <lastmod>{{ LAST_MOD }}</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>

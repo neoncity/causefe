@@ -1,8 +1,8 @@
-import { Cause } from '@neoncity/core-sdk-js'
+import { Cause, CauseSummary } from '@neoncity/core-sdk-js'
 import { Session, User } from '@neoncity/identity-sdk-js'
 
 
-export function causeLink(cause: Cause): string {
+export function causeLink(cause: Cause|CauseSummary): string {
     return `/c/${cause.id}/${cause.slug}`;
 }
 
