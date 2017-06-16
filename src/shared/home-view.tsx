@@ -56,6 +56,7 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
             <Helmet>
                 <title>{text.pageTitle[config.LANG()]}</title>
                 <meta name="description" content={text.pageDescription[config.LANG()]} />
+                <link rel="canonical" href={config.ORIGIN} />
             </Helmet>;
         
 	if (this.props.isLoading) {
