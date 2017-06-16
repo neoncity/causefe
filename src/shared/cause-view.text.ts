@@ -1,7 +1,7 @@
-import { Message, MessageWith0Arg, MessageWith1Arg } from './messages'
+import { MessageWith0Arg, MessageWith1Arg } from './messages'
 
 
-export const pageTitleDefault: Message = {
+export const pageTitleDefault: MessageWith0Arg = {
     en: "NeonCity - Cause",
     ro: "NeonCity - Cauză"
 };

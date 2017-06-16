@@ -69,7 +69,7 @@ class _CauseView extends React.Component<Props, undefined> {
     render() {
         const cause = this.props.cause as PublicCause;
         
-        const pageTitle = this.props.isReady || this.props.isPreloaded
+        const pageTitle: string = this.props.isReady || this.props.isPreloaded
               ? text.pageTitle[config.LANG()](cause.title)
               : text.pageTitleDefault[config.LANG()];
 
@@ -82,13 +82,19 @@ class _CauseView extends React.Component<Props, undefined> {
                 <title>{pageTitle}</title>
                 <meta name="description" content={pageDescription} />
                 <meta name="robots" content="index,follow" />
-                <link rel="canonical" href={`${config.ORIGIN}${causeLink(cause)}`} />
                 <meta name="twitter:card" content="summary" />
                 <meta name="twitter:title" content={pageTitle} />
                 <meta name="twitter:description" content={pageDescription} />
                 <meta name="twitter:image" content={causePictureUri(cause)} />
-                <meta name="twitter:creator" content="@neoncity" />
+                <meta name="twitter:creator" content={commonText.siteName[config.LANG()]} />
                 <meta name="twitter:site" content={config.ORIGIN} />
+                <meta property="og:url" content={`${config.ORIGIN}${causeLink(cause)}`} />
+                <meta property="og:type" content="article" />
+                <meta property="og:title" content={pageTitle} />
+                <meta property="og:description" content={pageDescription} />
+                <meta property="og:site_name" content={commonText.siteName[config.LANG()]} />
+                <meta property="og:image" content={causePictureUri(cause)} />
+                <link rel="canonical" href={`${config.ORIGIN}${causeLink(cause)}`} />
             </Helmet>;
         
         if (this.props.isLoading) {

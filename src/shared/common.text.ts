@@ -1,5 +1,10 @@
-import { Message } from './messages'
+import { Message, MessageWith0Arg } from './messages'
 
+
+export const siteName: MessageWith0Arg = {
+    en: "NeonCity",
+    ro: "NeonCity"
+};
 
 export const loading: Message = {
     en: "Loading ...",

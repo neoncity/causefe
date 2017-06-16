@@ -7,9 +7,9 @@ export function causeLink(cause: Cause|CauseSummary): string {
 }
 
 
-export function causePictureUri(cause: Cause): string|null {
+export function causePictureUri(cause: Cause): string|undefined {
     if (cause.pictureSet.pictures.length == 0) {
-        return null;
+        return undefined;
     }
 
     return cause.pictureSet.pictures[0].uri;
