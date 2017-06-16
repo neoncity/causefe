@@ -81,6 +81,7 @@ class _CauseView extends React.Component<Props, undefined> {
             <Helmet>
                 <title>{pageTitle}</title>
                 <meta name="description" content={pageDescription} />
+                <meta name="robots" content="index,follow" />
                 <link rel="canonical" href={`${config.ORIGIN}${causeLink(cause)}`} />
             </Helmet>;
         

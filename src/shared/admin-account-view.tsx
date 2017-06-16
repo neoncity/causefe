@@ -16,6 +16,7 @@ export class AdminAccountView extends React.Component<Props, undefined> {
             <div>
                 <Helmet>
                     <title>{text.pageTitle[config.LANG()]}</title>
+                    <meta name="robots" content="noindex,nofollow" />
                 </Helmet>
                 <p>{text.viewTitle[config.LANG()]}</p>
             </div>

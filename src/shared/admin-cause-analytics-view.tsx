@@ -49,6 +49,7 @@ class _AdminCauseAnalyticsView extends React.Component<Props, undefined> {
         const helmet =
             <Helmet>
                 <title>{text.pageTitle[config.LANG()]}</title>
+                <meta name="robots" content="noindex,nofollow" />
             </Helmet>;
                         
         if (this.props.isLoading) {
