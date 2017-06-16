@@ -55,6 +55,7 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
         const helmet =
             <Helmet>
                 <title>{text.pageTitle[config.LANG()]}</title>
+                <meta name="description" content={text.pageDescription[config.LANG()]} />
             </Helmet>;
         
 	if (this.props.isLoading) {

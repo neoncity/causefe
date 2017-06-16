@@ -67,13 +67,20 @@ class _CauseView extends React.Component<Props, undefined> {
     }    
     
     render() {
+        const cause = this.props.cause as PublicCause;
+        
         const pageTitle = this.props.isReady || this.props.isPreloaded
-              ? text.pageTitle[config.LANG()]((this.props.cause as PublicCause).title)
+              ? text.pageTitle[config.LANG()](cause.title)
               : text.pageTitleDefault[config.LANG()];
+
+        const pageDescription: string = this.props.isReady || this.props.isPreloaded
+              ? text.pageDescription[config.LANG()](cause.description)
+              : text.pageDescriptionDefault[config.LANG()];
         
         const helmet =
             <Helmet>
                 <title>{pageTitle}</title>
+                <meta name="description" content={pageDescription} />
             </Helmet>;
         
         if (this.props.isLoading) {

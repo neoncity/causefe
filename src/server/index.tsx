@@ -107,6 +107,7 @@ async function main() {
 
         return Mustache.render(bundles.getHtmlIndexTemplate(), {
             PAGE_TITLE_HTML: helmetData.title,
+            PAGE_META_HTML: helmetData.meta,
             FACEBOOK_APP_ID: config.FACEBOOK_APP_ID,
             APP_HTML: appHtml,
             CLIENT_CONFIG: serializeJavascript(clientConfigMarshaller.pack(clientConfig), {isJSON: true}),
