@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 
 import { UserActionsOverview } from '@neoncity/core-sdk-js'
@@ -42,10 +43,15 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
     }
     
     render() {
+        const helmet =
+            <Helmet>
+                <title>{text.pageTitle[config.LANG()]}</title>
+             </Helmet>;
+        
 	if (this.props.isLoading) {
-	    return <div>{commonText.loading[config.LANG()]}</div>;
+	    return <div>{helmet}{commonText.loading[config.LANG()]}</div>;
 	} else if (this.props.isFailed) {
-	    return <div>{commonText.loadingFailed[config.LANG()]}</div>;
+	    return <div>{helmet}{commonText.loadingFailed[config.LANG()]}</div>;
 	} else {
 	    const donationWidgets = (this.props.userActionsOverview as UserActionsOverview)
 		  .donations
@@ -60,6 +66,7 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
 
 	    return (
                 <div>
+                    {helmet}
 		    <h6>{text.donations[config.LANG()]}</h6>
 		    {donationWidgets}
 		    <h6>{text.shares[config.LANG()]}</h6>

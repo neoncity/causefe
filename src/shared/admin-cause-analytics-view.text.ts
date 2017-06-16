@@ -1,6 +1,12 @@
 import { Message, MessageWith1Arg, MessageWith2Arg } from './messages'
 
 
+export const pageTitle: Message = {
+    en: "Admin - Analytics",
+    ro: "Administrare - Situație"
+};
+
+
 export const noCause: Message = {
     en: "There is no cause. Create one to see something here",
     ro: "Nu exista o cauză încă. Porniți una pentru a vedea ceva aici"

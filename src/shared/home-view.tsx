@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 
 import { PublicCause } from '@neoncity/core-sdk-js'
@@ -9,6 +10,7 @@ import { PublicCauseWidget } from './public-cause-widget'
 import { OpState, PublicCausesState, StatePart } from '../shared/store'
 
 import * as commonText from './common.text'
+import * as text from './home-view.text'
 
 
 interface HomeViewProps {
@@ -50,16 +52,21 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
     }
     
     render() {
+        const helmet =
+            <Helmet>
+                <title>{text.pageTitle[config.LANG()]}</title>
+            </Helmet>;
+        
 	if (this.props.isLoading) {
-	    return <div>{commonText.loading[config.LANG()]}</div>;
+	    return <div>{helmet}{commonText.loading[config.LANG()]}</div>;
 	} else if (this.props.isFailed) {
-	    return <div>{commonText.loadingFailed[config.LANG()]}</div>;
+	    return <div>{helmet}{commonText.loadingFailed[config.LANG()]}</div>;
 	} else {
 	    const causes = (this.props.causes as PublicCause[]).map(
 	        c => <PublicCauseWidget key={c.id} cause={c} />
 	    );
 	    
-	    return <div>{causes}</div>;
+	    return <div>{helmet}{causes}</div>;
 	}
     }
 }

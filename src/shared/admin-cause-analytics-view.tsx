@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 
 import { CauseAnalytics } from '@neoncity/core-sdk-js'
@@ -45,17 +46,23 @@ class _AdminCauseAnalyticsView extends React.Component<Props, undefined> {
     }
     
     render() {
+        const helmet =
+            <Helmet>
+                <title>{text.pageTitle[config.LANG()]}</title>
+            </Helmet>;
+                        
         if (this.props.isLoading) {
-            return <div>{commonText.loading[config.LANG()]}</div>;
+            return <div>{helmet}{commonText.loading[config.LANG()]}</div>;
 	} else if (this.props.isFailed) {
-	    return <div>{commonText.loadingFailed[config.LANG()]}</div>;
+	    return <div>{helmet}{commonText.loadingFailed[config.LANG()]}</div>;
 	} else if (!this.props.hasCause) {
-            return <div>{text.noCause[config.LANG()]}</div>;
+            return <div>{helmet}{text.noCause[config.LANG()]}</div>;
 	} else {
             const causeAnalytics = this.props.causeAnalytics as CauseAnalytics;
             
             return (
                 <div>
+                    {helmet}
                     <p>{text.daysLeft[config.LANG()](causeAnalytics.daysLeft)}</p>
                     <p>{text.donorsCount[config.LANG()](causeAnalytics.donorsCount)}</p>
                     <p>{text.donationsCount[config.LANG()](causeAnalytics.donationsCount)}</p>

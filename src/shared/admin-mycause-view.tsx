@@ -2,6 +2,7 @@ import * as theMoment from 'moment'
 import * as r from 'raynor'
 import * as React from 'react'
 import * as ReactDatePicker from 'react-datepicker'
+import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 
 import { Currency, StandardCurrencies, CurrencyMarshaller } from '@neoncity/common-js'
@@ -118,6 +119,11 @@ class _AdminMyCauseView extends React.Component<Props, State> {
     }
     
     render() {
+        const helmet =
+            <Helmet>
+                <title>{text.pageTitle[config.LANG()]}</title>
+             </Helmet>;
+        
 	const allValid = !(this.state.title.isInvalid()
 			   || this.state.slug.isInvalid()
 			   || this.state.description.isInvalid()
@@ -248,15 +254,16 @@ class _AdminMyCauseView extends React.Component<Props, State> {
         );
 	
 	if (this.props.isLoading) {
-	    return <div>{commonText.loading[config.LANG()]}</div>;
+	    return <div>{helmet}{commonText.loading[config.LANG()]}</div>;
 	} else if (this.props.isFailed) {
-	    return <div>{commonText.loadingFailed[config.LANG()]}</div>;
+	    return <div>{helmet}{commonText.loadingFailed[config.LANG()]}</div>;
 	} else if (!this.props.hasCause) {
 	    if (!this.state.showCreationFormIfNoControls) {
-		return <div>{text.noCause[config.LANG()]} <button onClick={this._handleShowCreationForm.bind(this)}>{text.createCause[config.LANG()]}</button> </div>;
+		return <div>{helmet}{text.noCause[config.LANG()]} <button onClick={this._handleShowCreationForm.bind(this)}>{text.createCause[config.LANG()]}</button> </div>;
 	    } else {
 		return (
                     <div>
+                        {helmet}
                         {text.creationForm[config.LANG()]} {editForm}
                         <div>
                             <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>{text.reset[config.LANG()]}</button>
@@ -266,12 +273,13 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 		);
             }
 	} else if (this.props.causeIsDeleted) {
-	    return <div>{text.causeDeleted[config.LANG()]}</div>;
+	    return <div>{helmet}{text.causeDeleted[config.LANG()]}</div>;
         } else {
             const cause = this.props.cause as PrivateCause;
             
             return (
                 <div>
+                    {helmet}                    
                     {cause.title}
                     {editForm}
                     <div>

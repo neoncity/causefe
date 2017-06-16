@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { Helmet } from 'react-helmet'
 
 import * as config from './config'
 
@@ -11,6 +12,13 @@ interface Props {
 
 export class AdminAccountView extends React.Component<Props, undefined> {
     render() {
-        return <div>{text.viewTitle[config.LANG()]}</div>;
+        return (
+            <div>
+                <Helmet>
+                    <title>{text.pageTitle[config.LANG()]}</title>
+                </Helmet>
+                <p>{text.viewTitle[config.LANG()]}</p>
+            </div>
+        );
     }
 }

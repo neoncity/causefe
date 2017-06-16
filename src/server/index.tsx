@@ -6,6 +6,7 @@ import Mustache = require('mustache')
 import { MarshalFrom } from 'raynor'
 import * as React from 'react'
 import * as ReactDOMServer from 'react-dom/server'
+import { Helmet } from 'react-helmet'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import { RouterContext, RouterState } from 'react-router'
@@ -102,7 +103,10 @@ async function main() {
             </Provider>
         );
 
+        const helmetData = Helmet.renderStatic();
+
         return Mustache.render(bundles.getHtmlIndexTemplate(), {
+            PAGE_TITLE_HTML: helmetData.title,
             FACEBOOK_APP_ID: config.FACEBOOK_APP_ID,
             APP_HTML: appHtml,
             CLIENT_CONFIG: serializeJavascript(clientConfigMarshaller.pack(clientConfig), {isJSON: true}),

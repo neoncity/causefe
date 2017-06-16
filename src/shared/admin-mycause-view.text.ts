@@ -1,6 +1,12 @@
 import { Message, MessageWith0Arg } from './messages'
 
 
+export const pageTitle: Message = {
+    en: "Admin - My Cause",
+    ro: "Administrare - Cauza Mea"
+};
+
+
 export const modified: Message = {
     en: "Modified",
     ro: "Modificat"

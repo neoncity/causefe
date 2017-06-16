@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { browserHistory } from 'react-router'
 
@@ -10,6 +11,7 @@ import { PublicCauseWidget } from './public-cause-widget'
 import { OpState, PublicCauseDetailState, StatePart } from '../shared/store'
 import { causeLink } from './utils'
 
+import * as text from './cause-view.text'
 import * as commonText from './common.text'
 
 
@@ -65,13 +67,25 @@ class _CauseView extends React.Component<Props, undefined> {
     }    
     
     render() {
+        const pageTitle = this.props.isReady || this.props.isPreloaded
+              ? text.pageTitle[config.LANG()]((this.props.cause as PublicCause).title)
+              : text.pageTitleDefault[config.LANG()];
+        
+        const helmet =
+            <Helmet>
+                <title>{pageTitle}</title>
+            </Helmet>;
+        
         if (this.props.isLoading) {
-            return <div>{commonText.loading[config.LANG()]}</div>;
+            return <div>{helmet}{commonText.loading[config.LANG()]}</div>;
         } else if (this.props.isFailed) {
-            return <div>{commonText.loadingFailed[config.LANG()]}</div>;
+            return <div>{helmet}{commonText.loadingFailed[config.LANG()]}</div>;
         } else {
             return (
-                <PublicCauseWidget cause={this.props.cause as PublicCause} />
+                <div>
+                    {helmet}
+                    <PublicCauseWidget cause={this.props.cause as PublicCause} />
+                </div>
             );
         }
     }
