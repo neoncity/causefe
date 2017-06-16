@@ -7,6 +7,15 @@ export function causeLink(cause: Cause|CauseSummary): string {
 }
 
 
+export function causePictureUri(cause: Cause): string|null {
+    if (cause.pictureSet.pictures.length == 0) {
+        return null;
+    }
+
+    return cause.pictureSet.pictures[0].uri;
+}
+
+
 export function inferLanguage(session: Session): string {
     if (session.hasUser()) {
         const user = session.user as User;

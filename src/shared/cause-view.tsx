@@ -9,7 +9,7 @@ import { isLocal } from '@neoncity/common-js'
 import * as config from './config'
 import { PublicCauseWidget } from './public-cause-widget'
 import { OpState, PublicCauseDetailState, StatePart } from '../shared/store'
-import { causeLink } from './utils'
+import { causeLink, causePictureUri } from './utils'
 
 import * as text from './cause-view.text'
 import * as commonText from './common.text'
@@ -83,6 +83,12 @@ class _CauseView extends React.Component<Props, undefined> {
                 <meta name="description" content={pageDescription} />
                 <meta name="robots" content="index,follow" />
                 <link rel="canonical" href={`${config.ORIGIN}${causeLink(cause)}`} />
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:title" content={pageTitle} />
+                <meta name="twitter:description" content={pageDescription} />
+                <meta name="twitter:image" content={causePictureUri(cause)} />
+                <meta name="twitter:creator" content="@neoncity" />
+                <meta name="twitter:site" content={config.ORIGIN} />
             </Helmet>;
         
         if (this.props.isLoading) {

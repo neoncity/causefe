@@ -57,6 +57,12 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
                 <title>{text.pageTitle[config.LANG()]}</title>
                 <meta name="description" content={text.pageDescription[config.LANG()]} />
                 <meta name="robots" content="index,follow" />
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:title" content={pageTitle} />
+                <meta name="twitter:description" content={pageDescription} />
+                <meta name="twitter:image" content={causePictureUri(cause)} />
+                <meta name="twitter:creator" content="@neoncity" />
+                <meta name="twitter:site" content={config.ORIGIN} />
                 <link rel="canonical" href={config.ORIGIN} />
             </Helmet>;
         
