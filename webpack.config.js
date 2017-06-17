@@ -5,11 +5,23 @@ const webpack = require('webpack');
 
 
 const prodPlugins = [
+    new webpack.LoaderOptionsPlugin({
+        minimize: true,
+        debug: false
+    }),
     new webpack.optimize.UglifyJsPlugin({
         mangle: true,
         sourceMap: true,
         compress: {
             warnings: false, // Suppress uglification warnings
+            conditionals: true,
+            unused: true,
+            comparisons: true,
+            sequences: true,
+            dead_code: true,
+            evaluate: true,
+            if_return: true,
+            join_vars: true,
             pure_getters: true,
             unsafe: true,
             unsafe_comps: true,
@@ -49,7 +61,8 @@ module.exports = {
 	    test: /\.(less|css)$/,
 	    include: [
 		path.resolve(__dirname, 'src', 'client'),
-		path.resolve(__dirname, 'node_modules')
+		path.resolve(__dirname, 'src', 'shared'),
+		path.resolve(__dirname, 'node_modules', 'react-datepicker')
 	    ],
             loader: ExtractTextPlugin.extract({
                 fallback: 'style-loader',
@@ -58,14 +71,14 @@ module.exports = {
             })
 	}, {
 	    test: /\.html$/,
-	    include: [path.resolve(__dirname, 'src', 'client', 'static')],
+	    include: [path.resolve(__dirname, 'src', 'shared', 'static')],
             loader: 'file-loader',
             options: {
                 name: '[name].[ext]'
             }
 	}, {
 	    test: /favicon.ico$/,
-	    include: [path.resolve(__dirname, 'src', 'client', 'static')],
+	    include: [path.resolve(__dirname, 'src', 'shared', 'static')],
             loader: 'file-loader',
             options: {
                 name: '[name].[ext]'
