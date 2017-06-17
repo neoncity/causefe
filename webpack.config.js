@@ -1,8 +1,27 @@
 const CopyPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const failPlugin = require('webpack-fail-plugin');
 const path = require('path');
 const webpack = require('webpack');
+
+
+const prodPlugins = [
+    new webpack.optimize.UglifyJsPlugin({
+        mangle: true,
+        sourceMap: true,
+        compress: {
+            warnings: false, // Suppress uglification warnings
+            pure_getters: true,
+            unsafe: true,
+            unsafe_comps: true,
+            screw_ie8: true
+        },
+        output: {
+            comments: false,
+        },
+        exclude: [/\.min\.js$/gi] // skip pre-minified libs
+    }),
+    new webpack.optimize.AggressiveMergingPlugin()
+];
 
 module.exports = {
     target: 'web',
@@ -15,14 +34,14 @@ module.exports = {
         filename: '[name].js'
     },
     module: {
-        loaders: [{
+        rules: [{
             test: /\.(tsx?)$/,
             include: [
                 path.resolve(__dirname, 'src', 'client'),
                 path.resolve(__dirname, 'src', 'shared')
             ],
-            loader: 'ts',
-            query: {
+            loader: 'ts-loader',
+            options: {
                 configFileName: 'tsconfig.client.json',
                 silent: true
             }
@@ -32,15 +51,25 @@ module.exports = {
 		path.resolve(__dirname, 'src', 'client'),
 		path.resolve(__dirname, 'node_modules')
 	    ],
-	    loader: ExtractTextPlugin.extract('style', 'css?sourceMap!less')
+            loader: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: ['css-loader', 'less-loader'],
+                publicPath: '/real/client/'
+            })
 	}, {
 	    test: /\.html$/,
 	    include: [path.resolve(__dirname, 'src', 'client', 'static')],
-	    loader: 'file?name=[name].[ext]'
+            loader: 'file-loader',
+            options: {
+                name: '[name].[ext]'
+            }
 	}, {
 	    test: /favicon.ico$/,
 	    include: [path.resolve(__dirname, 'src', 'client', 'static')],
-	    loader: 'file?name=[name].[ext]'
+            loader: 'file-loader',
+            options: {
+                name: '[name].[ext]'
+            }
 	}],
     },
     plugins: [
@@ -58,7 +87,6 @@ module.exports = {
         new webpack.NormalModuleReplacementPlugin(/^continuation-local-storage$/, function(result) {
             result.request = './mock-continuation-local-storage';
         }),        
-        failPlugin,
 	new CopyPlugin([
 	    {from: './src/shared/static/index.html'},
 	    {from: './src/shared/static/favicon.ico'},
@@ -66,11 +94,12 @@ module.exports = {
 	    {from: './src/shared/static/robots.txt'},
 	    {from: './src/shared/static/sitemap.xml'}
 	]),
-	new ExtractTextPlugin('client.css')
-    ],
+	new ExtractTextPlugin('client.css'),
+        new webpack.NoEmitOnErrorsPlugin()
+    ].concat(process.env.ENV !== 'LOCAL' ? prodPlugins : []),
     resolve: {
-        extensions: ['', '.js', '.ts', '.tsx', '.css', '.less'],
-        root: [
+        extensions: ['.js', '.ts', '.tsx', '.css', '.less'],
+        modules: [
             path.resolve(__dirname, 'src', 'client'),
             path.resolve(__dirname, 'src', 'shared'),
             path.resolve(__dirname, 'node_modules')
