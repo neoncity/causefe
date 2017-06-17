@@ -90,6 +90,8 @@ module.exports = {
             'process.env.CONTEXT': '"CLIENT"',
             'process.env.NODE_ENV': process.env.ENV === 'LOCAL' ? '"development"' : '"production"'
         }),
+        // As we add more languages, we'll select more locales here.
+        new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en|ro/),
         // fs is needed in src/shared/config.ts on the server-side in the LOCAl env
         // to load some value from a secrets.json file. Naturally, fs doesn't exist
         // on the client side, so we need to fake it.
