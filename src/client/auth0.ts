@@ -1,4 +1,3 @@
-import Auth0Lock from 'auth0-lock'
 import { History } from 'history'
 
 import { Auth0Client } from '../shared/auth0'
@@ -21,25 +20,33 @@ export class Auth0Service implements Auth0Client {
     }
     
     showLock(canDismiss: boolean = true): void {
-        const currentLocation = this._history.getCurrentLocation();
-        const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
-        const postLoginInfoSer = this._postLoginRedirectInfoMarshaller.pack(postLoginInfo);
+        var _this = this;
+        
+        // This generates an async chunk.
+        require.ensure([], function(require) {
+            const auth0Lock = require('auth0-lock');
+            
+            const currentLocation = _this._history.getCurrentLocation();
+            const postLoginInfo = new PostLoginRedirectInfo(currentLocation.pathname);
+            const postLoginInfoSer = _this._postLoginRedirectInfoMarshaller.pack(postLoginInfo);
 
-        const auth0: Auth0LockStatic = new Auth0Lock(
-	    this._auth0ClientId,
-	    this._auth0Domain, {
-                closable: canDismiss,
-                auth: {
-		    redirect: true,
-		    redirectUrl: this._auth0CallbackUri,
-		    responseType: 'code',
-		    params: {
-                        state: postLoginInfoSer
-		    }
-                }
-	    }
-        );
+            const auth0: any = new ((auth0Lock as any).default)(
+	        _this._auth0ClientId,
+	        _this._auth0Domain, {
+                    closable: canDismiss,
+                    auth: {
+		        redirect: true,
+		        redirectUrl: _this._auth0CallbackUri,
+		        responseType: 'code',
+		        params: {
+                            state: postLoginInfoSer
+		        }
+                    }
+	        }
+            );
 
-        auth0.show();        
+            auth0.show();            
+        }, 'auth0-lock');
+
     }
 }
