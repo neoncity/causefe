@@ -188,6 +188,7 @@ async function main() {
             publicCauseDetail: null
         };
 
+        res.type('html');
         res.write(serverSideRender(
             req.session as Session,
             initialState,
@@ -214,6 +215,7 @@ async function main() {
             publicCauseDetail: cause
         };
 
+        res.type('html');
         res.write(serverSideRender(
             req.session as Session,
             initialState,
@@ -229,6 +231,7 @@ async function main() {
             publicCauseDetail: null
         };
 
+        res.type('html');
         res.write(serverSideRender(
             req.session as Session,
             initialState,
