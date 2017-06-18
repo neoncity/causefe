@@ -64,6 +64,7 @@ async function main() {
 
     const namespace = createNamespace(config.CLS_NAMESPACE_NAME);
 
+    app.disable('x-powered-by');
     app.use(newNamespaceMiddleware(namespace))
     app.use('/real/auth-flow', newAuthFlowRouter(identityClient));
     app.use('/real/client', bundles.getOtherBundlesRouter());
