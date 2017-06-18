@@ -1,4 +1,5 @@
 import { wrap } from 'async-middleware'
+import * as compression from 'compression'
 import { createNamespace } from 'continuation-local-storage'
 import * as express from 'express'
 import * as HttpStatus from 'http-status-codes'
@@ -66,6 +67,10 @@ async function main() {
     app.use(newNamespaceMiddleware(namespace))
     app.use('/real/auth-flow', newAuthFlowRouter(identityClient));
     app.use('/real/client', bundles.getOtherBundlesRouter());
+
+    if (!isLocal(config.ENV)) {
+        app.use(compression());
+    }
 
     function serverSideRender(session: Session, initialState: ClientInitialState, ssrRouterState: RouterState): string {
         const language = inferLanguage(session);
