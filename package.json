@@ -4,8 +4,8 @@
   "description": "The main frontend, where causes are managed and viewed.",
   "author": "NeonCity team",
   "scripts": {
-    "build": "tsc && webpack",
-    "build-analyze": "tsc && webpack --json > out/build-stats.json",      
+    "build": "tsc && webpack -p",
+    "build-analyze": "tsc && webpack -p --json > out/build-stats.json",      
     "serve-dev": "tsc --watch & nodemon out/server/index.js",
     "serve-prod": "node out/server/index.js",
     "pretest": "npm run build",
