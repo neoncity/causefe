@@ -76,6 +76,10 @@ class _CauseView extends React.Component<Props, undefined> {
         const pageDescription: string = this.props.isReady || this.props.isPreloaded
               ? text.pageDescription[config.LANG()](cause.description)
               : text.pageDescriptionDefault[config.LANG()];
+
+        const realCauseLink: string = this.props.isReady || this.props.isPreloaded
+              ? `${config.ORIGIN}${causeLink(cause)}`
+              : config.ORIGIN;
         
         const helmet =
             <Helmet>
@@ -88,13 +92,13 @@ class _CauseView extends React.Component<Props, undefined> {
                 <meta name="twitter:image" content={causePictureUri(cause)} />
                 <meta name="twitter:creator" content={commonText.siteName[config.LANG()]} />
                 <meta name="twitter:site" content={config.ORIGIN} />
-                <meta property="og:url" content={`${config.ORIGIN}${causeLink(cause)}`} />
+                <meta property="og:url" content={realCauseLink} />
                 <meta property="og:type" content="article" />
                 <meta property="og:title" content={pageTitle} />
                 <meta property="og:description" content={pageDescription} />
                 <meta property="og:site_name" content={commonText.siteName[config.LANG()]} />
                 <meta property="og:image" content={causePictureUri(cause)} />
-                <link rel="canonical" href={`${config.ORIGIN}${causeLink(cause)}`} />
+                <link rel="canonical" href={realCauseLink} />
             </Helmet>;
         
         if (this.props.isLoading) {
