@@ -112,7 +112,8 @@ async function main() {
             FACEBOOK_APP_ID: config.FACEBOOK_APP_ID,
             APP_HTML: appHtml,
             CLIENT_CONFIG: serializeJavascript(clientConfigMarshaller.pack(clientConfig), {isJSON: true}),
-            CLIENT_INITIAL_STATE: serializeJavascript(clientInitialStateMarshaller.pack(initialState), {isJSON: true})
+            CLIENT_INITIAL_STATE: serializeJavascript(clientInitialStateMarshaller.pack(initialState), {isJSON: true}),
+            WEBPACK_MANIFEST_JS: bundles.getManifestJs(),
         });    
     }
 

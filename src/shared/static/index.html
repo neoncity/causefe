@@ -44,7 +44,9 @@
       window.__NEONCITY_CLIENT_CONFIG = {{{ CLIENT_CONFIG }}};
       window.__NEONCITY_CLIENT_INITIAL_STATE = {{{ CLIENT_INITIAL_STATE }}};
     </script>
-    <script src="/real/client/manifest.js"></script>
+    <script>
+      {{{ WEBPACK_MANIFEST_JS }}}
+    </script>
     <script src="/real/client/vendor.js"></script>
     <script src="/real/client/client.js"></script>
   </body>
