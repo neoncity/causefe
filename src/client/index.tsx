@@ -5,6 +5,7 @@ import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import { Router, browserHistory } from 'react-router'
 
+import { IdentityClient, newIdentityClient } from '@neoncity/identity-sdk-js'
 import {
     newCorePrivateClient,
     newCorePublicClient,
@@ -25,12 +26,13 @@ import { FileStorageService } from './file-storage-service'
 const clientInitialStateMarshaller = new (MarshalFrom(ClientInitialState))();
 
 
+const identityClient: IdentityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_EXTERNAL_HOST);
 const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.CORE_SERVICE_EXTERNAL_HOST);
 const corePrivateClient: CorePrivateClient = newCorePrivateClient(config.ENV, config.CORE_SERVICE_EXTERNAL_HOST);
 const fileStorageClient: FileStorageClient = new FileStorageService(config.FILESTACK_KEY);
 const auth0Client: Auth0Client = new Auth0Service(browserHistory, config.AUTH0_CLIENT_ID, config.AUTH0_DOMAIN, config.AUTH0_CALLBACK_URI);
 
-config.setServices(corePublicClient, corePrivateClient, fileStorageClient, auth0Client);
+config.setServices(identityClient, corePublicClient, corePrivateClient, fileStorageClient, auth0Client);
 
 const clientInitialState = clientInitialStateMarshaller.extract((window as any).__NEONCITY_CLIENT_INITIAL_STATE);
 delete (window as any).__NEONCITY_INITIAL_STATE;

@@ -12,7 +12,7 @@ import {
 import {
     CorePublicClient,
     CorePrivateClient } from '@neoncity/core-sdk-js'
-import { Session } from '@neoncity/identity-sdk-js'
+import { IdentityClient, Session } from '@neoncity/identity-sdk-js'
 
 import { Auth0Client } from './auth0'
 import { FileStorageClient } from './file-storage'
@@ -39,11 +39,12 @@ export let FILESTACK_KEY: string;
 export let FACEBOOK_APP_ID:string;
 export let SESSION:() => Session;
 export let LANG:() => string;
+export let IDENTITY_CLIENT:() => IdentityClient;
 export let CORE_PUBLIC_CLIENT:() => CorePublicClient;
 export let CORE_PRIVATE_CLIENT:() => CorePrivateClient;
 export let FILE_STORAGE_CLIENT:() => FileStorageClient;
 export let AUTH0_CLIENT:() => Auth0Client;
-export let setServices:(corePublicClient: CorePublicClient, corePrivateClient: CorePrivateClient, fileStorageClient: FileStorageClient, auth0Client: Auth0Client) => void;
+export let setServices:(identityClient: IdentityClient, corePublicClient: CorePublicClient, corePrivateClient: CorePrivateClient, fileStorageClient: FileStorageClient, auth0Client: Auth0Client) => void;
 
 if (isServer(parseContext(process.env.CONTEXT))) {
     ENV = parseEnv(process.env.ENV);
@@ -85,7 +86,7 @@ if (isServer(parseContext(process.env.CONTEXT))) {
         throw new Error('Should not be invoked');
     };
 
-    setServices = (_corePublicClient: CorePublicClient, _corePrivateClient: CorePrivateClient, _fileStorageClient: FileStorageClient, _auth0Client: Auth0Client) => {
+    setServices = (_identityClient: IdentityClient, _corePublicClient: CorePublicClient, _corePrivateClient: CorePrivateClient, _fileStorageClient: FileStorageClient, _auth0Client: Auth0Client) => {
         throw new Error('Should not be invoked');
     };
 
@@ -112,6 +113,7 @@ if (isServer(parseContext(process.env.CONTEXT))) {
     const clientConfig = clientConfigMarshaller.extract((window as any).__NEONCITY_CLIENT_CONFIG);
     delete (window as any).__NEONCITY_CLIENT_CONFIG;
 
+    let identityClient: IdentityClient|null = null;
     let corePublicClient: CorePublicClient|null = null;
     let corePrivateClient: CorePrivateClient|null = null;
     let fileStorageClient: FileStorageClient|null = null;
@@ -129,6 +131,14 @@ if (isServer(parseContext(process.env.CONTEXT))) {
     LOGOUT_ROUTE = clientConfig.logoutRoute;
     SESSION = () => clientConfig.session;
     LANG = () => clientConfig.language;
+
+    IDENTITY_CLIENT = () => {
+        if (identityClient == null) {
+            throw new Error('Identity client not provided');
+        }
+
+        return identityClient;
+    };
 
     CORE_PUBLIC_CLIENT = () => {
         if (corePublicClient == null) {
@@ -162,7 +172,8 @@ if (isServer(parseContext(process.env.CONTEXT))) {
         return auth0Client;
     };
 
-    setServices = (newCorePublicClient: CorePublicClient, newCorePrivateClient: CorePrivateClient, newFileStorageClient: FileStorageClient, newAuth0Client: Auth0Client) => {
+    setServices = (newIdentityClient: IdentityClient, newCorePublicClient: CorePublicClient, newCorePrivateClient: CorePrivateClient, newFileStorageClient: FileStorageClient, newAuth0Client: Auth0Client) => {
+        identityClient = newIdentityClient;
         corePublicClient = newCorePublicClient;
         corePrivateClient = newCorePrivateClient;
         fileStorageClient = newFileStorageClient;

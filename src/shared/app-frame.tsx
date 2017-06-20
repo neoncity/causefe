@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Link } from 'react-router'
 
+import { CookiePolicyWidget } from './cookie-policy-widget'
 import * as config from './config'
 import { UserInfoWidget } from './user-info-widget'
 
@@ -27,6 +28,7 @@ export class AppFrame extends React.Component<Props, undefined> {
                         <UserInfoWidget />
                     </div>
                     {this.props.children}
+                    <CookiePolicyWidget />
                 </div>
             );
         } else {
@@ -39,6 +41,7 @@ export class AppFrame extends React.Component<Props, undefined> {
                         <UserInfoWidget />
                     </div>
                     {this.props.children}
+                    <CookiePolicyWidget />
                 </div>
             );      
         }
