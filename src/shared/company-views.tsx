@@ -18,14 +18,14 @@ export class CompanyAboutView extends React.Component<Props, undefined> {
 
 export class CompanyTermsView extends React.Component<Props, undefined> {
     render() {
-       return <div><p>{text.terms[config.LANG()]}</p></div>;
+       return <div><pre>{text.terms[config.LANG()]}</pre></div>;
     }
 }
 
 
 export class CompanyPrivacyView extends React.Component<Props, undefined> {
     render() {
-       return <div><p>{text.privacy[config.LANG()]}</p></div>;
+       return <div><pre>{text.privacy[config.LANG()]}</pre></div>;
     }
 }
 
