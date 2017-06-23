@@ -130,5 +130,5 @@ module.exports = {
             path.resolve(__dirname, 'node_modules')
         ]
     },
-    devtool: 'source-map'
+    devtool: process.env.ENV !== 'LOCAL' ? 'source-map' : 'eval-cheap-module-source-map'
 };
