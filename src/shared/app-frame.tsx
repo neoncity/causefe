@@ -38,6 +38,8 @@ export class AppFrame extends React.Component<Props, undefined> {
                     <Link to="/company/privacy">{text.privacy[config.LANG()]}</Link>
                     <Link to="/company/cookies">{text.cookies[config.LANG()]}</Link>            
                 </div>
+		<div>{text.copyright[config.LANG()]}</div>
+		<div>{text.usingWebsite[config.LANG()]}</div>
             </div>
         );
     }

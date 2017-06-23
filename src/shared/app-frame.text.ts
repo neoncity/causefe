@@ -35,3 +35,13 @@ export const cookies: Message = {
     en: "Cookies",
     ro: "Module cookie"
 };
+
+export const copyright: Message = {
+    en: "Copyright (c) 2017 NeonCity",
+    ro: "Copyright (c) 2017 NeonCity",
+};
+
+export const usingWebsite: Message = {
+    en: "By using this website you agree with our terms",
+    ro: "Folsind acest site sunteţi de acord cu condiţile de utilizare"
+};
