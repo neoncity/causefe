@@ -60,6 +60,7 @@ RUN chown -R neoncity:neoncity /neoncity/var
 VOLUME ["/neoncity/src"]
 VOLUME ["/neoncity/node_modules"]
 VOLUME ["/neoncity/var/secrets.json"]
+VOLUME ["/neoncity/webpack.config.js"]
 WORKDIR /neoncity
 EXPOSE 10000
 USER neoncity
