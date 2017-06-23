@@ -34,6 +34,7 @@ RUN groupadd neoncity && \
 # Copy source code.
 
 COPY . /neoncity
+RUN rm /neoncity/webpack.config.js
 
 # Setup the runtime environment for the application.
 

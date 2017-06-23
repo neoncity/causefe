@@ -84,6 +84,9 @@ module.exports = {
                 name: '[name].[ext]'
             }
 	}],
+	noParse: [
+            /filepicker-js/
+	],
     },
     plugins: [
         new webpack.DefinePlugin({
