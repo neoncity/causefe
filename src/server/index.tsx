@@ -45,7 +45,6 @@ import { causeLink,inferLanguage } from '../shared/utils'
 import { newServerSideRenderingMatchMiddleware } from './ssr-match-middleware'
 
 
-
 async function main() {
     const webpackConfig = require('../../webpack.config.js');
     const identityClient: IdentityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST);
