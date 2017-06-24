@@ -11,6 +11,11 @@ export const login: Message = {
     ro: "Login"
 };
 
+export const signup: Message = {
+    en: "Signup",
+    ro: "Alatură-te"
+};
+
 export const logout: Message = {
     en: "Logout",
     ro: "Logout"

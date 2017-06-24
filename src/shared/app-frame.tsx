@@ -24,11 +24,15 @@ export class AppFrame extends React.Component<Props, undefined> {
 	      
         return (
             <div>
-                <div>{text.viewTitle[config.LANG()]}</div>
-                <div>
-                    <Link to="/">{text.home[config.LANG()]}</Link>
-                    {linkToAdmin}
-                    <UserInfoWidget />
+                <div id="app-frame-header">
+                    <div className="header-section">
+                      <Link to="/">{text.home[config.LANG()]}</Link>
+                      {linkToAdmin}
+                    </div>
+                    <div className="header-section">{text.viewTitle[config.LANG()]}</div>
+                    <div className="header-section">
+                        <UserInfoWidget />
+                    </div>
                 </div>
                 {this.props.children}
                 <CookiePolicyWidget />

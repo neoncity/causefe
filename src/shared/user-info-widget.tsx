@@ -15,9 +15,19 @@ export class UserInfoWidget extends React.Component<Props, undefined> {
     render() {
         const session = config.SESSION();
 	if (session.hasUser()) {
-	    return <p>{text.user[config.LANG()]((session.user as User).name)} <button onClick={this._handleLogoutClick.bind(this)}>{text.logout[config.LANG()]}</button></p>;
+	    return (
+                <p>
+                    <span>{text.user[config.LANG()]((session.user as User).name)}</span>
+                    <button onClick={this._handleLogoutClick.bind(this)}>{text.logout[config.LANG()]}</button>
+                </p>
+            );
 	} else {
-	    return <p><button onClick={this._handleLoginClick.bind(this)}>{text.login[config.LANG()]}</button></p>;
+	    return (
+                <p>
+                    <button onClick={this._handleLoginClick.bind(this)}>{text.login[config.LANG()]}</button>
+                    <button onClick={this._handleLoginClick.bind(this)}>{text.signup[config.LANG()]}</button>
+                </p>
+            );
 	}
     }
 

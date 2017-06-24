@@ -2,7 +2,7 @@ import { Message } from './messages'
 
 
 export const weUseCookies: Message = {
-    en: "We use cookie",
+    en: "We use cookies",
     ro: "Folosim cookies"
 };
 
