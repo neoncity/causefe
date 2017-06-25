@@ -37,11 +37,11 @@ export class CookiePolicyWidget extends React.Component<Props, State> {
         }
 
         if (this.state.isLoading) {
-            return <div>{text.weUseCookies[config.LANG()]} {commonText.loading[config.LANG()]}</div>;
+            return <div>{text.weUseCookies[config.LANG()]} {text.seeOur[config.LANG()]} <a href="/company/privacy">{text.privacy[config.LANG()]}</a> {commonText.loading[config.LANG()]}</div>;
         } else if (this.state.isFailed) {
-            return <div>{text.weUseCookies[config.LANG()]} {commonText.loadingFailed[config.LANG()]}</div>;
+            return <div>{text.weUseCookies[config.LANG()]} {text.seeOur[config.LANG()]} <a href="/company/privacy">{text.privacy[config.LANG()]}</a> {commonText.loadingFailed[config.LANG()]}</div>;
         } else {
-            return <div>{text.weUseCookies[config.LANG()]}<button onClick={this._handleAgreeToCookiePolicyClick.bind(this)}>{text.agree[config.LANG()]}</button></div>;
+            return <div>{text.weUseCookies[config.LANG()]} {text.seeOur[config.LANG()]} <a href="/company/privacy">{text.privacy[config.LANG()]}</a> <button onClick={this._handleAgreeToCookiePolicyClick.bind(this)}>{text.agree[config.LANG()]}</button></div>;
         }
     }
 
