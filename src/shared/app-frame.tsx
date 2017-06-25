@@ -25,11 +25,11 @@ export class AppFrame extends React.Component<Props, undefined> {
         return (
             <div>
                 <div id="app-frame-header">
-                    <div className="header-section">
+                    <div className="header-section links">
                       <Link to="/">{text.home[config.LANG()]}</Link>
                       {linkToAdmin}
                     </div>
-                    <div className="header-section">{text.viewTitle[config.LANG()]}</div>
+                    <div className="header-section title">{text.viewTitle[config.LANG()]}</div>
                     <div className="header-section">
                         <UserInfoWidget />
                     </div>

@@ -12,8 +12,8 @@ export const home: Message = {
 };
 
 export const admin: Message = {
-    en: "Admin",
-    ro: "Administrare"
+    en: "My Cause",
+    ro: "Cauza mea"
 };
 
 export const about: Message = {
