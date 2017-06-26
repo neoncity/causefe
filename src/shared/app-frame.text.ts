@@ -11,9 +11,14 @@ export const home: Message = {
     ro: "Acasă"
 };
 
+export const startACause: Message = {
+    en: "New Cause",
+    ro: "Cauza Nouă"
+};
+
 export const admin: Message = {
     en: "My Cause",
-    ro: "Cauza mea"
+    ro: "Cauza Mea"
 };
 
 export const about: Message = {

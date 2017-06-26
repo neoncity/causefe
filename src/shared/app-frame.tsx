@@ -19,7 +19,7 @@ export class AppFrame extends React.Component<Props, undefined> {
 	// which will trigger a page load event. This is not so bad, as the login flow is beefy as it is, but it does add
 	// _some_ extra complexity. Hopefully it will be easy to get rid of in the future.
 	const linkToAdmin = !config.SESSION().hasUser()
-	      ? <a href="/admin">{text.admin[config.LANG()]}</a>
+	      ? <a href="/admin">{text.startACause[config.LANG()]}</a>
 	      : <Link to="/admin">{text.admin[config.LANG()]}</Link>;
 	      
         return (
