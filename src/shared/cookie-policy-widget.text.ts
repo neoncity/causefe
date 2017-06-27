@@ -11,9 +11,9 @@ export const seeOur: Message = {
     ro: "Consultați"
 };
 
-export const privacy: Message = {
-    en: "Privacy policy",
-    ro: "Termenii de Confidențialitate"
+export const cookies: Message = {
+    en: "cookies policy",
+    ro: "termenii pentru module cookie"
 };
 
 export const agree: Message = {

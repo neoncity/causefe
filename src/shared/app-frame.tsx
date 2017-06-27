@@ -38,10 +38,12 @@ export class AppFrame extends React.Component<Props, undefined> {
                 <CookiePolicyWidget />
                 <div id="app-frame-footer">
                     <div className="company">
-                        <Link to="/company/about">{text.about[config.LANG()]}</Link>
-                        <Link to="/company/terms">{text.terms[config.LANG()]}</Link>
-                        <Link to="/company/privacy">{text.privacy[config.LANG()]}</Link>
+		        <div className="content">
+                            <Link to="/company/about">{text.about[config.LANG()]}</Link>
+                            <Link to="/company/terms">{text.terms[config.LANG()]}</Link>
+                            <Link to="/company/privacy">{text.privacy[config.LANG()]}</Link>
                         <Link to="/company/cookies">{text.cookies[config.LANG()]}</Link>
+             	    </div>
                     </div>
                     <div className="copyright">{text.copyright[config.LANG()]}</div>
                 </div>

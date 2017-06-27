@@ -36,13 +36,25 @@ export class CookiePolicyWidget extends React.Component<Props, State> {
             return <div></div>;
         }
 
+        let lastPart = null;
         if (this.state.isLoading) {
-            return <div>{text.weUseCookies[config.LANG()]} {text.seeOur[config.LANG()]} <a href="/company/privacy">{text.privacy[config.LANG()]}</a> {commonText.loading[config.LANG()]}</div>;
+            lastPart = <span>{commonText.loading[config.LANG()]}</span>;
         } else if (this.state.isFailed) {
-            return <div>{text.weUseCookies[config.LANG()]} {text.seeOur[config.LANG()]} <a href="/company/privacy">{text.privacy[config.LANG()]}</a> {commonText.loadingFailed[config.LANG()]}</div>;
+            lastPart = <span>{commonText.loadingFailed[config.LANG()]}</span>;
         } else {
-            return <div>{text.weUseCookies[config.LANG()]} {text.seeOur[config.LANG()]} <a href="/company/privacy">{text.privacy[config.LANG()]}</a> <button onClick={this._handleAgreeToCookiePolicyClick.bind(this)}>{text.agree[config.LANG()]}</button></div>;
+            lastPart = <button className="agree" onClick={this._handleAgreeToCookiePolicyClick.bind(this)}>{text.agree[config.LANG()]}</button>;
         }
+
+        return (
+            <div id="cookie-policy-widget">
+		<div className="content">
+                    <span>{text.weUseCookies[config.LANG()]}</span>
+                    <span>{text.seeOur[config.LANG()]}</span>
+                    <a href="/company/cookies">{text.cookies[config.LANG()]}</a>
+                    {lastPart}
+	        </div>
+            </div>
+        );
     }
 
     private async _handleAgreeToCookiePolicyClick(): Promise<void> {
