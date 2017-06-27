@@ -16,10 +16,17 @@ export class UserInfoWidget extends React.Component<Props, undefined> {
         const session = config.SESSION();
 	if (session.hasUser()) {
 	    return (
-                <p>
-                    <span>{text.user[config.LANG()]((session.user as User).name)}</span>
-                    <button onClick={this._handleLogoutClick.bind(this)}>{text.logout[config.LANG()]}</button>
-                </p>
+                <div>
+		    <img
+		        className="profile-picture"
+		        src={(session.user as User).pictureUri}
+		        alt={text.pictureOf[config.LANG()]((session.user as User).name)} />
+                    <button
+		        className="action"
+		        onClick={this._handleLogoutClick.bind(this)}>
+		        {text.logout[config.LANG()]}
+		    </button>
+                </div>
             );
 	} else {
 	    return (

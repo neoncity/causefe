@@ -42,7 +42,12 @@ export class CookiePolicyWidget extends React.Component<Props, State> {
         } else if (this.state.isFailed) {
             lastPart = <span>{commonText.loadingFailed[config.LANG()]}</span>;
         } else {
-            lastPart = <button className="agree" onClick={this._handleAgreeToCookiePolicyClick.bind(this)}>{text.agree[config.LANG()]}</button>;
+            lastPart =
+		<button
+	            className="action"
+	            onClick={this._handleAgreeToCookiePolicyClick.bind(this)}>
+    		    {text.agree[config.LANG()]}
+	    </button>;
         }
 
         return (

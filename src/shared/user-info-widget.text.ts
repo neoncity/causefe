@@ -1,9 +1,9 @@
 import { Message, MessageWith1Arg } from './messages'
 
 
-export const user: MessageWith1Arg = {
-    en: (name: string) => `User: ${name}`,
-    ro: (name: string) => `Utilizator: ${name}`
+export const pictureOf: MessageWith1Arg = {
+    en: (name: string) => `Picture of ${name}`,
+    ro: (name: string) => `Poza lui ${name}`
 };
 
 export const login: Message = {
