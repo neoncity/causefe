@@ -25,13 +25,13 @@ export class UserInfoWidget extends React.Component<Props, undefined> {
 	    return (
                 <div>
                     <a
-                        href=""
+                        href="#"
                         className="auth-button"
                         onClick={this._handleLoginClick.bind(this)}>
                         {text.login[config.LANG()]}
                     </a>
                     <a
-                        href=""
+                        href="#"
                         className="auth-button"
                         onClick={this._handleLoginClick.bind(this)}>
                         {text.signup[config.LANG()]}
