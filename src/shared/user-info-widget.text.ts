@@ -7,13 +7,8 @@ export const pictureOf: MessageWith1Arg = {
 };
 
 export const login: Message = {
-    en: "Login",
-    ro: "Login"
-};
-
-export const signup: Message = {
-    en: "Signup",
-    ro: "Alatură-te"
+    en: "Login / Signup",
+    ro: "Login / Alatură-te"
 };
 
 export const logout: Message = {

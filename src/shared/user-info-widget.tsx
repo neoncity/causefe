@@ -37,12 +37,6 @@ export class UserInfoWidget extends React.Component<Props, undefined> {
                         onClick={this._handleLoginClick.bind(this)}>
                         {text.login[config.LANG()]}
                     </a>
-                    <a
-                        href="#"
-                        className="auth-button"
-                        onClick={this._handleLoginClick.bind(this)}>
-                        {text.signup[config.LANG()]}
-                    </a>
                 </div>
             );
 	}

@@ -6,11 +6,6 @@ export const viewTitle: Message = {
     ro: "NeonCity"
 };
 
-export const home: Message = {
-    en: "Home",
-    ro: "Acasă"
-};
-
 export const startACause: Message = {
     en: "New Cause",
     ro: "Cauza Nouă"
