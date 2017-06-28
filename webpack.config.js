@@ -70,6 +70,14 @@ module.exports = {
                 publicPath: '/real/client/'
             })
 	}, {
+	    test: /\.svg$/,
+	    include: [path.resolve(__dirname, 'src', 'shared', 'static')],
+	    loader: 'url-loader',
+	    options: {
+		limit: 8192,
+		prefix: 'img'
+	    }
+	}, {
 	    test: /\.html$/,
 	    include: [path.resolve(__dirname, 'src', 'shared', 'static')],
             loader: 'file-loader',

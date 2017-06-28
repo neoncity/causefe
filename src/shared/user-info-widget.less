@@ -21,6 +21,29 @@
 	    float: left;
 	    top: 1.125em;
 	    margin-right: 1em;
+	    height: 2em;
+	}
+
+	.menu {
+	    outline: none;
+	    width: 2em;
+	    height: 2em;
+	    background-color: transparent;
+	    background-repeat: no-repeat;
+	    background-size: cover;
+	    border: none;
+	    position: relative;
+	    float: left;
+	    top: 1.125em;
+	    margin-right: 1em;
+
+	    &.closed {
+		background-image: url('./static/menu-icon.svg');
+	    }
+
+	    &.open {
+		background-image: url('./static/menu-close-icon.svg');
+	    }
 	}
 
         a.auth-button {

@@ -14,13 +14,3 @@ export const causeAnalytics: Message = {
     en: "Cause analytics",
     ro: "Statistici"
 };
-
-export const myActions: Message = {
-    en: "My actions",
-    ro: "Faptele mele"
-};
-
-export const account: Message = {
-    en: "Account",
-    ro: "Cont"
-};

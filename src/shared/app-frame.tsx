@@ -6,6 +6,7 @@ import * as config from './config'
 import { UserInfoWidget } from './user-info-widget'
 
 import * as text from './app-frame.text'
+import * as commonText from './common.text'
 
 
 interface Props {
@@ -20,7 +21,7 @@ export class AppFrame extends React.Component<Props, undefined> {
 	// _some_ extra complexity. Hopefully it will be easy to get rid of in the future.
 	const linkToAdmin = !config.SESSION().hasUser()
 	      ? <a href="/admin">{text.startACause[config.LANG()]}</a>
-	      : <Link to="/admin">{text.admin[config.LANG()]}</Link>;
+	      : <Link to="/admin">{commonText.admin[config.LANG()]}</Link>;
 	      
         return (
             <div>

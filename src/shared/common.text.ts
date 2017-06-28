@@ -25,3 +25,18 @@ export const remove: Message = {
     en: "Remove",
     ro: "Șterge"
 };
+
+export const admin: Message = {
+    en: "My Cause",
+    ro: "Cauza Mea"
+};
+
+export const adminMyActions: Message = {
+    en: "My actions",
+    ro: "Faptele mele"
+};
+
+export const adminAccount: Message = {
+    en: "Account",
+    ro: "Cont"
+};
