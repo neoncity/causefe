@@ -1,4 +1,3 @@
-import * as classNames from 'classnames'
 import * as React from 'react'
 import { Link } from 'react-router'
 
@@ -31,16 +30,41 @@ export class UserInfoWidget extends React.Component<Props, State> {
 	let menu = <span></span>;
 	if (this.state.showMenu) {
 	    menu =
-		<div>
-                    <Link to="/admin">{commonText.admin[config.LANG()]}</Link>
-		    <Link to="/admin/my-actions">{commonText.adminMyActions[config.LANG()]}</Link>
-		    <Link to="/admin/account">{commonText.adminAccount[config.LANG()]}</Link>
-		    <button
-		        className="action"
-		        onClick={this._handleLogoutClick.bind(this)}>
-		        {text.logout[config.LANG()]}
-   		    </button>
-		</div>;
+		<div id="overlay-menu">
+                <div className="container1">
+                <div className="container2">
+                <div className="actions">
+                        <Link
+                            onClick={this._handleCloseMenu.bind(this)}
+                            to="/admin">
+                            {commonText.admin[config.LANG()]}
+                        </Link>
+                        <Link
+                            onClick={this._handleCloseMenu.bind(this)}
+                            to="/admin/my-actions">
+                            {commonText.adminMyActions[config.LANG()]}
+                        </Link>
+                        <Link
+                            onClick={this._handleCloseMenu.bind(this)}
+                            to="/admin/account">
+                            {commonText.adminAccount[config.LANG()]}
+                        </Link>
+                </div>
+                <div>                
+                        <button
+                            className="menu-open"
+                            onClick={this._handleCloseMenu.bind(this)}>
+                </button>
+                </div>
+
+            </div>
+                <button
+            className="action"
+            onClick={this._handleLogoutClick.bind(this)}>
+                {text.logout[config.LANG()]}
+            </button>
+                </div>
+                </div>;
 	}
 	
         const session = config.SESSION();
@@ -52,8 +76,8 @@ export class UserInfoWidget extends React.Component<Props, State> {
 		        src={(session.user as User).pictureUri}
 		        alt={text.pictureOf[config.LANG()]((session.user as User).name)} />
                     <button
-		        className={classNames('menu', {open: this.state.showMenu, closed: !this.state.showMenu})}
-		        onClick={this._handleShowMenuClick.bind(this)}>
+		        className="menu-closed"
+		        onClick={this._handleOpenMenu.bind(this)}>
 		    </button>
 		    {menu}
                 </div>
@@ -73,14 +97,21 @@ export class UserInfoWidget extends React.Component<Props, State> {
     }
 
     private _handleLogoutClick() {
-        location.replace(config.LOGOUT_ROUTE);
+        this.setState(
+            {showMenu: false},
+            () => location.replace(config.LOGOUT_ROUTE)
+        );
     }
 
     private _handleLoginClick() {
         config.AUTH0_CLIENT().showLock(true);
     }
 
-    private _handleShowMenuClick() {
-	this.setState({showMenu: !this.state.showMenu});
+    private _handleOpenMenu() {
+	this.setState({showMenu: true});
     }
+
+    private _handleCloseMenu() {
+	this.setState({showMenu: false});
+    }    
 }

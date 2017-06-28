@@ -32,8 +32,8 @@ export const admin: Message = {
 };
 
 export const adminMyActions: Message = {
-    en: "My actions",
-    ro: "Faptele mele"
+    en: "My Actions",
+    ro: "Faptele Mele"
 };
 
 export const adminAccount: Message = {
