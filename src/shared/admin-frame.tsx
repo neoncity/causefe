@@ -17,8 +17,8 @@ export class AdminFrame extends React.Component<Props, undefined> {
         return (
             <div>
                 <div>{text.viewTitle[config.LANG()]}</div>
-                <Link to="/admin/my-cause">{text.myCause[config.LANG()]}</Link>
-                <Link to="/admin/cause-analytics">{text.causeAnalytics[config.LANG()]}</Link>
+                <Link to="/admin/my-cause">{commonText.adminMyCause[config.LANG()]}</Link>
+                <Link to="/admin/cause-analytics">{commonText.adminCauseAnalytics[config.LANG()]}</Link>
                 <Link to="/admin/my-actions">{commonText.adminMyActions[config.LANG()]}</Link>
                 <Link to="/admin/account">{commonText.adminAccount[config.LANG()]}</Link>
                 {this.props.children}

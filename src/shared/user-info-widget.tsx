@@ -29,61 +29,77 @@ export class UserInfoWidget extends React.Component<Props, State> {
     render() {
 	let menu = <span></span>;
 	if (this.state.showMenu) {
-	    menu =
-		<div id="overlay-menu">
-                <div className="container1">
-                <div className="container2">
-                <div className="actions">
-                        <Link
-                            onClick={this._handleCloseMenu.bind(this)}
-                            to="/admin">
-                            {commonText.admin[config.LANG()]}
-                        </Link>
-                        <Link
-                            onClick={this._handleCloseMenu.bind(this)}
-                            to="/admin/my-actions">
-                            {commonText.adminMyActions[config.LANG()]}
-                        </Link>
-                        <Link
-                            onClick={this._handleCloseMenu.bind(this)}
-                            to="/admin/account">
-                            {commonText.adminAccount[config.LANG()]}
-                        </Link>
-                </div>
-                <div>                
+            menu =
+                <div id="overlay-menu">
+                    <div className="container1">
+                        <div className="container2">
+                            <div className="actions">
+                                <span>
+                                    <span className="menu-icon my-cause"></span>
+                                    <Link
+                                        onClick={this._handleCloseMenu.bind(this)}
+                                        to="/admin/my-cause">
+                                        {commonText.adminMyCause[config.LANG()]}
+                                    </Link>
+                                </span>
+                                <span>
+                                    <span className="menu-icon cause-analytics"></span>
+                                    <Link
+                                        onClick={this._handleCloseMenu.bind(this)}
+                                        to="/admin/cause-analytics">
+                                        {commonText.adminCauseAnalytics[config.LANG()]}
+                                    </Link>
+                                </span>
+                                <span>
+                                    <span className="menu-icon my-actions"></span>
+                                    <Link
+                                        onClick={this._handleCloseMenu.bind(this)}
+                                        to="/admin/my-actions">
+                                        {commonText.adminMyActions[config.LANG()]}
+                                    </Link>
+                                </span>
+                                <span>
+                                    <span className="menu-icon account"></span>
+                                    <Link
+                                        onClick={this._handleCloseMenu.bind(this)}
+                                        to="/admin/account">
+                                        {commonText.adminAccount[config.LANG()]}
+                                    </Link>
+                                </span>
+                            </div>
+                            <div>                
+                                <button
+                                    className="menu-open"
+                                    onClick={this._handleCloseMenu.bind(this)}>
+                                </button>
+                            </div>
+                        </div>
                         <button
-                            className="menu-open"
-                            onClick={this._handleCloseMenu.bind(this)}>
-                </button>
-                </div>
-
-            </div>
-                <button
-            className="action"
-            onClick={this._handleLogoutClick.bind(this)}>
-                {text.logout[config.LANG()]}
-            </button>
-                </div>
+                            className="action"
+                            onClick={this._handleLogoutClick.bind(this)}>
+                            {text.logout[config.LANG()]}
+                        </button>
+                    </div>
                 </div>;
-	}
-	
+        }
+        
         const session = config.SESSION();
-	if (session.hasUser()) {
-	    return (
+        if (session.hasUser()) {
+            return (
                 <div>
-		    <img
-		        className="profile-picture"
-		        src={(session.user as User).pictureUri}
-		        alt={text.pictureOf[config.LANG()]((session.user as User).name)} />
+                    <img
+                        className="profile-picture"
+                        src={(session.user as User).pictureUri}
+                        alt={text.pictureOf[config.LANG()]((session.user as User).name)} />
                     <button
-		        className="menu-closed"
-		        onClick={this._handleOpenMenu.bind(this)}>
-		    </button>
-		    {menu}
+                        className="menu-closed"
+                        onClick={this._handleOpenMenu.bind(this)}>
+                    </button>
+                    {menu}
                 </div>
             );
-	} else {
-	    return (
+        } else {
+            return (
                 <div>
                     <a
                         href="#"
@@ -93,7 +109,7 @@ export class UserInfoWidget extends React.Component<Props, State> {
                     </a>
                 </div>
             );
-	}
+        }
     }
 
     private _handleLogoutClick() {
@@ -108,10 +124,10 @@ export class UserInfoWidget extends React.Component<Props, State> {
     }
 
     private _handleOpenMenu() {
-	this.setState({showMenu: true});
+        this.setState({showMenu: true});
     }
 
     private _handleCloseMenu() {
-	this.setState({showMenu: false});
+        this.setState({showMenu: false});
     }    
 }

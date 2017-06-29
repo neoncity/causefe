@@ -26,9 +26,14 @@ export const remove: Message = {
     ro: "Șterge"
 };
 
-export const admin: Message = {
+export const adminMyCause: Message = {
     en: "My Cause",
     ro: "Cauza Mea"
+};
+
+export const adminCauseAnalytics: Message = {
+    en: "Cause analytics",
+    ro: "Statistici"
 };
 
 export const adminMyActions: Message = {
