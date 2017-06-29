@@ -1,0 +1,65 @@
+@import './action-button';
+
+
+#admin-frame-body {
+    display: flex;
+    flex-direction: row;
+    
+    #sidebar-menu {
+        width: 10em;
+
+        @media all and (max-width: 800px) {
+            display: none;
+        }
+        
+        .actions {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+
+            .menu-icon {
+                background-color: transparent;
+                background-repeat: no-repeat;
+                background-size: cover;
+                display: inline-block;
+                width: 1.125em;
+                height: 1.125em;
+                margin-right: 0.25em;
+                position: relative;
+                top: 0.125em;
+                
+                &.my-cause {
+                    background-image: url('./static/cause-icon.svg');
+                }
+
+                &.cause-analytics {
+                    background-image: url('./static/cause-analytics-icon.svg');
+                }
+
+                &.my-actions {
+                    background-image: url('./static/my-actions-icon.svg');
+                }
+
+                &.account {
+                    background-image: url('./static/account-icon.svg');
+                }
+            }
+            
+            a {
+                line-height: 2em;
+                margin-bottom: 2em;
+                text-decoration: none;
+                font-weight: 900;
+                font-variant: small-caps;
+            }
+
+            a:last-child {
+                margin-bottom: 0em;
+            }
+
+            button.action {
+                align-self: center;
+            }
+        }
+    }
+}
