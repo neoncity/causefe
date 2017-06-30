@@ -74,7 +74,10 @@ export class PublicCauseWidget extends React.Component<Props, State> {
 		    className="cause-picture"
 		    src={causePictureUri(this.props.cause)}
 		    alt={text.causePicture[config.LANG()]} />
-	        <h2><Link to={causeLink(this.props.cause)}>{this.props.cause.title}</Link></h2>
+	        <h2 className="cause-title">
+                    <Link to={causeLink(this.props.cause)}>{this.props.cause.title}</Link>
+                </h2>
+                
 		<p>{this.props.cause.description}</p>
 		<p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency.toString()}</p>
 		<p>{this.props.cause.deadline.toUTCString()}</p>
