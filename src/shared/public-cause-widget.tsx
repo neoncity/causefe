@@ -6,10 +6,9 @@ import { isLocal } from '@neoncity/common-js'
 import { CurrencyAmount, PublicCause } from '@neoncity/core-sdk-js'
 
 import * as config from './config'
-import { ImageGalleryWidget } from './image-gallery-widget'
 import { OpState } from '../shared/store'
 import { UserInput, UserInputMaster } from './user-input'
-import { causeLink } from './utils'
+import { causeLink, causePictureUri } from './utils'
 
 import * as text from './public-cause-widget.text'
 
@@ -70,12 +69,15 @@ export class PublicCauseWidget extends React.Component<Props, State> {
         }
         
 	return (
-            <div>
+            <div className="public-cause-widget">
+		<img
+		    className="cause-picture"
+		    src={causePictureUri(this.props.cause)}
+		    alt={text.causePicture[config.LANG()]} />
 	        <h2><Link to={causeLink(this.props.cause)}>{this.props.cause.title}</Link></h2>
 		<p>{this.props.cause.description}</p>
 		<p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency.toString()}</p>
 		<p>{this.props.cause.deadline.toUTCString()}</p>
-                <ImageGalleryWidget pictureSet={this.props.cause.pictureSet} />
                 <button
 		    type="button"
 		    onClick={_ => this._handleSetDonationAmount(10)}>
