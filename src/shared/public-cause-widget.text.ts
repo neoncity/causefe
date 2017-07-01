@@ -1,6 +1,5 @@
 import { Currency } from '@neoncity/common-js'
 
-
 import { Message, MessageWith0Arg, MessageWith1Arg, MessageWith3Arg } from './messages'
 
 
@@ -59,7 +58,7 @@ export const failed: Message = {
     ro: "Am eșuat"
 };
 
-export const donate: Message = {
+export const donate: MessageWith0Arg = {
     en: "Donate",
     ro: "Donează"
 };

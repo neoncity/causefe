@@ -1,3 +1,4 @@
+import * as classNames from 'classnames'
 import * as React from 'react'
 import { Link } from 'react-router'
 import * as r from 'raynor'
@@ -81,45 +82,55 @@ export class PublicCauseWidget extends React.Component<Props, State> {
 	            alt={text.causePicture[config.LANG()]} />
 
                 <div className="content">
-                    <h2 className="cause-title">
+                    <h2 className="title">
                         <Link to={causeLink(this.props.cause)}>{this.props.cause.title}</Link>
                     </h2>
                 
-                    <p className="cause-description">{this.props.cause.description}</p>
+                    <p className="description">{this.props.cause.description}</p>
                     
-                    <p className="cause-status">
+                    <p className="status">
                         <span>{text.infoOnRaised[config.LANG()](percentageRaised, this.props.cause.goal.amount, this.props.cause.goal.currency)}</span>
                         <span>{text.daysLeft[config.LANG()](daysLeft)}</span>
                     </p>
-                    <button
-                        type="button"
-                        onClick={_ => this._handleSetDonationAmount(10)}>
-                        10
-                    </button>
-                    <button
-                        type="button"
-                        onClick={_ => this._handleSetDonationAmount(25)}>
-                        25
-                    </button>
-                    <button
-                        type="button"
-                        onClick={_ => this._handleSetDonationAmount(50)}>
-                        50
-                    </button>
-                    <span>{this.state.donationAmount.getValue()} - {this.props.cause.goal.currency.toString()}</span>
-                    <button
-                        type="button" 
-                        disabled={!allValid}
-                        onClick={this._handleDonate.bind(this)}>
-                        {text.donate[config.LANG()]}
-                    </button>
-                    {donationResult}
-                    <button
-                        type="button"
-                        onClick={this._handleShare.bind(this)}>
-                        {text.share[config.LANG()]}
-                    </button>
-                    {shareResult}
+
+                    <p className="donation-amount-select">
+                        <button
+                            className={classNames('action', {'selected': this.state.donationAmount.getValue() == 10})}
+                            type="button"
+                            onClick={_ => this._handleSetDonationAmount(10)}>
+                            10 {this.props.cause.goal.currency.toString()}
+                        </button>
+                        <button
+                            className={classNames('action', {'selected': this.state.donationAmount.getValue() == 25})}
+                            type="button"
+                            onClick={_ => this._handleSetDonationAmount(25)}>
+                            25 {this.props.cause.goal.currency.toString()}
+                        </button>
+                        <button
+                            className={classNames('action', {'selected': this.state.donationAmount.getValue() == 50})}
+                            type="button"
+                            onClick={_ => this._handleSetDonationAmount(50)}>
+                            50 {this.props.cause.goal.currency.toString()}
+                        </button>
+                    </p>
+
+                    <p className="donate-and-share">
+                        <button
+                            className="action"
+                            type="button" 
+                            disabled={!allValid}
+                            onClick={this._handleDonate.bind(this)}>
+                            {text.donate[config.LANG()]}
+                        </button>
+                        {donationResult}
+                        <button
+                            className="share"
+                            type="button"
+                            onClick={this._handleShare.bind(this)}>
+                            {text.share[config.LANG()]}
+                        </button>
+                        {shareResult}
+                    </p>
                 </div>
 	    </div>
 	);

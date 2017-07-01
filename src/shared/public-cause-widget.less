@@ -1,3 +1,4 @@
+@import './action-button';
 @import './colors';
 
 
@@ -25,8 +26,9 @@
         flex-direction: column;
         margin-left: 0.5rem;
         margin-right: 0.5rem;
+        margin-bottom: 1rem;
 
-        .cause-title {
+        .title {
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
@@ -41,18 +43,47 @@
             }
         }
 
-        .cause-description {
+        .description {
             margin-bottom: 0.5rem;
             max-height: 3em;
             overflow: hidden;
         }
 
-        .cause-status {
+        .status {
             margin-bottom: 0.5rem;
             height: 1.5rem;
             
             span:first-child {
                 margin-right: 0.5rem;
+            }
+        }
+
+        .donation-amount-select {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 0.5rem;
+            justify-content: space-around;
+
+            button.action {
+                width: 6em;
+
+                &.selected {
+                    font-weight: 600;
+                }
+            }
+        }
+
+        .donate-and-share {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+
+            button.action {
+                width: 45%;
+            }
+
+            button.share {
+                width: 45%;
             }
         }
     }
