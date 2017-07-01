@@ -12,6 +12,8 @@ import { causeLink, causePictureUri } from './utils'
 
 import * as text from './public-cause-widget.text'
 
+const moment = require('moment')
+
 
 interface Props {
     cause: PublicCause;
@@ -67,6 +69,9 @@ export class PublicCauseWidget extends React.Component<Props, State> {
             shareResult = <span>{text.failed[config.LANG()]}</span>;
             break;
         }
+
+        const daysLeft = moment().diff(moment(this.props.cause.deadline), 'days');
+        const percentageRaised = 0.5;
         
 	return (
             <div className="public-cause-widget">
@@ -82,8 +87,10 @@ export class PublicCauseWidget extends React.Component<Props, State> {
                 
                     <p className="cause-description">{this.props.cause.description}</p>
                     
-                    <p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency.toString()}</p>
-                    <p>{this.props.cause.deadline.toUTCString()}</p>
+                    <p className="cause-status">
+                        <span>{text.infoOnRaised[config.LANG()](percentageRaised, this.props.cause.goal.amount, this.props.cause.goal.currency)}</span>
+                        <span>{text.daysLeft[config.LANG()](daysLeft)}</span>
+                    </p>
                     <button
                         type="button"
                         onClick={_ => this._handleSetDonationAmount(10)}>
