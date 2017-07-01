@@ -18,22 +18,33 @@
     .cause-picture {
 	width: 100%;
 	height: auto;
-    }
+    }    
 
-    .cause-title {
+    .content {
+        display: flex;
+        flex-direction: column;
         margin-left: 0.5rem;
         margin-right: 0.5rem;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-        
-        a {
-            font-size: 1.5rem;
-            line-height: 2rem;
-            font-weight: 500;
-            text-decoration: none;
-            font-variant: small-caps;
-            color: black;
+
+        .cause-title {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            
+            a {
+                font-size: 1.5rem;
+                line-height: 2rem;
+                font-weight: 500;
+                text-decoration: none;
+                font-variant: small-caps;
+                color: black;
+            }
+        }
+
+        .cause-description {
+            margin-bottom: 0.5rem;
+            max-height: 3em;
+            overflow: hidden;
         }
     }
 }

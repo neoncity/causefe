@@ -73,43 +73,47 @@ export class PublicCauseWidget extends React.Component<Props, State> {
 		<img
 		    className="cause-picture"
 		    src={causePictureUri(this.props.cause)}
-		    alt={text.causePicture[config.LANG()]} />
-	        <h2 className="cause-title">
-                    <Link to={causeLink(this.props.cause)}>{this.props.cause.title}</Link>
-                </h2>
+	            alt={text.causePicture[config.LANG()]} />
+
+                <div className="content">
+                    <h2 className="cause-title">
+                        <Link to={causeLink(this.props.cause)}>{this.props.cause.title}</Link>
+                    </h2>
                 
-		<p>{this.props.cause.description}</p>
-		<p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency.toString()}</p>
-		<p>{this.props.cause.deadline.toUTCString()}</p>
-                <button
-		    type="button"
-		    onClick={_ => this._handleSetDonationAmount(10)}>
-		    10
-		</button>
-                <button
-		    type="button"
-		    onClick={_ => this._handleSetDonationAmount(25)}>
-		    25
-		</button>
-                <button
-		    type="button"
-		    onClick={_ => this._handleSetDonationAmount(50)}>
-		    50
-		</button>
-                <span>{this.state.donationAmount.getValue()} - {this.props.cause.goal.currency.toString()}</span>
-                <button
-		    type="button" 
-		    disabled={!allValid}
-		    onClick={this._handleDonate.bind(this)}>
-                    {text.donate[config.LANG()]}
-		</button>
-                {donationResult}
-                <button
-		    type="button"
-		    onClick={this._handleShare.bind(this)}>
-                    {text.share[config.LANG()]}
-		</button>
-                {shareResult}
+                    <p className="cause-description">{this.props.cause.description}</p>
+                    
+                    <p>{this.props.cause.goal.amount} - {this.props.cause.goal.currency.toString()}</p>
+                    <p>{this.props.cause.deadline.toUTCString()}</p>
+                    <button
+                        type="button"
+                        onClick={_ => this._handleSetDonationAmount(10)}>
+                        10
+                    </button>
+                    <button
+                        type="button"
+                        onClick={_ => this._handleSetDonationAmount(25)}>
+                        25
+                    </button>
+                    <button
+                        type="button"
+                        onClick={_ => this._handleSetDonationAmount(50)}>
+                        50
+                    </button>
+                    <span>{this.state.donationAmount.getValue()} - {this.props.cause.goal.currency.toString()}</span>
+                    <button
+                        type="button" 
+                        disabled={!allValid}
+                        onClick={this._handleDonate.bind(this)}>
+                        {text.donate[config.LANG()]}
+                    </button>
+                    {donationResult}
+                    <button
+                        type="button"
+                        onClick={this._handleShare.bind(this)}>
+                        {text.share[config.LANG()]}
+                    </button>
+                    {shareResult}
+                </div>
 	    </div>
 	);
     }
