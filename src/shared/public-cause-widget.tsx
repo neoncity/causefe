@@ -28,6 +28,8 @@ interface State {
 
 
 export class PublicCauseWidget extends React.Component<Props, State> {
+    private static readonly _ACTION_RESET_TIMEOUT: number = 1000;
+    
     private static readonly _initialState: State = {
         donationAmount: new UserInput<number, number>(10, 10),
         donationState: OpState.Init,
@@ -45,29 +47,50 @@ export class PublicCauseWidget extends React.Component<Props, State> {
     render() {
         const allValid = !this.state.donationAmount.isInvalid();
         
-        let donationResult = <span></span>;
+        let donationSegment = <span></span>;
         switch (this.state.donationState) {
+        case OpState.Init:
+            donationSegment =
+                <button
+                    className="action donate"
+                    type="button" 
+                    disabled={!allValid}
+                    onClick={this._handleDonate.bind(this)}>
+		    <span className="icon" />
+                    <span className="text">{text.donate[config.LANG()]}</span>
+                </button>;
+            break;
         case OpState.Loading:
-            donationResult = <span>{text.donating[config.LANG()]}</span>;
+            donationSegment = <span className="action-status">{text.donating[config.LANG()]}</span>;
             break;
         case OpState.Ready:
-            donationResult = <span>{text.ready[config.LANG()]}</span>;
+            donationSegment = <span className="action-status">{text.donated[config.LANG()]}</span>;
             break;
         case OpState.Failed:
-            donationResult = <span>{text.failed[config.LANG()]}</span>;
+            donationSegment = <span className="action-status">{text.failed[config.LANG()]}</span>;
             break;
         } 
         
-        let shareResult = <span></span>;
+        let shareSegment = <span></span>;
         switch (this.state.shareState) {
+        case OpState.Init:
+            shareSegment =
+                <button
+                    className="action share"
+                    type="button"
+                    onClick={this._handleShare.bind(this)}>
+		    <span className="icon" />
+                    <span className="text">{text.share[config.LANG()]}</span>
+                </button>;
+            break;
         case OpState.Loading:
-            shareResult = <span>{text.sharing[config.LANG()]}</span>;
+            shareSegment = <span className="action-status">{text.sharing[config.LANG()]}</span>;
             break;
         case OpState.Ready:
-            shareResult = <span>{text.ready[config.LANG()]}</span>;
+            shareSegment = <span className="action-status">{text.shared[config.LANG()]}</span>;
             break;
         case OpState.Failed:
-            shareResult = <span>{text.failed[config.LANG()]}</span>;
+            shareSegment = <span className="action-status">{text.failed[config.LANG()]}</span>;
             break;
         }
 
@@ -115,23 +138,8 @@ export class PublicCauseWidget extends React.Component<Props, State> {
                     </p>
 
                     <p className="donate-and-share">
-                        <button
-                            className="action donate"
-                            type="button" 
-                            disabled={!allValid}
-                            onClick={this._handleDonate.bind(this)}>
-			    <span className="icon" />
-                            <span className="text">{text.donate[config.LANG()]}</span>
-                        </button>
-                        {donationResult}
-                        <button
-                            className="action share"
-                            type="button"
-                            onClick={this._handleShare.bind(this)}>
-			    <span className="icon" />
-                            <span className="text">{text.share[config.LANG()]}</span>
-                        </button>
-                        {shareResult}
+                        {donationSegment}
+                        {shareSegment}
                     </p>
                 </div>
 	    </div>
@@ -152,6 +160,7 @@ export class PublicCauseWidget extends React.Component<Props, State> {
             
             await config.CORE_PUBLIC_CLIENT().createDonation(config.SESSION(), this.props.cause.id, currencyAmount);
             this.setState({donationState: OpState.Ready});
+            setInterval(() => this.setState({donationState: OpState.Init}), PublicCauseWidget._ACTION_RESET_TIMEOUT);
         } catch (e) {
             if (isLocal(config.ENV)) {
                 console.log(e);
@@ -190,6 +199,7 @@ export class PublicCauseWidget extends React.Component<Props, State> {
             try {
                 await config.CORE_PUBLIC_CLIENT().createShare(config.SESSION(), this.props.cause.id, response.post_id as string);
                 this.setState({shareState: OpState.Ready});
+                setInterval(() => this.setState({donationState: OpState.Init}), PublicCauseWidget._ACTION_RESET_TIMEOUT);
             } catch (e) {
                 if (isLocal(config.ENV)) {
                     console.log(e);

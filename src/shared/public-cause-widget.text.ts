@@ -43,14 +43,19 @@ export const donating: Message = {
     ro: "Procesãm donația"
 };
 
+export const donated: Message = {
+    en: "Donated",
+    ro: "Ai donat"
+};
+
 export const sharing: Message = {
     en: "Sharing",
     ro: "Procesãm share-ul"
 };
 
-export const ready: Message = {
-    en: "Ready",
-    ro: "Gata"
+export const shared: Message = {
+    en: "Shared",
+    ro: "Ai share-uit"
 };
 
 export const failed: Message = {
