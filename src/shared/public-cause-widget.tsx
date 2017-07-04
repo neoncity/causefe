@@ -120,7 +120,8 @@ export class PublicCauseWidget extends React.Component<Props, State> {
                             type="button" 
                             disabled={!allValid}
                             onClick={this._handleDonate.bind(this)}>
-                            {text.donate[config.LANG()]}
+			    <span className="icon" />
+                            <span className="text">{text.donate[config.LANG()]}</span>
                         </button>
                         {donationResult}
                         <button
