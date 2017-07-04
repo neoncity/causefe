@@ -99,11 +99,13 @@ export class PublicCauseWidget extends React.Component<Props, State> {
         
 	return (
             <div className="public-cause-widget">
-		<img
-		    className="cause-picture"
-		    src={causePictureUri(this.props.cause)}
-	            alt={text.causePicture[config.LANG()]} />
-
+                <Link to={causeLink(this.props.cause)}>
+                    <img
+                        className="cause-picture"
+                        src={causePictureUri(this.props.cause)}
+                        alt={text.causePicture[config.LANG()]} />
+                </Link>
+                
                 <div className="content">
                     <h2 className="title">
                         <Link to={causeLink(this.props.cause)}>{this.props.cause.title}</Link>
