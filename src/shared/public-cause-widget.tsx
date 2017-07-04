@@ -116,7 +116,7 @@ export class PublicCauseWidget extends React.Component<Props, State> {
 
                     <p className="donate-and-share">
                         <button
-                            className="action"
+                            className="action donate"
                             type="button" 
                             disabled={!allValid}
                             onClick={this._handleDonate.bind(this)}>
@@ -125,10 +125,11 @@ export class PublicCauseWidget extends React.Component<Props, State> {
                         </button>
                         {donationResult}
                         <button
-                            className="share"
+                            className="action share"
                             type="button"
                             onClick={this._handleShare.bind(this)}>
-                            {text.share[config.LANG()]}
+			    <span className="icon" />
+                            <span className="text">{text.share[config.LANG()]}</span>
                         </button>
                         {shareResult}
                     </p>

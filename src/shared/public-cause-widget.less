@@ -80,31 +80,49 @@
 
             button.action {
                 width: 10rem;
-		margin-right: 1rem;
 		height: 2.5rem;
 
-		span.icon {
-		    position: relative;
-		    margin-right: 0.5rem;
-		    top: 0.1rem;
-		    display: inline-block;
-		    width: 1.5em;
-		    height: 1.5em;
-		    background-image: url('./static/donate-icon.svg');
-		    background-color: transparent;
-                    background-repeat: no-repeat;
-                    background-size: cover;
-                }
+		&.donate {
+		    margin-right: 1rem;
+		    
+		    span.icon {
+			position: relative;
+			margin-right: 0.5rem;
+			top: 0.1rem;
+			display: inline-block;
+			width: 1.5em;
+			height: 1.5em;
+			background-image: url('./static/donate-icon.svg');
+			background-color: transparent;
+			background-repeat: no-repeat;
+			background-size: cover;
+                    }
 
-		span.text {
-		    position: relative;
-		    top: -0.25rem;
+		    span.text {
+			position: relative;
+			top: -0.25rem;
+		    }
 		}
-            }
 
-            button.share {
-                width: 10rem;
-		height: 2.5rem;
+		&.share {
+		    span.icon {
+			position: relative;
+			margin-right: 0.5rem;
+			top: 0.1rem;
+			display: inline-block;
+			width: 1.5em;
+			height: 1.5em;
+			background-image: url('./static/facebook-icon.svg');
+			background-color: transparent;
+			background-repeat: no-repeat;
+			background-size: cover;
+                    }
+
+		    span.text {
+			position: relative;
+			top: -0.25rem;
+		    }		    
+		}
             }
         }
     }
