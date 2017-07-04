@@ -61,13 +61,13 @@ export class PublicCauseWidget extends React.Component<Props, State> {
                 </button>;
             break;
         case OpState.Loading:
-            donationSegment = <span className="action-status">{text.donating[config.LANG()]}</span>;
+            donationSegment = <span className="action-status donate">{text.donating[config.LANG()]}</span>;
             break;
         case OpState.Ready:
-            donationSegment = <span className="action-status">{text.donated[config.LANG()]}</span>;
+            donationSegment = <span className="action-status donate">{text.donated[config.LANG()]}</span>;
             break;
         case OpState.Failed:
-            donationSegment = <span className="action-status">{text.failed[config.LANG()]}</span>;
+            donationSegment = <span className="action-status donate">{text.failed[config.LANG()]}</span>;
             break;
         } 
         
@@ -84,13 +84,13 @@ export class PublicCauseWidget extends React.Component<Props, State> {
                 </button>;
             break;
         case OpState.Loading:
-            shareSegment = <span className="action-status">{text.sharing[config.LANG()]}</span>;
+            shareSegment = <span className="action-status donate">{text.sharing[config.LANG()]}</span>;
             break;
         case OpState.Ready:
-            shareSegment = <span className="action-status">{text.shared[config.LANG()]}</span>;
+            shareSegment = <span className="action-status donate">{text.shared[config.LANG()]}</span>;
             break;
         case OpState.Failed:
-            shareSegment = <span className="action-status">{text.failed[config.LANG()]}</span>;
+            shareSegment = <span className="action-status donate">{text.failed[config.LANG()]}</span>;
             break;
         }
 
