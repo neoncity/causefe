@@ -71,9 +71,19 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
             </Helmet>;
         
 	if (this.props.isLoading) {
-	    return <div id="home-view" className="loading">{helmet}{commonText.loading[config.LANG()]}</div>;
+	    return (
+		<div className="loading">
+		   {helmet}
+                   <span className="message">{commonText.loading[config.LANG()]}</span>
+	        </div>
+	    );
 	} else if (this.props.isFailed) {
-	    return <div id="home-view" className="failed">{helmet}{commonText.loadingFailed[config.LANG()]}</div>;
+	    return (
+                <div className="failed">
+                    {helmet}
+                    <span className="message">{commonText.loadingFailed[config.LANG()]}</span>
+                </div>
+	    );
 	} else {
 	    const causes = (this.props.causes as PublicCause[]).map(
 	        c => <PublicCauseWidget key={c.id} cause={c} />

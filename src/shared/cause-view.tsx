@@ -101,11 +101,21 @@ class _CauseView extends React.Component<Props, undefined> {
                 <link rel="canonical" href={realCauseLink} />
             </Helmet>;
         
-        if (this.props.isLoading) {
-            return <div>{helmet}{commonText.loading[config.LANG()]}</div>;
-        } else if (this.props.isFailed) {
-            return <div>{helmet}{commonText.loadingFailed[config.LANG()]}</div>;
-        } else {
+	if (this.props.isLoading) {
+	    return (
+		<div className="loading">
+		   {helmet}
+                   <span className="message">{commonText.loading[config.LANG()]}</span>
+	        </div>
+	    );
+	} else if (this.props.isFailed) {
+	    return (
+                <div className="failed">
+                    {helmet}
+                    <span className="message">{commonText.loadingFailed[config.LANG()]}</span>
+                </div>
+	    );
+	} else {
             return (
                 <div>
                     {helmet}

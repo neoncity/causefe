@@ -52,10 +52,20 @@ class _AdminCauseAnalyticsView extends React.Component<Props, undefined> {
                 <meta name="robots" content="noindex,nofollow" />
             </Helmet>;
                         
-        if (this.props.isLoading) {
-            return <div>{helmet}{commonText.loading[config.LANG()]}</div>;
+	if (this.props.isLoading) {
+	    return (
+		<div className="loading">
+		   {helmet}
+                   <span className="message">{commonText.loading[config.LANG()]}</span>
+	        </div>
+	    );
 	} else if (this.props.isFailed) {
-	    return <div>{helmet}{commonText.loadingFailed[config.LANG()]}</div>;
+	    return (
+                <div className="failed">
+                    {helmet}
+                    <span className="message">{commonText.loadingFailed[config.LANG()]}</span>
+                </div>
+	    );
 	} else if (!this.props.hasCause) {
             return <div>{helmet}{text.noCause[config.LANG()]}</div>;
 	} else {

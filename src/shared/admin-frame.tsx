@@ -15,7 +15,7 @@ export class AdminFrame extends React.Component<Props, undefined> {
     render() {
         return (
             <div id="admin-frame-body">
-                <div id="sidebar-menu">
+                <div id="admin-sidebar-menu">
                     <div className="actions">
                         <span>
                             <span className="menu-icon my-cause"></span>
@@ -43,7 +43,7 @@ export class AdminFrame extends React.Component<Props, undefined> {
                         </span>
                     </div>                
                 </div>
-                <div>
+                <div id="admin-content" >
                     {this.props.children}
                 </div>
             </div>
