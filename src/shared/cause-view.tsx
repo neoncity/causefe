@@ -7,7 +7,6 @@ import { PublicCause } from '@neoncity/core-sdk-js'
 import { isLocal } from '@neoncity/common-js'
 
 import * as config from './config'
-import { PublicCauseWidget } from './public-cause-widget'
 import { OpState, PublicCauseDetailState, StatePart } from '../shared/store'
 import { causeLink, causePictureUri } from './utils'
 
@@ -116,10 +115,30 @@ class _CauseView extends React.Component<Props, undefined> {
                 </div>
 	    );
 	} else {
+	    const cause = this.props.cause as PublicCause;
+	    
             return (
-                <div>
+                <div id="cause-view">
                     {helmet}
-                    <PublicCauseWidget cause={this.props.cause as PublicCause} />
+
+		    <div id="cause-view-head-region">
+
+		        <div id="cause-view-gallery">
+  		            <img
+                                className="cause-picture"
+                                src={causePictureUri(cause)}
+                                alt={text.causePicture[config.LANG()]} />
+		        </div>
+
+		        <div id="cause-view-controls">
+		            <h2>{cause.title}</h2>
+		        </div>
+
+		    </div>
+
+		    <div id="cause-view-description">
+		        {cause.description}
+		    </div>
                 </div>
             );
         }

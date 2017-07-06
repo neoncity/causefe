@@ -1,1 +1,31 @@
 @import './state-transitions';
+@import './common';
+
+
+#cause-view {
+    margin: 1em;
+    display: flex;
+    flex-wrap: wrap;
+
+    #cause-view-head-region {
+	.column-container();
+
+	#cause-view-gallery {
+	    .half-column();
+
+	    img.cause-picture {
+		display: block;
+		width: 100%;
+		height: auto;
+	    }
+	}
+
+	#cause-view-controls {
+	    .half-column();
+	}
+    }
+
+    #cause-view-description {
+	.full-column();
+    }
+}
