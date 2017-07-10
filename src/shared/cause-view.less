@@ -8,6 +8,9 @@
     flex-wrap: wrap;
 
     #cause-view-head-region {
+        display: flex;
+        flex-wrap: wrap;
+        
 	.column-container();
 
 	#cause-view-gallery {
@@ -22,6 +25,21 @@
 
 	#cause-view-controls {
 	    .half-column();
+
+            .content {
+                margin-left: 0.5em;
+                margin-right: 0.5em;
+                margin-bottom: 1em;
+                
+                .status {
+                    margin-bottom: 0.5rem;
+                    height: 1.5rem;
+                    
+                    span:first-child {
+                        margin-right: 0.5rem;
+                    }
+                }
+            }
 	}
     }
 

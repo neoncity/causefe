@@ -6,12 +6,15 @@ import { browserHistory } from 'react-router'
 import { PublicCause } from '@neoncity/core-sdk-js'
 import { isLocal } from '@neoncity/common-js'
 
+import { CauseActionsWidget } from './cause-actions-widget'
 import * as config from './config'
 import { OpState, PublicCauseDetailState, StatePart } from '../shared/store'
 import { causeLink, causePictureUri } from './utils'
 
 import * as text from './cause-view.text'
 import * as commonText from './common.text'
+
+const moment = require('moment')
 
 
 interface Params {
@@ -116,6 +119,9 @@ class _CauseView extends React.Component<Props, undefined> {
 	    );
 	} else {
 	    const cause = this.props.cause as PublicCause;
+
+            const daysLeft = moment().diff(moment(cause.deadline), 'days');
+            const percentageRaised = 0.5;
 	    
             return (
                 <div id="cause-view">
@@ -131,7 +137,18 @@ class _CauseView extends React.Component<Props, undefined> {
 		        </div>
 
 		        <div id="cause-view-controls">
-		            <h2>{cause.title}</h2>
+                            <div className="content">
+                                <h2>{cause.title}</h2>
+
+                                <p className="status">
+                                    <span>{commonText.infoOnRaised[config.LANG()](percentageRaised, cause.goal.amount, cause.goal.currency)}</span>
+                                    <span>{commonText.daysLeft[config.LANG()](daysLeft)}</span>
+                                </p>
+
+                                <CauseActionsWidget
+                                    cause={cause}
+                                    onNewCause={(_: PublicCause) => { return; }} />
+                            </div>
 		        </div>
 
 		    </div>
