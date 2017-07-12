@@ -37,9 +37,19 @@ export const invalidGoalCurrencyValue: Message = {
     ro: "Valoare incorectă pentru moneda țintă"
 };
 
+export const title: Message = {
+    en: "Title",
+    ro: "Titlu"
+};
+
 export const causeTitlePlaceholder: MessageWith0Arg = {
     en: "Cause title ...",
     ro: "Titlul cauzei ..."
+};
+
+export const url: Message = {
+    en: "URL",
+    ro: "URL"
 };
 
 export const causeUrlPlaceholder: MessageWith0Arg = {
@@ -47,9 +57,19 @@ export const causeUrlPlaceholder: MessageWith0Arg = {
     ro: "URL ..."
 };
 
+export const description: Message = {
+    en: "Description",
+    ro: "Descriere"
+};
+
 export const causeDescriptionPlaceholder: MessageWith0Arg = {
     en: "Cause description ...",
     ro: "Descrierea cauzei ..."
+};
+
+export const deadline: Message = {
+    en: "Deadline",
+    ro: "Termen limită"
 };
 
 export const noCause: Message = {

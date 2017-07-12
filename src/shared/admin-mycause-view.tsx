@@ -185,7 +185,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
             <div>
                 <form>
                     <div>
-                        <label htmlFor="admin-my-cause-title">Title</label>
+                        <label htmlFor="admin-my-cause-title">{text.title[config.LANG()]}</label>
                         <input
                             id="admin-my-cause-title"
                             type="text"
@@ -195,7 +195,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                             {titleModifiedRegion} {titleWarningRegion}
                     </div>
                     <div>
-                        <label htmlFor="admin-my-cause-slug">URL</label>
+                        <label htmlFor="admin-my-cause-slug">{text.url[config.LANG()]}</label>
                         <input
                             id="admin-my-cause-slug"
                             value={this.state.slug.getValue()}
@@ -204,7 +204,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                         {slugModifiedRegion} {slugWarningRegion}
                     </div>
                     <div>
-                        <label htmlFor="admin-my-cause-description">Description</label>
+                        <label htmlFor="admin-my-cause-description">{text.description[config.LANG()]}</label>
                         <input
                             id="admin-my-cause-description"
                             type="text"
@@ -214,14 +214,14 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                         {descriptionModifiedRegion} {descriptionWarningRegion}
                     </div>
                     <div>
-                        <label htmlFor="admin-my-cause-deadline">Deadline</label>
+                        <label htmlFor="admin-my-cause-deadline">{text.deadline[config.LANG()]}</label>
                         <ReactDatePicker
                             id="admin-my-cause-deadline"
                             selected={this.state.deadline}
                             onChange={this._handleDeadlineChange.bind(this)} />
                     </div>
                     <div>
-                        <label htmlFor="admin-my-cause-goal-amount">Goal amount</label>
+                        <label htmlFor="admin-my-cause-goal-amount">{text.goalAmount[config.LANG()]}</label>
                         <input
                             id="admin-my-cause-goal-amount"
                             type="number"
