@@ -1,4 +1,4 @@
-import { Message, MessageWith1Arg, MessageWith2Arg } from './messages'
+import { Message } from './messages'
 
 
 export const pageTitle: Message = {
@@ -12,32 +12,32 @@ export const noCause: Message = {
     ro: "Nu exista o cauză încă. Porniți una pentru a vedea ceva aici"
 };
 
-export const daysLeft: MessageWith1Arg = {
-    en: (daysLeft: number) => `Days left: ${daysLeft}`,
-    ro: (daysLeft: number) => `Zile rămase: ${daysLeft}`
+export const daysLeft: Message = {
+    en: "Days left",
+    ro: "Zile rămase"
 };
 
-export const donorsCount: MessageWith1Arg = {
-    en: (donorsCount: number) => `Donors count: ${donorsCount}`,
-    ro: (donorsCount: number) => `Numărul donatorilor: ${donorsCount}`
+export const donorsCount: Message = {
+    en: "Donors count",
+    ro: "Numărul donatorilor",
 };
 
-export const donationsCount: MessageWith1Arg = {
-    en: (donationsCount: number) => `Donations count: ${donationsCount}`,
-    ro: (donationsCount: number) => `Numărul donațiilor: ${donationsCount}`
+export const donationsCount: Message = {
+    en: "Donations count",
+    ro: "Numărul donațiilor"
 };
 
-export const donatedAmount: MessageWith2Arg = {
-    en: (donationsAmount: number, donationsCurrency: string) => `Donated amount: ${donationsAmount} ${donationsCurrency}`,
-    ro: (donationsAmount: number, donationsCurrency: string) => `Suma donată: ${donationsAmount} ${donationsCurrency}`
+export const donatedAmount: Message = {
+    en: "Donated amount",
+    ro: "Suma donată"
 };
 
-export const sharersCount: MessageWith1Arg = {
-    en: (sharersCount: number) => `Sharers count: ${sharersCount}`,
-    ro: (sharersCount: number) => `Numărul celor care au dat share: ${sharersCount}`
+export const sharersCount: Message = {
+    en: "Sharers count",
+    ro: "Numărul celor care au dat share"
 };
 
-export const sharesCount: MessageWith1Arg = {
-    en: (sharesCount: number) => `Shares count: ${sharesCount}`,
-    ro: (sharesCount: number) => `Numărul de share-uri: ${sharesCount}`
+export const sharesCount: Message = {
+    en: "Shares count",
+    ro: "Numărul de share-uri"
 };

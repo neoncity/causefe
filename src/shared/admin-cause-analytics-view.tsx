@@ -74,12 +74,39 @@ class _AdminCauseAnalyticsView extends React.Component<Props, undefined> {
             return (
                 <div>
                     {helmet}
-                    <p>{text.daysLeft[config.LANG()](causeAnalytics.daysLeft)}</p>
-                    <p>{text.donorsCount[config.LANG()](causeAnalytics.donorsCount)}</p>
-                    <p>{text.donationsCount[config.LANG()](causeAnalytics.donationsCount)}</p>
-                    <p>{text.donatedAmount[config.LANG()](causeAnalytics.amountDonated.amount, causeAnalytics.amountDonated.currency.toString())}</p>
-                    <p>{text.sharersCount[config.LANG()](causeAnalytics.sharersCount)}</p>
-                    <p>{text.sharesCount[config.LANG()](causeAnalytics.sharesCount)}</p>
+                    <table id="cause-analytics-table">
+                        <tbody>
+                            <tr>
+                                <td>{text.daysLeft[config.LANG()]}</td>
+                                <td>{causeAnalytics.daysLeft}</td>
+                            </tr>
+
+                            <tr>
+                                <td>{text.donorsCount[config.LANG()]}</td>
+                                <td>{causeAnalytics.donorsCount}</td>
+                            </tr>
+
+                            <tr>
+                                <td>{text.donationsCount[config.LANG()]}</td>
+                                <td>{causeAnalytics.donationsCount}</td>
+                            </tr>
+
+                            <tr>
+                                <td>{text.donatedAmount[config.LANG()]}</td>
+                                <td>{causeAnalytics.amountDonated.amount} {causeAnalytics.amountDonated.currency.toString()}</td>
+                            </tr>
+
+                            <tr>
+                                <td>{text.sharersCount[config.LANG()]}</td>
+                                <td>{causeAnalytics.sharersCount}</td>
+                            </tr>
+
+                            <tr>
+                                <td>{text.sharesCount[config.LANG()]}</td>
+                                <td>{causeAnalytics.sharesCount}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             );
         }
