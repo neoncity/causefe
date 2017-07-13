@@ -230,7 +230,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                         {goalAmountModifiedRegion} {goalAmountWarningRegion}
                     </div>
                     <div>
-                        <label htmlFor="admin-my-cause-goal-currency">Goal currency</label>
+                        <label htmlFor="admin-my-cause-goal-currency">{text.goalCurrency[config.LANG()]}</label>
                         <select
                             id="admin-my-cause-goal-currency"
                             value={this.state.goalCurrency.getUserInput()}

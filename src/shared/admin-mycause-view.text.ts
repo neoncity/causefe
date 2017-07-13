@@ -72,6 +72,16 @@ export const deadline: Message = {
     ro: "Termen limită"
 };
 
+export const goalAmount: Message = {
+    en: "Goal amount",
+    ro: "Suma țintă"
+};
+
+export const goalCurrency: Message = {
+    en: "Goal currency",
+    ro: "Monedă"
+};
+
 export const noCause: Message = {
     en: "There is no cause",
     ro: "Nu există incă o cauza"
