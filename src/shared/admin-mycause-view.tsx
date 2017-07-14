@@ -289,7 +289,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
             const cause = this.props.cause as PrivateCause;
             
             return (
-                <div>
+                <div id="admin-mycause-view">
                     {helmet}                    
                     {cause.title}
                     {editForm}

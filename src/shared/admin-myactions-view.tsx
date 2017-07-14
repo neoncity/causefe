@@ -76,11 +76,11 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
 		  .map((d) => <ShareForSessionWidget key={d.id} shareForSession={d} />);
 
 	    return (
-                <div>
+                <div id="admin-myactions-view">
                     {helmet}
-		    <h6>{text.donations[config.LANG()]}</h6>
+		    <h2>{text.donations[config.LANG()]}</h2>
 		    {donationWidgets}
-		    <h6>{text.shares[config.LANG()]}</h6>
+		    <h2>{text.shares[config.LANG()]}</h2>
 		    {shareWidgets}
 		</div>
 	    );

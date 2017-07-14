@@ -72,7 +72,7 @@ class _AdminCauseAnalyticsView extends React.Component<Props, undefined> {
             const causeAnalytics = this.props.causeAnalytics as CauseAnalytics;
             
             return (
-                <div>
+                <div id="admin-cause-analytics-view">
                     {helmet}
                     <table id="cause-analytics-table">
                         <tbody>

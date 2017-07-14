@@ -13,7 +13,7 @@ interface Props {
 export class AdminAccountView extends React.Component<Props, undefined> {
     render() {
         return (
-            <div>
+            <div id="admin-account-view">
                 <Helmet>
                     <title>{text.pageTitle[config.LANG()]}</title>
                     <meta name="robots" content="noindex,nofollow" />
