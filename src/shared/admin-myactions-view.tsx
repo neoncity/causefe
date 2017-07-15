@@ -64,13 +64,13 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
                 </div>
 	    );
 	} else {
-	    const donationWidgets = (this.props.userActionsOverview as UserActionsOverview)
-		  .donations
+	    const latestDonationWidgets = (this.props.userActionsOverview as UserActionsOverview)
+		  .latestDonations
 		  .slice(0) // clone
 		  .sort((a, b) => b.timeCreated.getTime() - a.timeCreated.getTime())
 		  .map((d) => <DonationForSessionWidget key={d.id} donationForSession={d} />);
-	    const shareWidgets = (this.props.userActionsOverview as UserActionsOverview)
-		  .shares
+	    const latestShareWidgets = (this.props.userActionsOverview as UserActionsOverview)
+		  .latestShares
 		  .slice(0) // clone
 		  .sort((a, b) => b.timeCreated.getTime() - a.timeCreated.getTime())
 		  .map((d) => <ShareForSessionWidget key={d.id} shareForSession={d} />);
@@ -79,9 +79,9 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
                 <div id="admin-myactions-view">
                     {helmet}
 		    <h2>{text.donations[config.LANG()]}</h2>
-		    {donationWidgets}
+		    {latestDonationWidgets}
 		    <h2>{text.shares[config.LANG()]}</h2>
-		    {shareWidgets}
+		    {latestShareWidgets}
 		</div>
 	    );
 	}
