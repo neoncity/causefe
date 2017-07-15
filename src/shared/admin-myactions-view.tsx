@@ -64,12 +64,16 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
                 </div>
 	    );
 	} else {
-	    const latestDonationWidgets = (this.props.userActionsOverview as UserActionsOverview)
+            const userActionsOverview = this.props.userActionsOverview as UserActionsOverview;
+            const amountsDonated = userActionsOverview
+                  .amountsDonatedByCurrency
+                  .map(crc => <p>{text.amountsDonated[config.LANG()](crc)}</p>);
+	    const latestDonationWidgets = userActionsOverview
 		  .latestDonations
 		  .slice(0) // clone
 		  .sort((a, b) => b.timeCreated.getTime() - a.timeCreated.getTime())
 		  .map((d) => <DonationForSessionWidget key={d.id} donationForSession={d} />);
-	    const latestShareWidgets = (this.props.userActionsOverview as UserActionsOverview)
+	    const latestShareWidgets = userActionsOverview
 		  .latestShares
 		  .slice(0) // clone
 		  .sort((a, b) => b.timeCreated.getTime() - a.timeCreated.getTime())
@@ -78,6 +82,11 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
 	    return (
                 <div id="admin-myactions-view">
                     {helmet}
+                    <div className="high-level">
+                        <p>{text.donationsCount[config.LANG()](userActionsOverview.donationsCount)}</p>
+                        {amountsDonated}
+                        <p>{text.sharesCount[config.LANG()](userActionsOverview.sharesCount)}</p>
+                    </div>
 		    <h2>{text.donations[config.LANG()]}</h2>
 		    {latestDonationWidgets}
 		    <h2>{text.shares[config.LANG()]}</h2>

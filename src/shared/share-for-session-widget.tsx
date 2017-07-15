@@ -20,6 +20,11 @@ export class ShareForSessionWidget extends React.Component<Props, null> {
 	const cause = this.props.shareForSession.forCause;
 	const timeCreated = share.timeCreated.toUTCString();
 	
-	return <p>{text.shared[config.LANG()](cause.title, timeCreated)} <Link to={causeLink(cause)}>{text.details[config.LANG()]}}</Link></p>;
+	return (
+            <p>
+                <span>{text.shared[config.LANG()](cause.title, timeCreated)}</span>
+                <Link to={causeLink(cause)}>{text.details[config.LANG()]}}</Link>
+            </p>
+        );
     }
 }
