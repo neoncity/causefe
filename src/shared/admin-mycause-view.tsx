@@ -269,15 +269,34 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	    );
 	} else if (!this.props.hasCause) {
 	    if (!this.state.showCreationFormIfNoControls) {
-		return <div>{helmet}{text.noCause[config.LANG()]} <button onClick={this._handleShowCreationForm.bind(this)}>{text.createCause[config.LANG()]}</button> </div>;
+		return (
+                    <div>
+                        {helmet}{text.noCause[config.LANG()]}
+                        <button
+                            className="action"
+                            onClick={this._handleShowCreationForm.bind(this)}>
+                        {text.createCause[config.LANG()]}
+                        </button>
+                    </div>
+                );
 	    } else {
 		return (
                     <div>
                         {helmet}
                         {text.creationForm[config.LANG()]} {editForm}
-                        <div>
-                            <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>{text.reset[config.LANG()]}</button>
-                            <button disabled={!this.state.modifiedGeneral || !allValid} onClick={this._handleCreate.bind(this)}>{text.create[config.LANG()]}</button>
+                        <div className="create-controls">
+                            <button
+                                className="action"
+                                disabled={!this.state.modifiedGeneral}
+                                onClick={this._handleResetGeneral.bind(this)}>
+                                {text.reset[config.LANG()]}
+                            </button>
+                            <button
+                                className="action"
+                                disabled={!this.state.modifiedGeneral || !allValid}
+                                onClick={this._handleCreate.bind(this)}>
+                                {text.create[config.LANG()]}
+                            </button>
                         </div>
                     </div>
 		);
@@ -291,12 +310,27 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                 <div id="admin-mycause-view">
                     {helmet}
                     {editForm}
-                    <div>
-                        <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>{text.reset[config.LANG()]}</button>
-                         <button disabled={!this.state.modifiedGeneral || !allValid} onClick={this._handleUpdate.bind(this)}>{text.update[config.LANG()]}</button>
+                    <div className="update-controls">
+                         <button
+                             className="action"
+                             disabled={!this.state.modifiedGeneral}
+                             onClick={this._handleResetGeneral.bind(this)}>
+                             {text.reset[config.LANG()]}
+                         </button>
+                         <button
+                             className="action"
+                             disabled={!this.state.modifiedGeneral || !allValid}
+                             onClick={this._handleUpdate.bind(this)}>
+                             {text.update[config.LANG()]}
+                         </button>
                     </div>
-		    <div>
-                        <button onClick={this._handleDelete.bind(this)}>{text.deleteCause[config.LANG()]}</button>
+		    <div className="delete-controls">
+                        <button
+                            className="action"
+                            onClick={this._handleDelete.bind(this)}>
+                            <span className="icon" />
+                            <span className="text">{text.deleteCause[config.LANG()]}</span>
+                        </button>
 		    </div>
                 </div>
 	    );

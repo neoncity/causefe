@@ -1,3 +1,4 @@
+@import './action-button';
 @import './state-transitions';
 
 div#admin-mycause-view {
@@ -37,6 +38,43 @@ div#admin-mycause-view {
                 width: 100%;
                 max-width: 40rem;
                 height: 10rem;
+            }
+        }
+    }
+
+    .create-controls, .update-controls, .delete-controls {
+        line-height: 3rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+
+        button.action {
+            height: 2rem;
+            width: 8rem;
+            margin-right: 1rem;
+        }
+    }
+
+    .delete-controls {
+        button.action {
+            height: 2rem;
+            width: 12rem;
+            
+            span.icon {
+	        position: relative;
+	        margin-right: 0.5rem;
+	        top: 0.1rem;
+	        display: inline-block;
+	        width: 1.5em;
+	        height: 1.5em;
+	        background-image: url('./static/warning-icon.svg');
+	        background-color: transparent;
+	        background-repeat: no-repeat;
+	        background-size: cover;
+            }
+
+            span.text {
+                position: relative;
+                top: -0.25rem;
             }
         }
     }
