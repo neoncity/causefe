@@ -136,6 +136,8 @@ class _AdminMyCauseView extends React.Component<Props, State> {
             titleModifiersRegion = <span className="modifiers warning">{text.invalidTitleValue[config.LANG()]}</span>;
         } else if (this.state.title.isModified()) {
             titleModifiersRegion = <span className="modifiers modified">{text.modified[config.LANG()]}</span>;
+        } else if (!this.props.hasCause) {
+            titleModifiersRegion = <span className="modifiers mandatory">{text.mandatory[config.LANG()]}</span>;
         }
 
         let slugModifiersRegion = <span></span>;
@@ -148,25 +150,33 @@ class _AdminMyCauseView extends React.Component<Props, State> {
         let descriptionModifiersRegion = <span></span>;
         if (this.state.description.isInvalid()) {
             descriptionModifiersRegion = <span className="modifiers no-padding warning">{text.invalidDescriptionValue[config.LANG()]}</span>;
-        }
-        else if (this.state.description.isModified()) {
+        } else if (this.state.description.isModified()) {
             descriptionModifiersRegion = <span className="modifiers no-padding modified">{text.modified[config.LANG()]}</span>;
+        } else if (!this.props.hasCause) {
+            descriptionModifiersRegion = <span className="modifiers mandatory">{text.mandatory[config.LANG()]}</span>;
+        }
+
+        let deadlineModifiersRegion = <span></span>;
+        if (!this.props.hasCause) {
+            deadlineModifiersRegion = <span className="modifiers mandatory">{text.mandatory[config.LANG()]}</span>;
         }
         
         let goalAmountModifiersRegion = <span></span>;
         if (this.state.goalAmount.isInvalid()) {
             goalAmountModifiersRegion = <span className="modifiers warning">{text.invalidGoalAmountValue[config.LANG()]}</span>;
-        }
-        else if (this.state.goalAmount.isModified()) {
+        } else if (this.state.goalAmount.isModified()) {
             goalAmountModifiersRegion = <span className="modifiers modified">{text.modified[config.LANG()]}</span>;
+        } else if (!this.props.hasCause) {
+            goalAmountModifiersRegion = <span className="modifiers mandatory">{text.mandatory[config.LANG()]}</span>;
         }
 
         let goalCurrencyModifiersRegion = <span></span>;
         if (this.state.goalCurrency.isInvalid()) {
             goalCurrencyModifiersRegion = <span className="modifiers warning">{text.invalidGoalCurrencyValue[config.LANG()]}</span>;
-        }        
-        else if (this.state.goalCurrency.isModified()) {
+        } else if (this.state.goalCurrency.isModified()) {
             goalCurrencyModifiersRegion = <span className="modifiers modified">{text.modified[config.LANG()]}</span>;
+        } else if (!this.props.hasCause) {
+            goalCurrencyModifiersRegion = <span className="modifiers mandatory">{text.mandatory[config.LANG()]}</span>;
         }
 	
         const editForm = (
@@ -210,6 +220,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                 <div className="form-line">
                     <div className="form-line-info">
                         <label htmlFor="admin-mycause-deadline">{text.deadline[config.LANG()]}</label>
+                        {deadlineModifiersRegion}
                     </div>
                     <ReactDatePicker
                         id="admin-mycause-deadline"

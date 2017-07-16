@@ -12,6 +12,11 @@ export const modified: Message = {
     ro: "Modificat"
 };
 
+export const mandatory: Message = {
+    en: "Required",
+    ro: "Câmp necesar"
+};
+
 export const invalidTitleValue: Message = {
     en: "Invalid title value",
     ro: "Valoare incorectă pentru titlu"
