@@ -43,7 +43,7 @@ export class AdminFrame extends React.Component<Props, undefined> {
                         </span>
                     </div>                
                 </div>
-                <div id="admin-content" >
+                <div id="admin-content">
                     {this.props.children}
                 </div>
             </div>

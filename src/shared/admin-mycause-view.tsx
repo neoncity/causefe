@@ -131,127 +131,126 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 			   || this.state.goalAmount.isInvalid()
 			   || this.state.goalCurrency.isInvalid());
 
-        let titleModifiedRegion = <span></span>;
-        if (this.state.title.isModified()) {
-            titleModifiedRegion = <span>{text.modified[config.LANG()]}</span>;
-        }
-
-        let titleWarningRegion = <span></span>;
+        let titleModifiersRegion = <span></span>;
         if (this.state.title.isInvalid()) {
-            titleWarningRegion = <span>{text.invalidTitleValue[config.LANG()]}</span>;
+            titleModifiersRegion = <span className="modifiers warning">{text.invalidTitleValue[config.LANG()]}</span>;
+        } else if (this.state.title.isModified()) {
+            titleModifiersRegion = <span className="modifiers modified">{text.modified[config.LANG()]}</span>;
         }
 
-        let slugModifiedRegion = <span></span>;
-        if (this.state.slug.isModified()) {
-            slugModifiedRegion = <span>{text.modified[config.LANG()]}</span>;
-        }
-
-        let slugWarningRegion = <span></span>;
+        let slugModifiersRegion = <span></span>;
         if (this.state.slug.isInvalid()) {
-            slugWarningRegion = <span>{text.invalidSlugValue[config.LANG()]}</span>;
+            slugModifiersRegion = <span className="modifiers warning">{text.invalidSlugValue[config.LANG()]}</span>;
+        } else if (this.state.slug.isModified()) {
+            slugModifiersRegion = <span className="modifiers modified">{text.modified[config.LANG()]}</span>;
         }
 
-        let descriptionModifiedRegion = <span></span>;
-        if (this.state.description.isModified()) {
-            descriptionModifiedRegion = <span>{text.modified[config.LANG()]}</span>;
-        }
-
-        let descriptionWarningRegion = <span></span>;
+        let descriptionModifiersRegion = <span></span>;
         if (this.state.description.isInvalid()) {
-            descriptionWarningRegion = <span>{text.invalidDescriptionValue[config.LANG()]}</span>;
+            descriptionModifiersRegion = <span className="modifiers no-padding warning">{text.invalidDescriptionValue[config.LANG()]}</span>;
         }
-
-        let goalAmountModifiedRegion = <span></span>;
-        if (this.state.goalAmount.isModified()) {
-            goalAmountModifiedRegion = <span>{text.modified[config.LANG()]}</span>;
+        else if (this.state.description.isModified()) {
+            descriptionModifiersRegion = <span className="modifiers no-padding modified">{text.modified[config.LANG()]}</span>;
         }
-
-        let goalAmountWarningRegion = <span></span>;
+        
+        let goalAmountModifiersRegion = <span></span>;
         if (this.state.goalAmount.isInvalid()) {
-            goalAmountWarningRegion = <span>{text.invalidGoalAmountValue[config.LANG()]}</span>;
+            goalAmountModifiersRegion = <span className="modifiers warning">{text.invalidGoalAmountValue[config.LANG()]}</span>;
+        }
+        else if (this.state.goalAmount.isModified()) {
+            goalAmountModifiersRegion = <span className="modifiers modified">{text.modified[config.LANG()]}</span>;
         }
 
-        let goalCurrencyModifiedRegion = <span></span>;
-        if (this.state.goalCurrency.isModified()) {
-            goalCurrencyModifiedRegion = <span>{text.modified[config.LANG()]}</span>;
-        }
-
-        let goalCurrencyWarningRegion = <span></span>;
+        let goalCurrencyModifiersRegion = <span></span>;
         if (this.state.goalCurrency.isInvalid()) {
-            goalCurrencyWarningRegion = <span>{text.invalidGoalCurrencyValue[config.LANG()]}</span>;
+            goalCurrencyModifiersRegion = <span className="modifiers warning">{text.invalidGoalCurrencyValue[config.LANG()]}</span>;
         }        
+        else if (this.state.goalCurrency.isModified()) {
+            goalCurrencyModifiersRegion = <span className="modifiers modified">{text.modified[config.LANG()]}</span>;
+        }
 	
         const editForm = (
-            <div>
-                <form>
+            <form className="edit-form">
+                <div className="form-line">
+                    <div className="form-line-info">
+                        <label htmlFor="admin-mycause-title">{text.title[config.LANG()]}</label>
+                        {titleModifiersRegion}
+                    </div>
                     <div>
-                        <label htmlFor="admin-my-cause-title">{text.title[config.LANG()]}</label>
                         <input
-                            id="admin-my-cause-title"
+                            id="admin-mycause-title"
                             type="text"
                             value={this.state.title.getUserInput()}
                             onChange={this._handleTitleChange.bind(this)}
                             placeholder={text.causeTitlePlaceholder[config.LANG()]} />
-                            {titleModifiedRegion} {titleWarningRegion}
                     </div>
-                    <div>
-                        <label htmlFor="admin-my-cause-slug">{text.url[config.LANG()]}</label>
-                        <input
-                            id="admin-my-cause-slug"
-                            value={this.state.slug.getValue()}
-                            disabled={true}
-                            placeholder={text.causeUrlPlaceholder[config.LANG()]} />
-                        {slugModifiedRegion} {slugWarningRegion}
+                </div>
+                <div className="form-line">
+                    <div className="form-line-info">
+                        <label htmlFor="admin-mycause-slug">{text.url[config.LANG()]}</label>
+                        {slugModifiersRegion}
                     </div>
-                    <div>
-                        <label htmlFor="admin-my-cause-description">{text.description[config.LANG()]}</label>
-                        <input
-                            id="admin-my-cause-description"
-                            type="text"
-                            value={this.state.description.getUserInput()}
-                            onChange={this._handleDescriptionChange.bind(this)}
-                            placeholder={text.causeDescriptionPlaceholder[config.LANG()]} />
-                        {descriptionModifiedRegion} {descriptionWarningRegion}
+                    <input
+                        id="admin-mycause-slug"
+                        value={this.state.slug.getValue()}
+                        disabled={true}
+                        placeholder={text.causeUrlPlaceholder[config.LANG()]} />
+                </div>
+                <div className="form-line">
+                    <div className="form-line-info">
+                        <label htmlFor="admin-mycause-description">{text.description[config.LANG()]}</label>
+                        {descriptionModifiersRegion}
                     </div>
-                    <div>
-                        <label htmlFor="admin-my-cause-deadline">{text.deadline[config.LANG()]}</label>
-                        <ReactDatePicker
-                            id="admin-my-cause-deadline"
-                            selected={this.state.deadline}
-                            onChange={this._handleDeadlineChange.bind(this)} />
+                    <textarea
+                        id="admin-mycause-description"
+                        value={this.state.description.getUserInput()}
+                        onChange={this._handleDescriptionChange.bind(this)}
+                        placeholder={text.causeDescriptionPlaceholder[config.LANG()]} />
+                </div>
+                <div className="form-line">
+                    <div className="form-line-info">
+                        <label htmlFor="admin-mycause-deadline">{text.deadline[config.LANG()]}</label>
                     </div>
-                    <div>
-                        <label htmlFor="admin-my-cause-goal-amount">{text.goalAmount[config.LANG()]}</label>
-                        <input
-                            id="admin-my-cause-goal-amount"
-                            type="number"
-                            value={this.state.goalAmount.getUserInput()}
-                            onChange={this._handleGoalAmountChange.bind(this)} placeholder="100" />
-                        {goalAmountModifiedRegion} {goalAmountWarningRegion}
+                    <ReactDatePicker
+                        id="admin-mycause-deadline"
+                        selected={this.state.deadline}
+                        onChange={this._handleDeadlineChange.bind(this)} />
+                </div>
+                <div className="form-line">
+                    <div className="form-line-info">
+                        <label htmlFor="admin-mycause-goal-amount">{text.goalAmount[config.LANG()]}</label>
+                        {goalAmountModifiersRegion}
                     </div>
-                    <div>
-                        <label htmlFor="admin-my-cause-goal-currency">{text.goalCurrency[config.LANG()]}</label>
-                        <select
-                            id="admin-my-cause-goal-currency"
-                            value={this.state.goalCurrency.getUserInput()}
-                            onChange={this._handleGoalCurrencyChange.bind(this)}>
-                            <option value="RON">RON</option>
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                        </select>
-                        {goalCurrencyModifiedRegion} {goalCurrencyWarningRegion}
+                    <input
+                        id="admin-mycause-goal-amount"
+                        type="number"
+                        value={this.state.goalAmount.getUserInput()}
+                        onChange={this._handleGoalAmountChange.bind(this)} placeholder="100" />
+                </div>
+                <div className="form-line">
+                    <div className="form-line-info">
+                        <label htmlFor="admin-mycause-goal-currency">{text.goalCurrency[config.LANG()]}</label>
+                        {goalCurrencyModifiersRegion}
                     </div>
-                    <div>
-                        <BankInfoWidget
-                            bankInfo={this.state.bankInfo}
-                            onBankInfoChange={this._handleBankInfoChange.bind(this)} />
-                        <ImageGalleryEditorWidget
-                            pictureSet={this.state.pictureSet}
-                            selectPicture={pos => config.FILE_STORAGE_CLIENT().selectImageWithWidget(pos)}
-                            onPictureSetChange={this._handlePictureSetChange.bind(this)} />
-                    </div>
-                </form>
-            </div>
+                    <select
+                        id="admin-mycause-goal-currency"
+                        value={this.state.goalCurrency.getUserInput()}
+                        onChange={this._handleGoalCurrencyChange.bind(this)}>
+                        <option value="RON">RON</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                    </select>
+                </div>
+                <div className="form-line">
+                    <BankInfoWidget
+                        bankInfo={this.state.bankInfo}
+                        onBankInfoChange={this._handleBankInfoChange.bind(this)} />
+                    <ImageGalleryEditorWidget
+                        pictureSet={this.state.pictureSet}
+                        selectPicture={pos => config.FILE_STORAGE_CLIENT().selectImageWithWidget(pos)}
+                        onPictureSetChange={this._handlePictureSetChange.bind(this)} />
+                </div>
+            </form>
         );
 	
 	if (this.props.isLoading) {
@@ -286,16 +285,15 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	} else if (this.props.causeIsDeleted) {
 	    return <div>{helmet}{text.causeDeleted[config.LANG()]}</div>;
         } else {
-            const cause = this.props.cause as PrivateCause;
+            // const cause = this.props.cause as PrivateCause;
             
             return (
                 <div id="admin-mycause-view">
-                    {helmet}                    
-                    {cause.title}
+                    {helmet}
                     {editForm}
                     <div>
                         <button disabled={!this.state.modifiedGeneral} onClick={this._handleResetGeneral.bind(this)}>{text.reset[config.LANG()]}</button>
-                    <button disabled={!this.state.modifiedGeneral || !allValid} onClick={this._handleUpdate.bind(this)}>{text.update[config.LANG()]}</button>
+                         <button disabled={!this.state.modifiedGeneral || !allValid} onClick={this._handleUpdate.bind(this)}>{text.update[config.LANG()]}</button>
                     </div>
 		    <div>
                         <button onClick={this._handleDelete.bind(this)}>{text.deleteCause[config.LANG()]}</button>
