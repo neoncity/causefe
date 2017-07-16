@@ -83,18 +83,13 @@ export const goalCurrency: Message = {
 };
 
 export const noCause: Message = {
-    en: "There is no cause",
-    ro: "Nu există incă o cauza"
+    en: "There is no cause. Press the button to create a new one.",
+    ro: "Nu există incă o cauza. Apăsați butonul pentru a crea una."
 };
 
 export const createCause: Message = {
     en: "Create cause",
     ro: "Creaza o cauză"
-};
-
-export const creationForm: Message = {
-    en: "Creation form",
-    ro: "Formular de început"
 };
 
 export const reset: Message = {

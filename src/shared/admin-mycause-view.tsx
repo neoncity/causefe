@@ -62,7 +62,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	title: new UserInput<string, string>('', ''),
 	slug: new UserInput<string, string>('', ''),
 	description: new UserInput<string, string>('', ''),
-	deadline: moment(),
+	deadline: moment().add(60, 'days'),
 	goalAmount: new UserInput<string, number>('100', 100),
 	goalCurrency: new UserInput<string, Currency>('RON', StandardCurrencies.RON),
         bankInfo: {ibans: []},
@@ -270,20 +270,25 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	} else if (!this.props.hasCause) {
 	    if (!this.state.showCreationFormIfNoControls) {
 		return (
-                    <div>
-                        {helmet}{text.noCause[config.LANG()]}
-                        <button
-                            className="action"
-                            onClick={this._handleShowCreationForm.bind(this)}>
-                        {text.createCause[config.LANG()]}
-                        </button>
+                    <div id="admin-mycause-view">
+                        {helmet}
+                        <p className="no-cause">
+                            {text.noCause[config.LANG()]}
+                        </p>
+                        <p className="no-cause">
+                            <button
+                                className="action"
+                                onClick={this._handleShowCreationForm.bind(this)}>
+                            {text.createCause[config.LANG()]}
+                            </button>
+                        </p>
                     </div>
                 );
 	    } else {
 		return (
-                    <div>
+                    <div id="admin-mycause-view">
                         {helmet}
-                        {text.creationForm[config.LANG()]} {editForm}
+                        {editForm}
                         <div className="create-controls">
                             <button
                                 className="action"
