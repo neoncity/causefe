@@ -25,6 +25,10 @@ div#admin-mycause-view {
         width: 100%;
         max-width: 40rem;
         height: 10rem;
+
+        @media all and (max-width: 800px) {
+            max-width: none;
+        }
     }
 
     .create-controls, .update-controls, .delete-controls {
