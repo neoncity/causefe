@@ -166,8 +166,6 @@ class _AdminMyCauseView extends React.Component<Props, State> {
             goalAmountModifiersRegion = <span className="modifiers warning">{text.invalidGoalAmountValue[config.LANG()]}</span>;
         } else if (this.state.goalAmount.isModified()) {
             goalAmountModifiersRegion = <span className="modifiers modified">{text.modified[config.LANG()]}</span>;
-        } else if (!this.props.hasCause) {
-            goalAmountModifiersRegion = <span className="modifiers mandatory">{text.mandatory[config.LANG()]}</span>;
         }
 
         let goalCurrencyModifiersRegion = <span></span>;
@@ -175,8 +173,6 @@ class _AdminMyCauseView extends React.Component<Props, State> {
             goalCurrencyModifiersRegion = <span className="modifiers warning">{text.invalidGoalCurrencyValue[config.LANG()]}</span>;
         } else if (this.state.goalCurrency.isModified()) {
             goalCurrencyModifiersRegion = <span className="modifiers modified">{text.modified[config.LANG()]}</span>;
-        } else if (!this.props.hasCause) {
-            goalCurrencyModifiersRegion = <span className="modifiers mandatory">{text.mandatory[config.LANG()]}</span>;
         }
 	
         const editForm = (
