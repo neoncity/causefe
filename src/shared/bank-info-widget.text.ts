@@ -2,13 +2,23 @@ import { Message, MessageWith0Arg } from './messages'
 
 
 export const widgetTitle: Message = {
-    en: "Bank info",
-    ro: "Informații bancare"
+    en: "Bank Info",
+    ro: "Informații Bancare"
 };
 
 export const modified: Message = {
     en: "Modified",
     ro: "Modificat"
+};
+
+export const IBAN: Message = {
+    en: "IBAN",
+    ro: "IBAN"
+};
+
+export const addIBAN: Message = {
+    en: "Add IBAN",
+    ro: "Adaugă IBAN"
 };
 
 export const invalidIBAN: Message = {

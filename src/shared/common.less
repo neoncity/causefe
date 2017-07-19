@@ -18,3 +18,36 @@
 	}	
     }
 }
+
+
+.form-line {
+    margin-bottom: 0.5rem;
+
+    .form-line-info {
+	display: flex;
+	
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            font-variant: small-caps;
+        }
+
+        .modifiers {
+            font-size: 13px;
+            padding-left: 0.5rem;
+            
+            &.modified {
+                color: green;
+            }
+
+            &.warning {
+                color: orange;
+            }
+
+            &.mandatory {
+                color: firebrick;
+                font-weight: 600;
+            }
+        }                
+    }
+}

@@ -344,7 +344,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                         <button
                             className="action"
                             onClick={this._handleDelete.bind(this)}>
-                            <span className="icon" />
+                            <span className="warning-icon" />
                             <span className="text">{text.deleteCause[config.LANG()]}</span>
                         </button>
 		    </div>

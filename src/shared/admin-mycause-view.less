@@ -1,5 +1,7 @@
 @import './action-button';
+@import './common';
 @import './state-transitions';
+
 
 div#admin-mycause-view {
     p.no-cause {
@@ -12,49 +14,17 @@ div#admin-mycause-view {
         }        
     }
     
-    form.edit-form {
-        .form-line {
-            margin-bottom: 0.5rem;
-
-            .form-line-info {
-                label {
-                    font-size: 13px;
-                    font-weight: 600;
-                    font-variant: small-caps;
-                }
-
-                .modifiers {
-                    font-size: 13px;
-                    padding-left: 0.5rem;
-                    
-                    &.modified {
-                        color: green;
-                    }
-
-                    &.warning {
-                        color: orange;
-                    }
-
-                    &.mandatory {
-                        color: firebrick;
-                        font-weight: 600;
-                    }
-                }                
-            }
-
-            input#admin-mycause-title, input#admin-mycause-slug {
-                width: 20rem;
-                @media all and (max-width: 800px) {
-                    width: 100%;
-                }
-            }
-
-            textarea#admin-mycause-description {
-                width: 100%;
-                max-width: 40rem;
-                height: 10rem;
-            }
+    input#admin-mycause-title, input#admin-mycause-slug {
+        width: 20rem;
+        @media all and (max-width: 800px) {
+            width: 100%;
         }
+    }
+
+    textarea#admin-mycause-description {
+        width: 100%;
+        max-width: 40rem;
+        height: 10rem;
     }
 
     .create-controls, .update-controls, .delete-controls {
@@ -73,24 +43,6 @@ div#admin-mycause-view {
         button.action {
             height: 2rem;
             width: 12rem;
-            
-            span.icon {
-	        position: relative;
-	        margin-right: 0.5rem;
-	        top: 0.1rem;
-	        display: inline-block;
-	        width: 1.5em;
-	        height: 1.5em;
-	        background-image: url('./static/warning-icon.svg');
-	        background-color: transparent;
-	        background-repeat: no-repeat;
-	        background-size: cover;
-            }
-
-            span.text {
-                position: relative;
-                top: -0.25rem;
-            }
         }
     }
 }

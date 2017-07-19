@@ -36,37 +36,47 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
     
     render() {
         const ibansRegion = this.state.ibans.map((iban, ibanIndex) => {
-            let modifiedRegion = <span></span>;
-            if (iban.isModified()) {
-                modifiedRegion = <span>{text.modified[config.LANG()]}</span>;
-            }
-            
-            let warningRegion = <span></span>;
+            let modifiersRegion = <span></span>;
             if (iban.isInvalid()) {
-                warningRegion = <span>{text.invalidIBAN[config.LANG()]}</span>;
+                modifiersRegion = <span className="modifiers warning">{text.invalidIBAN[config.LANG()]}</span>;
+            } else if (iban.isModified()) {
+                modifiersRegion = <span className="modifiers modified">{text.modified[config.LANG()]}</span>;
             }
             
             return (
-                <p key={ibanIndex.toString()}>
-                    <input
-                        type="text"
-                        value={iban.getUserInput()}
-                        onChange={e => this._handleIBANChange(ibanIndex, e)}
-                        placeholder={text.ibanInputPlaceholder[config.LANG()]} />
-                    {modifiedRegion} {warningRegion}
-                    <button type="button" onClick={_ => this._handleRemoveIBAN(ibanIndex)}>{commonText.remove[config.LANG()]}</button>
-                </p>
+                <div key={ibanIndex.toString()} className="form-line">
+		    <div className="form-line-info">
+		        <label>{text.IBAN[config.LANG()]}</label>
+			{modifiersRegion}
+		    </div>
+		    <div className="form-line-info">
+                        <input
+                            className="value"
+                            type="text"
+                            value={iban.getUserInput()}
+                            onChange={e => this._handleIBANChange(ibanIndex, e)}
+                            placeholder={text.ibanInputPlaceholder[config.LANG()]} />
+                        <button
+                            className="action"
+                            type="button"
+                            onClick={_ => this._handleRemoveIBAN(ibanIndex)}>
+                            <span className="warning-icon"/>                        
+                            <span className="text">{commonText.remove[config.LANG()]}</span>
+                        </button>
+                    </div>
+                </div>
             );
         });
         
         return (
-            <div>
-                <p>{text.widgetTitle[config.LANG()]}</p>
+            <div className="bank-info-widget">
+                <h3>{text.widgetTitle[config.LANG()]}</h3>
                 <button
+	            className="action add-iban"
                     disabled={this.state.ibans.length > BankInfo.MAX_NUMBER_OF_IBANS}
                     type="button"
                     onClick={this._handleAddIBAN.bind(this)}>
-                    {commonText.add[config.LANG()]}
+                    {text.addIBAN[config.LANG()]}
                 </button>
                 {ibansRegion}
             </div>
