@@ -1,6 +1,6 @@
 import { Message } from './messages'
 
-export const title: Message = {
+export const widgetTitle: Message = {
     en: "Pictures",
     ro: "Imagini"
 };

@@ -1,6 +1,35 @@
-.image-gallery {
-    &.picture {
-        width: 64px;
-        height: 64px;
+@import './action-button';
+
+
+.image-gallery-editor-widget {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+
+    h3 {
+	font-weight: 500;
+	font-variant: small-caps;
+    }
+
+    button.action.add-picture {
+	margin-bottom: 1rem;
+    }
+
+    .picture-container {
+        display: flex;
+        flex-wrap: wrap;
+        
+        .picture {
+            width: 20rem;
+            padding: 0.5rem;
+
+            @media all and (max-width: 800px) {
+                width: 100%;
+            }            
+            
+            img {
+                width: 100%;
+                height: auto;
+            }
+        }
     }
 }

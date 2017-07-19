@@ -51,15 +51,10 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
             }
 
             return (
-                <p key={pictureIndex.toString()}>
-                    <img src={picture.getValue().uri} className="image-gallery picture" />
+                <div key={pictureIndex.toString()} className="picture">
+                    <img src={picture.getValue().uri}/>
                     {modifiedRegion} {warningRegion}
-                    <button
-		        type="button"
-		        onClick={_ => this._handleRemovePicture(pictureIndex)}>
-		    {commonText.remove[config.LANG()]}
-		    </button>
-                </p>
+                </div>
             );
         });
 
@@ -69,16 +64,19 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
         }
 
         return (
-            <div>
-                <p>{text.title[config.LANG()]}</p>
+            <div className="image-gallery-editor-widget">
+                <h3>{text.widgetTitle[config.LANG()]}</h3>
                 <button
+                    className="action add-picture"
                     type="button"
 	            disabled={this.state.pictures.length >= PictureSet.MAX_NUMBER_OF_PICTURES}
 	            onClick={this._handleAddPicture.bind(this)}>
                     {commonText.add[config.LANG()]}
 	        </button>
                 {selectPictureErrorRegion}
-                {picturesRegion}
+                <div className="picture-container">
+                    {picturesRegion}
+                </div>
             </div>
         );
     }
@@ -109,17 +107,17 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
         }
     }
 
-    private _handleRemovePicture(pictureIndex: number) {
-        const newPictures = this.state.pictures.slice(0);
-        newPictures.splice(pictureIndex, 1);
+    // private _handleRemovePicture(pictureIndex: number) {
+    //     const newPictures = this.state.pictures.slice(0);
+    //     newPictures.splice(pictureIndex, 1);
 
-        // Adjust positions. The in-place modification isn't that great.
-        for (let i = 0; i < newPictures.length; i++) {
-            newPictures[i].getValue().position = i + 1;
-        }
+    //     // Adjust positions. The in-place modification isn't that great.
+    //     for (let i = 0; i < newPictures.length; i++) {
+    //         newPictures[i].getValue().position = i + 1;
+    //     }
         
-        this.setState({hasSelectPictureError: false, pictures: newPictures}, this._updateOwner);
-    }
+    //     this.setState({hasSelectPictureError: false, pictures: newPictures}, this._updateOwner);
+    // }
 
     private _updateOwner() {
         const allValid = this.state.pictures.every(picture => !picture.isInvalid());
