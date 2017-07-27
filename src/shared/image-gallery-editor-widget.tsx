@@ -64,6 +64,10 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
             );
         });
 
+        const noPicturesWarning = <p>{text.thereAreNoPictures[config.LANG()]}</p>;
+
+        const mainRegion = this.state.pictures.length == 0 ? noPicturesWarning : picturesRegion;
+
         let selectPictureErrorRegion = <span></span>;
         if (this.state.hasSelectPictureError) {
             selectPictureErrorRegion = <span>{text.errorAddingImage[config.LANG()]}</span>;
@@ -81,7 +85,7 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
 	        </button>
                 {selectPictureErrorRegion}
                 <div className="picture-container">
-                    {picturesRegion}
+                    {mainRegion}
                 </div>
             </div>
         );
