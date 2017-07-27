@@ -21,6 +21,7 @@
         .picture {
             width: 20rem;
             padding: 0.5rem;
+            position: relative;
 
             @media all and (max-width: 800px) {
                 width: 100%;
@@ -29,6 +30,13 @@
             img {
                 width: 100%;
                 height: auto;
+            }
+
+            .remove-button {
+                position: absolute;
+                right: 1rem;
+                top: 1rem;
+                box-shadow: none;
             }
         }
     }

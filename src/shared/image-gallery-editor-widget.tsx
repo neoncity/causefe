@@ -53,6 +53,12 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
             return (
                 <div key={pictureIndex.toString()} className="picture">
                     <img src={picture.getValue().uri}/>
+                    <button
+                        className="action remove-button"
+                        type="button"
+                        onClick={() => this._handleRemovePicture(pictureIndex)}>
+                    x
+                    </button>
                     {modifiedRegion} {warningRegion}
                 </div>
             );
@@ -107,17 +113,17 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
         }
     }
 
-    // private _handleRemovePicture(pictureIndex: number) {
-    //     const newPictures = this.state.pictures.slice(0);
-    //     newPictures.splice(pictureIndex, 1);
+    private _handleRemovePicture(pictureIndex: number) {
+        const newPictures = this.state.pictures.slice(0);
+        newPictures.splice(pictureIndex, 1);
 
-    //     // Adjust positions. The in-place modification isn't that great.
-    //     for (let i = 0; i < newPictures.length; i++) {
-    //         newPictures[i].getValue().position = i + 1;
-    //     }
+        // Adjust positions. The in-place modification isn't that great.
+        for (let i = 0; i < newPictures.length; i++) {
+            newPictures[i].getValue().position = i + 1;
+        }
         
-    //     this.setState({hasSelectPictureError: false, pictures: newPictures}, this._updateOwner);
-    // }
+        this.setState({hasSelectPictureError: false, pictures: newPictures}, this._updateOwner);
+    }
 
     private _updateOwner() {
         const allValid = this.state.pictures.every(picture => !picture.isInvalid());
