@@ -122,3 +122,7 @@ export const causeDeleted: Message = {
     ro: "Cauza a fost ștearsă. Daca doriți sa o restaurați, vorbiți cu unul dintre administratori."
 };
 
+export const cantChangeCurrency: Message = {
+    en: "You can't change the currency after you create the cause",
+    ro: "Nu puteți schimba moneda după crearea cauzei"
+};

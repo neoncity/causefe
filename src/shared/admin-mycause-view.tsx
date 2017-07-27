@@ -174,6 +174,23 @@ class _AdminMyCauseView extends React.Component<Props, State> {
         } else if (this.state.goalCurrency.isModified()) {
             goalCurrencyModifiersRegion = <span className="modifiers modified">{text.modified[config.LANG()]}</span>;
         }
+
+        const goalCurrencyFormLine =
+            <div className="form-line">
+                <div className="form-line-info">
+                    <label htmlFor="admin-mycause-goal-currency">{text.goalCurrency[config.LANG()]}</label>
+                    {goalCurrencyModifiersRegion}
+                </div>
+                <select
+                    id="admin-mycause-goal-currency"
+                    value={this.state.goalCurrency.getUserInput()}
+                    onChange={this._handleGoalCurrencyChange.bind(this)}>
+                    <option value="RON">RON</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                </select>
+                <p className="currency-change-warning">{text.cantChangeCurrency[config.LANG()]}</p>
+            </div>;
 	
         const editForm = (
             <form className="edit-form">
@@ -233,21 +250,9 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                         type="number"
                         value={this.state.goalAmount.getUserInput()}
                         onChange={this._handleGoalAmountChange.bind(this)} placeholder="100" />
+                    <span className="goal-currency">{this.state.goalCurrency.getValue().toString()}</span>
                 </div>
-                <div className="form-line">
-                    <div className="form-line-info">
-                        <label htmlFor="admin-mycause-goal-currency">{text.goalCurrency[config.LANG()]}</label>
-                        {goalCurrencyModifiersRegion}
-                    </div>
-                    <select
-                        id="admin-mycause-goal-currency"
-                        value={this.state.goalCurrency.getUserInput()}
-                        onChange={this._handleGoalCurrencyChange.bind(this)}>
-                        <option value="RON">RON</option>
-                        <option value="USD">USD</option>
-                        <option value="EUR">EUR</option>
-                    </select>
-                </div>
+                {!this.props.hasCause ? goalCurrencyFormLine : <div></div>}
                 <div className="form-line">
                     <BankInfoWidget
                         bankInfo={this.state.bankInfo}
@@ -460,7 +465,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	try {
 	    const goal: CurrencyAmount = new CurrencyAmount();
 	    goal.amount = this.state.goalAmount.getValue();
-	    goal.currency = this.state.goalCurrency.getValue();
+	    goal.currency = (this.props.cause as PrivateCause).goal.currency;
 	    
 	    const privateCause = await config.CORE_PRIVATE_CLIENT().updateCause(
                 config.SESSION(),
