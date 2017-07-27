@@ -67,6 +67,10 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
                 </div>
             );
         });
+
+        const noIBANsWarning = <p>{text.thereAreNoIBANs[config.LANG()]}</p>;
+
+        const mainRegion = this.state.ibans.length == 0 ? noIBANsWarning : ibansRegion;
         
         return (
             <div className="bank-info-widget">
@@ -78,7 +82,7 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
                     onClick={this._handleAddIBAN.bind(this)}>
                     {text.addIBAN[config.LANG()]}
                 </button>
-                {ibansRegion}
+                {mainRegion}
             </div>
         );
     }
