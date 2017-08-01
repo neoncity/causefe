@@ -120,7 +120,7 @@ class _CauseView extends React.Component<Props, undefined> {
 	} else {
 	    const cause = this.props.cause as PublicCause;
 
-            const daysLeft = moment().diff(moment(cause.deadline), 'days');
+            const daysLeft = moment.utc().diff(moment(cause.deadline), 'days');
             const percentageRaised = 0.5;
 	    
             return (

@@ -32,6 +32,11 @@ export const invalidDescriptionValue: Message = {
     ro: "Valoare incorectă pentru descriere"
 };
 
+export const invalidDeadlineValue: Message = {
+    en: "Invalid deadline value",
+    ro: "Valoare incorectă pentru termenul limită"
+};
+
 export const invalidGoalAmountValue: Message = {
     en: "Invalid goal amount value",
     ro: "Valoare incorectă pentru suma țintă"

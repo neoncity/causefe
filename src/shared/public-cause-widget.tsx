@@ -20,7 +20,7 @@ interface Props {
 
 export class PublicCauseWidget extends React.Component<Props, undefined> {
     render() {
-        const daysLeft = moment().diff(moment(this.props.cause.deadline), 'days');
+        const daysLeft = moment.utc().diff(moment(this.props.cause.deadline), 'days');
         const percentageRaised = 0.5;
         
 	return (

@@ -47,11 +47,28 @@ interface State {
     title: UserInput<string, string>;
     slug: UserInput<string, string>;
     description: UserInput<string, string>;
-    deadline: theMoment.Moment;
+    deadline: UserInput<theMoment.Moment, theMoment.Moment>;
     goalAmount: UserInput<string, number>;
     goalCurrency: UserInput<string, Currency>;
     bankInfo: BankInfo;
     pictureSet: PictureSet;
+}
+
+
+class DeadlineMomentMarshaller implements r.Marshaller<theMoment.Moment> {
+    private static readonly _rightNow: theMoment.Moment = moment.utc();
+    
+    extract(raw: any): theMoment.Moment {
+	if (DeadlineMomentMarshaller._rightNow.isAfter(raw as theMoment.Moment)) {
+	    throw new r.ExtractError('Deadline is in the past');
+	}
+	
+	return raw;
+    }
+
+    pack(cooked: theMoment.Moment): any {
+	return cooked;
+    }
 }
 
 
@@ -62,7 +79,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	title: new UserInput<string, string>('', ''),
 	slug: new UserInput<string, string>('', ''),
 	description: new UserInput<string, string>('', ''),
-	deadline: moment().add(60, 'days'),
+	deadline: new UserInput<theMoment.Moment, theMoment.Moment>(moment.utc().add(60, 'days'), moment.utc().add(60, 'days')),
 	goalAmount: new UserInput<string, number>('100', 100),
 	goalCurrency: new UserInput<string, Currency>('RON', StandardCurrencies.RON),
         bankInfo: {ibans: []},
@@ -72,6 +89,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
     private readonly _titleMaster: UserInputMaster<string, string>;
     private readonly _slugMaster: UserInputMaster<string, string>;
     private readonly _descriptionMaster: UserInputMaster<string, string>;
+    private readonly _deadlineMaster: UserInputMaster<theMoment.Moment, theMoment.Moment>;
     private readonly _goalAmountMaster: UserInputMaster<string, number>;
     private readonly _goalCurrencyMaster: UserInputMaster<string, Currency>;
     
@@ -81,6 +99,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	this._titleMaster = new UserInputMaster<string, string>(new TitleMarshaller());
 	this._slugMaster = new UserInputMaster<string, string>(new r.SlugMarshaller());
 	this._descriptionMaster = new UserInputMaster<string, string>(new DescriptionMarshaller());
+	this._deadlineMaster = new UserInputMaster<theMoment.Moment, theMoment.Moment>(new DeadlineMomentMarshaller());
 	this._goalAmountMaster = new UserInputMaster<string, number>(new r.PositiveIntegerFromStringMarshaller());
 	this._goalCurrencyMaster = new UserInputMaster<string, Currency>(new CurrencyMarshaller());
     }
@@ -128,6 +147,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	const allValid = !(this.state.title.isInvalid()
 			   || this.state.slug.isInvalid()
 			   || this.state.description.isInvalid()
+			   || this.state.deadline.isInvalid()
 			   || this.state.goalAmount.isInvalid()
 			   || this.state.goalCurrency.isInvalid());
 
@@ -157,7 +177,11 @@ class _AdminMyCauseView extends React.Component<Props, State> {
         }
 
         let deadlineModifiersRegion = <span></span>;
-        if (!this.props.hasCause) {
+	if (this.state.deadline.isInvalid()) {
+	    deadlineModifiersRegion = <span className="modifiers warning">{text.invalidDeadlineValue[config.LANG()]}</span>;
+	} else if (this.state.deadline.isModified()) {
+	    deadlineModifiersRegion = <span className="modifiers modified">{text.modified[config.LANG()]}</span>;
+	} else if (!this.props.hasCause) {
             deadlineModifiersRegion = <span className="modifiers mandatory">{text.mandatory[config.LANG()]}</span>;
         }
         
@@ -237,7 +261,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                     </div>
                     <ReactDatePicker
                         id="admin-mycause-deadline"
-                        selected={this.state.deadline}
+                        selected={this.state.deadline.getUserInput()}
                         onChange={this._handleDeadlineChange.bind(this)} />
                 </div>
                 <div className="form-line">
@@ -367,7 +391,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	    title: new UserInput<string, string>(cause.title, cause.title),
 	    slug: new UserInput<string, string>(cause.slug, cause.slug),
 	    description: new UserInput<string, string>(cause.description, cause.description),
-	    deadline: moment(cause.deadline),
+	    deadline: new UserInput<theMoment.Moment, theMoment.Moment>(moment(cause.deadline), moment(cause.deadline)),
 	    goalAmount: new UserInput<string, number>(cause.goal.amount.toString(), cause.goal.amount),
 	    goalCurrency: new UserInput<string, Currency>(cause.goal.currency.toString(), cause.goal.currency),
 	    bankInfo: cause.bankInfo,
@@ -397,7 +421,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
     private _handleDeadlineChange(newDeadline: theMoment.Moment) {
 	this.setState({
 	    modifiedGeneral: true,
-	    deadline: newDeadline
+	    deadline: this._deadlineMaster.transform(newDeadline, this.state.deadline.getValue())
 	});
     }
 
@@ -446,7 +470,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 		this.state.title.getValue(),
 		this.state.description.getValue(),
 		this.state.pictureSet,
-		this.state.deadline.toDate(),
+		this.state.deadline.getValue().toDate(),
 		goal,
 		this.state.bankInfo);
 	    this.props.onPrivateCauseReady(true, false, privateCause);
@@ -473,7 +497,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 		    title: this.state.title.getValue(),
 		    description: this.state.description.getValue(),
 		    pictureSet: this.state.pictureSet,
-		    deadline: this.state.deadline.toDate(),
+		    deadline: this.state.deadline.getValue().toDate(),
 		    goal: goal,
 		    bankInfo: this.state.bankInfo
 		});
