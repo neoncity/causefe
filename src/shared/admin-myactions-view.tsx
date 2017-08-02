@@ -67,7 +67,7 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
             const userActionsOverview = this.props.userActionsOverview as UserActionsOverview;
             const amountsDonated = userActionsOverview
                   .amountsDonatedByCurrency
-                  .map(crc => <p>{text.amountsDonated[config.LANG()](crc)}</p>);
+                  .map(crc => <p key={crc.toString()}>{text.amountsDonated[config.LANG()](crc)}</p>);
 	    const latestDonationWidgets = userActionsOverview
 		  .latestDonations
 		  .slice(0) // clone
