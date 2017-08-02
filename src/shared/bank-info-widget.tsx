@@ -26,12 +26,12 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
     
     constructor(props: BankInfoWidgetProps, context: any) {
         super(props, context);
-        this.state = this._fullStateFromProps(props);
+        this.state = this._fullStateFromProps(props, false);
         this._ibanMaster = new UserInputMaster<string, IBAN>(new IBANMarshaller());
     }
 
     componentWillReceiveProps(newProps: BankInfoWidgetProps) {
-        this.setState(this._fullStateFromProps(newProps));
+        this.setState(this._fullStateFromProps(newProps, true));
     }
     
     render() {
@@ -87,14 +87,20 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
         );
     }
 
-    private _fullStateFromProps(props: BankInfoWidgetProps): BankInfoWidgetState {
-        return {
-            ibans: props.bankInfo.ibans.map(iban => new UserInput<string, IBAN>(iban.toString(), iban))
-        };
+    private _fullStateFromProps(props: BankInfoWidgetProps, lookAtStateForModifiedStatus: boolean): BankInfoWidgetState {
+	if (lookAtStateForModifiedStatus) {
+	    return {
+		ibans: props.bankInfo.ibans.map((iban, ibanIndex) => new UserInput<string, IBAN>(iban.toString(), iban, this.state.ibans[ibanIndex].isModified()))
+	    }
+	} else {
+            return {
+                ibans: props.bankInfo.ibans.map(iban => new UserInput<string, IBAN>(iban.toString(), iban))
+            };
+	}
     }
 
     private _handleAddIBAN() {
-        const newIbans = this.state.ibans.concat(new UserInput<string, IBAN>('', new IBAN('', '', '')));
+        const newIbans = this.state.ibans.concat(new UserInput<string, IBAN>('', new IBAN('', '', ''), false, true));
         this.setState({ibans: newIbans}, this._updateOwner);
     }
 
