@@ -10,29 +10,29 @@ import * as text from './bank-info-widget.text'
 import * as commonText from './common.text'
 
 
-interface BankInfoWidgetProps {
+interface Props {
     bankInfo: UserInput<BankInfo, BankInfo>;
     onBankInfoChange: (newBankInfo: UserInput<BankInfo, BankInfo>) => void;
 }
 
 
-interface BankInfoWidgetState {
+interface State {
     ibans: UserInput<string, IBAN>[];
     modified: boolean;
     invalid: boolean;
 }
 
 
-export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInfoWidgetState> {
+export class BankInfoWidget extends React.Component<Props, State> {
     private readonly _ibanMaster: UserInputMaster<string, IBAN>;
     
-    constructor(props: BankInfoWidgetProps, context: any) {
+    constructor(props: Props, context: any) {
         super(props, context);
         this.state = this._fullStateFromProps(props, false);
         this._ibanMaster = new UserInputMaster<string, IBAN>(new IBANMarshaller());
     }
 
-    componentWillReceiveProps(newProps: BankInfoWidgetProps) {
+    componentWillReceiveProps(newProps: Props) {
         this.setState(this._fullStateFromProps(newProps, true));
     }
     
@@ -96,7 +96,7 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
         );
     }
 
-    private _fullStateFromProps(props: BankInfoWidgetProps, fromReupdate: boolean): BankInfoWidgetState {
+    private _fullStateFromProps(props: Props, fromReupdate: boolean): State {
 	if (!fromReupdate) {
 	    return {
 		modified: props.bankInfo.isModified(),

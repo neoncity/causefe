@@ -13,15 +13,17 @@ import * as text from './image-gallery-editor-widget.text'
 
 
 interface Props {
-    pictureSet: PictureSet;
+    pictureSet: UserInput<PictureSet, PictureSet>;
     selectPicture: (position: number) => Promise<Picture>;
-    onPictureSetChange: (newPictureSet: PictureSet) => void;
+    onPictureSetChange: (newPictureSet: UserInput<PictureSet, PictureSet>) => void;
 }
 
 
 interface State {
     hasSelectPictureError: boolean;
     pictures: UserInput<Picture, Picture>[];
+    modified: boolean;
+    invalid: boolean;
 }
 
 
@@ -30,26 +32,16 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
 
     constructor(props: Props, context: any) {
         super(props, context);
-        this.state = this._fullStateFromProps(props);
+        this.state = this._fullStateFromProps(props, false);
         this._pictureMaster = new UserInputMaster<Picture, Picture>(new (MarshalFrom(Picture))());
     }
 
     componentWillReceiveProps(newProps: Props) {
-        this.setState(this._fullStateFromProps(newProps));
+        this.setState(this._fullStateFromProps(newProps, true));
     }
 
     render() {
         const picturesRegion = this.state.pictures.map((picture, pictureIndex) => {
-            let modifiedRegion = <span></span>;
-            if (picture.isModified()) {
-                modifiedRegion = <span>{text.modified[config.LANG()]}</span>;
-            }
-
-            let warningRegion = <span></span>;
-            if (picture.isInvalid()) {
-                warningRegion = <span>{text.invalidImage[config.LANG()]}</span>;
-            }
-
             return (
                 <div key={pictureIndex.toString()} className="picture">
                     <img src={picture.getValue().uri}/>
@@ -59,7 +51,6 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
                         onClick={() => this._handleRemovePicture(pictureIndex)}>
                     x
                     </button>
-                    {modifiedRegion} {warningRegion}
                 </div>
             );
         });
@@ -68,6 +59,13 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
 
         const mainRegion = this.state.pictures.length == 0 ? noPicturesWarning : picturesRegion;
 
+        let modifiersRegion = <span></span>;
+        if (this.state.invalid) {
+            modifiersRegion = <span className="modifiers warning">{text.invalidPictures[config.LANG()]}</span>;
+        } else if (this.state.modified) {
+            modifiersRegion = <span className="modifiers modified">{text.modified[config.LANG()]}</span>;
+        }	
+
         let selectPictureErrorRegion = <span></span>;
         if (this.state.hasSelectPictureError) {
             selectPictureErrorRegion = <span>{text.errorAddingImage[config.LANG()]}</span>;
@@ -75,11 +73,11 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
 
         return (
             <div className="image-gallery-editor-widget">
-                <h3>{text.widgetTitle[config.LANG()]}</h3>
+                <h3>{text.widgetTitle[config.LANG()]} {modifiersRegion}</h3>
                 <button
                     className="action add-picture"
                     type="button"
-	            disabled={this.state.pictures.length >= PictureSet.MAX_NUMBER_OF_PICTURES}
+	            disabled={this.state.invalid || this.state.pictures.length > PictureSet.MAX_NUMBER_OF_PICTURES}
 	            onClick={this._handleAddPicture.bind(this)}>
                     {commonText.add[config.LANG()]}
 	        </button>
@@ -91,18 +89,43 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
         );
     }
 
-    private _fullStateFromProps(props: Props): State {
-        return {
-            hasSelectPictureError: false,
-            pictures: props.pictureSet.pictures.map(picture => new UserInput<Picture, Picture>(picture, picture))
-        };
+    private _fullStateFromProps(props: Props, fromReupdate: boolean): State {
+	if (!fromReupdate) {
+	    return {
+		hasSelectPictureError: false,
+		pictures: props.pictureSet.getValue().pictures.map(picture => new UserInput<Picture, Picture>(picture, picture)),
+		modified: props.pictureSet.isModified(),
+		invalid: props.pictureSet.isInvalid()
+	    };
+	} else {
+	    if (props.pictureSet.isInvalid()) {
+		return {
+		    hasSelectPictureError: false,
+		    pictures: this.state.pictures,
+		    modified: props.pictureSet.isModified(),
+		    invalid: props.pictureSet.isInvalid()
+		};
+	    } else {
+		return {
+		    hasSelectPictureError: false,
+		    pictures: props.pictureSet.getValue().pictures.map((picture, pictureIndex) => new UserInput<Picture, Picture>(picture, picture, this.state.pictures[pictureIndex].isModified())),
+		    modified: props.pictureSet.isModified(),
+		    invalid: props.pictureSet.isInvalid()
+		};
+	    }
+	}
     }
 
     private async _handleAddPicture() {
         try {
             const picture = await this.props.selectPicture(this.state.pictures.length + 1);
             const newPictures = this.state.pictures.concat(this._pictureMaster.transform(picture, picture));
-            this.setState({hasSelectPictureError: false, pictures: newPictures}, this._updateOwner);
+            this.setState({
+		hasSelectPictureError: false,
+		modified: true,
+		invalid: false,
+		pictures: newPictures
+	    }, this._updateOwner);
         } catch (e) {
             // If the user canceled the dialog, we don't do nothing.
             if (e.hasOwnProperty('FPError') && e.hasOwnProperty('code') && e.code == 101) {
@@ -113,7 +136,11 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
                 console.log(e);
             }
 
-            this.setState({hasSelectPictureError: true});
+            this.setState({
+		hasSelectPictureError: true,
+		modified: false,
+		invalid: true
+	    });
         }
     }
 
@@ -126,16 +153,17 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
             newPictures[i].getValue().position = i + 1;
         }
         
-        this.setState({hasSelectPictureError: false, pictures: newPictures}, this._updateOwner);
+        this.setState({
+	    hasSelectPictureError: false,
+	    modified: true,
+	    invalid: !newPictures.every(picture => !picture.isInvalid()),
+	    pictures: newPictures
+	}, this._updateOwner);
     }
 
     private _updateOwner() {
-        const allValid = this.state.pictures.every(picture => !picture.isInvalid());
-
-        if (allValid) {
-            const pictureSet = new PictureSet();
-            pictureSet.pictures = this.state.pictures.map(picture => picture.getValue());
-            this.props.onPictureSetChange(pictureSet);
-        }
+        const pictureSet = new PictureSet();
+        pictureSet.pictures = this.state.pictures.map(picture => picture.getValue());
+        this.props.onPictureSetChange(new UserInput<PictureSet, PictureSet>(pictureSet, pictureSet, this.state.modified, this.state.invalid));
     }
 }

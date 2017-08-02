@@ -51,7 +51,7 @@ interface State {
     goalAmount: UserInput<string, number>;
     goalCurrency: UserInput<string, Currency>;
     bankInfo: UserInput<BankInfo, BankInfo>;
-    pictureSet: PictureSet;
+    pictureSet: UserInput<PictureSet, PictureSet>;
 }
 
 
@@ -83,7 +83,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	goalAmount: new UserInput<string, number>('100', 100),
 	goalCurrency: new UserInput<string, Currency>('RON', StandardCurrencies.RON),
         bankInfo: new UserInput<BankInfo, BankInfo>({ibans: []}, {ibans: []}),
-        pictureSet: new PictureSet()
+        pictureSet: new UserInput<PictureSet, PictureSet>(new PictureSet(), new PictureSet())
     };
 
     private readonly _titleMaster: UserInputMaster<string, string>;
@@ -150,7 +150,8 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 			   || this.state.deadline.isInvalid()
 			   || this.state.goalAmount.isInvalid()
 			   || this.state.goalCurrency.isInvalid()
-			   || this.state.bankInfo.isInvalid());
+			   || this.state.bankInfo.isInvalid()
+			   || this.state.pictureSet.isInvalid());
 
         let titleModifiersRegion = <span></span>;
         if (this.state.title.isInvalid()) {
@@ -398,7 +399,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	    goalAmount: new UserInput<string, number>(cause.goal.amount.toString(), cause.goal.amount),
 	    goalCurrency: new UserInput<string, Currency>(cause.goal.currency.toString(), cause.goal.currency),
 	    bankInfo: new UserInput<BankInfo, BankInfo>(cause.bankInfo, cause.bankInfo),
-	    pictureSet: cause.pictureSet
+	    pictureSet: new UserInput<PictureSet, PictureSet>(cause.pictureSet, cause.pictureSet)
 	};
     }
 
@@ -449,7 +450,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
         });
     }
 
-    private _handlePictureSetChange(newPictureSet: PictureSet) {
+    private _handlePictureSetChange(newPictureSet: UserInput<PictureSet, PictureSet>) {
         this.setState({
             modifiedGeneral: true,
             pictureSet: newPictureSet
@@ -472,7 +473,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                 config.SESSION(),
 		this.state.title.getValue(),
 		this.state.description.getValue(),
-		this.state.pictureSet,
+		this.state.pictureSet.getValue(),
 		this.state.deadline.getValue().toDate(),
 		goal,
 		this.state.bankInfo.getValue());
@@ -499,7 +500,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 		{
 		    title: this.state.title.getValue(),
 		    description: this.state.description.getValue(),
-		    pictureSet: this.state.pictureSet,
+		    pictureSet: this.state.pictureSet.getValue(),
 		    deadline: this.state.deadline.getValue().toDate(),
 		    goal: goal,
 		    bankInfo: this.state.bankInfo.getValue()

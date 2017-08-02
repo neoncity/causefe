@@ -24,3 +24,8 @@ export const thereAreNoPictures: Message = {
     en: "You've not added any pictures. You need to add at least one for people to see your cause.",
     ro: "Nu ați adăugat nici o poza. Trebuie adăugați cel puțin una pentru ca oamenii să poată vedea cauza."
 };
+
+export const invalidPictures: Message = {
+    en: "Invalid pictures",
+    ro: "Valoare incorectă pentru imagini"
+};
