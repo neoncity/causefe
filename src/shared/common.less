@@ -19,6 +19,26 @@
     }
 }
 
+.modifiersBlock() {
+    .modifiers {
+	font-size: 13px;
+	padding-left: 0.5rem;
+	
+	&.modified {
+            color: green;
+	}
+
+	&.warning {
+            color: orange;
+	}
+
+	&.mandatory {
+            color: firebrick;
+            font-weight: 600;
+	}
+    }
+}
+
 
 .form-line {
     margin-bottom: 0.5rem;
@@ -32,22 +52,6 @@
             font-variant: small-caps;
         }
 
-        .modifiers {
-            font-size: 13px;
-            padding-left: 0.5rem;
-            
-            &.modified {
-                color: green;
-            }
-
-            &.warning {
-                color: orange;
-            }
-
-            &.mandatory {
-                color: firebrick;
-                font-weight: 600;
-            }
-        }                
+        .modifiersBlock();
     }
 }

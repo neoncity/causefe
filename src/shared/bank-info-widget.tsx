@@ -11,13 +11,15 @@ import * as commonText from './common.text'
 
 
 interface BankInfoWidgetProps {
-    bankInfo: BankInfo;
-    onBankInfoChange: (newBankInfo: BankInfo) => void;
+    bankInfo: UserInput<BankInfo, BankInfo>;
+    onBankInfoChange: (newBankInfo: UserInput<BankInfo, BankInfo>) => void;
 }
 
 
 interface BankInfoWidgetState {
-    ibans: UserInput<string, IBAN>[]
+    ibans: UserInput<string, IBAN>[];
+    modified: boolean;
+    invalid: boolean;
 }
 
 
@@ -71,13 +73,20 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
         const noIBANsWarning = <p>{text.thereAreNoIBANs[config.LANG()]}</p>;
 
         const mainRegion = this.state.ibans.length == 0 ? noIBANsWarning : ibansRegion;
+
+        let modifiersRegion = <span></span>;
+        if (this.state.invalid) {
+            modifiersRegion = <span className="modifiers warning">{text.invalidIBANs[config.LANG()]}</span>;
+        } else if (this.state.modified) {
+            modifiersRegion = <span className="modifiers modified">{text.modified[config.LANG()]}</span>;
+        }
         
         return (
             <div className="bank-info-widget">
-                <h3>{text.widgetTitle[config.LANG()]}</h3>
+                <h3>{text.widgetTitle[config.LANG()]} {modifiersRegion}</h3>
                 <button
 	            className="action add-iban"
-                    disabled={this.state.ibans.length > BankInfo.MAX_NUMBER_OF_IBANS}
+                    disabled={this.state.invalid || this.state.ibans.length > BankInfo.MAX_NUMBER_OF_IBANS}
                     type="button"
                     onClick={this._handleAddIBAN.bind(this)}>
                     {text.addIBAN[config.LANG()]}
@@ -87,42 +96,65 @@ export class BankInfoWidget extends React.Component<BankInfoWidgetProps, BankInf
         );
     }
 
-    private _fullStateFromProps(props: BankInfoWidgetProps, lookAtStateForModifiedStatus: boolean): BankInfoWidgetState {
-	if (lookAtStateForModifiedStatus) {
+    private _fullStateFromProps(props: BankInfoWidgetProps, fromReupdate: boolean): BankInfoWidgetState {
+	if (!fromReupdate) {
 	    return {
-		ibans: props.bankInfo.ibans.map((iban, ibanIndex) => new UserInput<string, IBAN>(iban.toString(), iban, this.state.ibans[ibanIndex].isModified()))
-	    }
+		modified: props.bankInfo.isModified(),
+		invalid: props.bankInfo.isInvalid(),
+		ibans: props.bankInfo.getValue().ibans.map(iban => new UserInput<string, IBAN>(iban.toString(), iban))
+	    };
 	} else {
-            return {
-                ibans: props.bankInfo.ibans.map(iban => new UserInput<string, IBAN>(iban.toString(), iban))
-            };
+	    if (props.bankInfo.isInvalid()) {
+		return {
+		    modified: props.bankInfo.isModified(),
+		    invalid: props.bankInfo.isInvalid(),
+		    ibans: this.state.ibans
+		};
+	    } else {
+		return {
+		    modified: props.bankInfo.isModified(),
+		    invalid: props.bankInfo.isInvalid(),
+		    ibans: props.bankInfo.getValue().ibans.map((iban, ibanIndex) => new UserInput<string, IBAN>(iban.toString(), iban, this.state.ibans[ibanIndex].isModified()))
+		};
+	    }
 	}
     }
 
     private _handleAddIBAN() {
         const newIbans = this.state.ibans.concat(new UserInput<string, IBAN>('', new IBAN('', '', ''), false, true));
-        this.setState({ibans: newIbans}, this._updateOwner);
+	
+        this.setState({
+	    modified: true,
+	    invalid: true,
+	    ibans: newIbans
+	}, this._updateOwner);
     }
 
     private _handleRemoveIBAN(ibanIndex: number) {
         const newIbans = this.state.ibans.slice(0);
         newIbans.splice(ibanIndex, 1);
-        this.setState({ibans: newIbans}, this._updateOwner);
+	
+        this.setState({
+	    modified: true,
+	    invalid: !newIbans.every(iban => !iban.isInvalid()),
+	    ibans: newIbans
+	}, this._updateOwner);
     }
 
     private _handleIBANChange(ibanIndex: number, e: React.FormEvent<HTMLInputElement>) {
         const newIbans = this.state.ibans.slice(0);
         newIbans[ibanIndex] = this._ibanMaster.transform(e.currentTarget.value, this.state.ibans[ibanIndex].getValue());
-        this.setState({ibans: newIbans}, this._updateOwner);
+
+        this.setState({
+	    modified: true,
+	    invalid: !newIbans.every(iban => !iban.isInvalid()),
+	    ibans: newIbans
+	}, this._updateOwner);
     }
 
     private _updateOwner() {
-        const allValid = this.state.ibans.every(iban => !iban.isInvalid());
-
-        if (allValid) {
-            const bankInfo = new BankInfo();
-            bankInfo.ibans = this.state.ibans.map(iban => iban.getValue());
-            this.props.onBankInfoChange(bankInfo);
-        }
+	const bankInfo = new BankInfo();
+        bankInfo.ibans = this.state.ibans.map(iban => iban.getValue());
+        this.props.onBankInfoChange(new UserInput<BankInfo, BankInfo>(bankInfo, bankInfo, this.state.modified, this.state.invalid));
     }
 }

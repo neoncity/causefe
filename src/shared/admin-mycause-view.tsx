@@ -50,7 +50,7 @@ interface State {
     deadline: UserInput<theMoment.Moment, theMoment.Moment>;
     goalAmount: UserInput<string, number>;
     goalCurrency: UserInput<string, Currency>;
-    bankInfo: BankInfo;
+    bankInfo: UserInput<BankInfo, BankInfo>;
     pictureSet: PictureSet;
 }
 
@@ -82,7 +82,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	deadline: new UserInput<theMoment.Moment, theMoment.Moment>(moment.utc().add(60, 'days'), moment.utc().add(60, 'days')),
 	goalAmount: new UserInput<string, number>('100', 100),
 	goalCurrency: new UserInput<string, Currency>('RON', StandardCurrencies.RON),
-        bankInfo: {ibans: []},
+        bankInfo: new UserInput<BankInfo, BankInfo>({ibans: []}, {ibans: []}),
         pictureSet: new PictureSet()
     };
 
@@ -149,7 +149,8 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 			   || this.state.description.isInvalid()
 			   || this.state.deadline.isInvalid()
 			   || this.state.goalAmount.isInvalid()
-			   || this.state.goalCurrency.isInvalid());
+			   || this.state.goalCurrency.isInvalid()
+			   || this.state.bankInfo.isInvalid());
 
         let titleModifiersRegion = <span></span>;
         if (this.state.title.isInvalid()) {
@@ -281,6 +282,8 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                     <BankInfoWidget
                         bankInfo={this.state.bankInfo}
                         onBankInfoChange={this._handleBankInfoChange.bind(this)} />
+		</div>
+		<div className="form-line">
                     <ImageGalleryEditorWidget
                         pictureSet={this.state.pictureSet}
                         selectPicture={pos => config.FILE_STORAGE_CLIENT().selectImageWithWidget(pos)}
@@ -394,7 +397,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	    deadline: new UserInput<theMoment.Moment, theMoment.Moment>(moment(cause.deadline), moment(cause.deadline)),
 	    goalAmount: new UserInput<string, number>(cause.goal.amount.toString(), cause.goal.amount),
 	    goalCurrency: new UserInput<string, Currency>(cause.goal.currency.toString(), cause.goal.currency),
-	    bankInfo: cause.bankInfo,
+	    bankInfo: new UserInput<BankInfo, BankInfo>(cause.bankInfo, cause.bankInfo),
 	    pictureSet: cause.pictureSet
 	};
     }
@@ -439,7 +442,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	});
     }
 
-    private _handleBankInfoChange(newBankInfo: BankInfo) {
+    private _handleBankInfoChange(newBankInfo: UserInput<BankInfo, BankInfo>) {
         this.setState({
             modifiedGeneral: true,
             bankInfo: newBankInfo
@@ -472,7 +475,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 		this.state.pictureSet,
 		this.state.deadline.getValue().toDate(),
 		goal,
-		this.state.bankInfo);
+		this.state.bankInfo.getValue());
 	    this.props.onPrivateCauseReady(true, false, privateCause);
 	} catch (e) {
             if (isLocal(config.ENV)) {
@@ -499,7 +502,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 		    pictureSet: this.state.pictureSet,
 		    deadline: this.state.deadline.getValue().toDate(),
 		    goal: goal,
-		    bankInfo: this.state.bankInfo
+		    bankInfo: this.state.bankInfo.getValue()
 		});
 	    this.props.onPrivateCauseReady(true, false, privateCause);
 	} catch (e) {

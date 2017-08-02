@@ -36,3 +36,7 @@ export const thereAreNoIBANs: Message = {
     ro: "Nu ați adăugat nici un IBAN. Trebuie să adăugați cel puțin unul pentru a putea primi donațiile."
 };
 
+export const invalidIBANs: Message = {
+    en: "Invalid IBANs",
+    ro: "Valoare incorectă pentru IBAN-uri"
+};
