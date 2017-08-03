@@ -1,4 +1,5 @@
 import * as React from 'react'
+import * as ReactMarkdown from 'react-markdown'
 
 import * as config from './config'
 
@@ -11,7 +12,7 @@ interface Props {
 
 export class CompanyAboutView extends React.Component<Props, undefined> {
     render() {
-       return <div><p>{text.about[config.LANG()]}</p></div>;
+       return <div><ReactMarkdown source={text.about[config.LANG()]} /></div>;
     }
 }
 

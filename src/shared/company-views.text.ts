@@ -1,9 +1,17 @@
-import { Message } from './messages'
+import { Message, MessageWith0Arg } from './messages'
 
 
-export const about: Message = {
-    en: "This is the about page",
-    ro: "Aceasta este pagina despre companie"
+export const about: MessageWith0Arg = {
+    en: `
+# This is the about page
+
+This is the _about_ page    
+    `,
+    ro: `
+# Aceasta este pagina despre companie
+
+Aceasta este pagina despre _companie_
+    `
 };
 
 export const terms: Message = {
