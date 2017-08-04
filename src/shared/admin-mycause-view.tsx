@@ -24,7 +24,8 @@ import { UserInput, UserInputMaster } from './user-input'
 import * as text from './admin-mycause-view.text'
 import * as commonText from './common.text'
 
-const moment = require('moment')
+const moment = require('moment');
+const ReactMarkdownEditor = require('react-simplemde-editor');
 
 
 interface Props {
@@ -250,11 +251,15 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                         <label htmlFor="admin-mycause-description">{text.description[config.LANG()]}</label>
                         {descriptionModifiersRegion}
                     </div>
-                    <textarea
-                        id="admin-mycause-description"
-                        value={this.state.description.getUserInput()}
-                        onChange={this._handleDescriptionChange.bind(this)}
-                        placeholder={text.causeDescriptionPlaceholder[config.LANG()]} />
+		    <div className="markdown-editor-container">
+		        <ReactMarkdownEditor
+	                    value={this.state.description.getUserInput()}
+	                    options={{
+			        autofocus: false,
+				spellChecker: false
+			    }}
+			    onChange={this._handleDescriptionChange.bind(this)} />
+		    </div>
                 </div>
                 <div className="form-line">
                     <div className="form-line-info">
@@ -415,10 +420,10 @@ class _AdminMyCauseView extends React.Component<Props, State> {
 	});
     }
 
-    private _handleDescriptionChange(e: React.FormEvent<HTMLInputElement>) {
+    private _handleDescriptionChange(newDescription: string) {
 	this.setState({
 	    modifiedGeneral: true,
-	    description: this._descriptionMaster.transform(e.currentTarget.value, this.state.description.getValue())
+	    description: this._descriptionMaster.transform(newDescription, this.state.description.getValue())
 	});
     }
 

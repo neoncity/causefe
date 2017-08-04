@@ -72,11 +72,6 @@ export const description: Message = {
     ro: "Descriere"
 };
 
-export const causeDescriptionPlaceholder: MessageWith0Arg = {
-    en: "Cause description ...",
-    ro: "Descrierea cauzei ..."
-};
-
 export const deadline: Message = {
     en: "Deadline",
     ro: "Termen limită"
