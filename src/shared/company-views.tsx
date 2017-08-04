@@ -12,27 +12,51 @@ interface Props {
 
 export class CompanyAboutView extends React.Component<Props, undefined> {
     render() {
-       return <div><ReactMarkdown source={text.about[config.LANG()]} /></div>;
+        return (
+            <div>
+                <ReactMarkdown
+                    escapeHtml={true}
+                    source={text.about[config.LANG()]} />
+            </div>
+        );
     }
 }
 
 
 export class CompanyTermsView extends React.Component<Props, undefined> {
     render() {
-       return <div><pre>{text.terms[config.LANG()]}</pre></div>;
+       return (
+           <div>
+               <ReactMarkdown
+                   escapeHtml={true}
+                   source={text.terms[config.LANG()]} />
+           </div>
+       );
     }
 }
 
 
 export class CompanyPrivacyView extends React.Component<Props, undefined> {
     render() {
-       return <div><pre>{text.privacy[config.LANG()]}</pre></div>;
+       return (
+           <div>
+               <ReactMarkdown
+                   escapeHtml={true}
+                   source={text.privacy[config.LANG()]} />
+           </div>
+       );
     }
 }
 
 
 export class CompanyCookiesView extends React.Component<Props, undefined> {
     render() {
-       return <div><p>{text.cookies[config.LANG()]}</p></div>;
+       return (
+           <div>
+               <ReactMarkdown
+                   escapeHtml={true}
+                   source={text.cookies[config.LANG()]} />
+           </div>
+       );
     }
 }
