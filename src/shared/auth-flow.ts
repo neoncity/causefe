@@ -35,6 +35,8 @@ export class PostLoginRedirectInfoMarshaller extends r.BaseStringMarshaller<Post
 
     build(a: string): PostLoginRedirectInfo {
 	try {
+	    console.log(`Debug - ${isLocal(config.ENV)}`);
+	    console.log(`${a} - ${decodeURIComponent(a)} - ${decodeURIComponent(decodeURIComponent(a))}`);
 	    // Don't ask. Auth0 seems to double encode this.
 	    const redirectInfoSer = isLocal(config.ENV) ? decodeURIComponent(a) : decodeURIComponent(decodeURIComponent(a));
 	    const redirectInfoRaw = JSON.parse(redirectInfoSer);
