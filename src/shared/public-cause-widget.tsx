@@ -37,8 +37,6 @@ export class PublicCauseWidget extends React.Component<Props, undefined> {
                         <Link to={causeLink(this.props.cause)}>{this.props.cause.title}</Link>
                     </h2>
                 
-                    <p className="description">{this.props.cause.description}</p>
-                    
                     <p className="status">
                         <span>{commonText.infoOnRaised[config.LANG()](percentageRaised, this.props.cause.goal.amount, this.props.cause.goal.currency)}</span>
                         <span>{commonText.daysLeft[config.LANG()](daysLeft)}</span>

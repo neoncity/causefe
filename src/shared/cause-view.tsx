@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { Helmet } from 'react-helmet'
+import * as ReactMarkdown from 'react-markdown'
 import { connect } from 'react-redux'
 import { browserHistory } from 'react-router'
 
@@ -154,7 +155,10 @@ class _CauseView extends React.Component<Props, undefined> {
 		    </div>
 
 		    <div id="cause-view-description">
-		        {cause.description}
+		        <ReactMarkdown
+		            escapeHtml={true}
+			    disallowedTypes={['Image', 'Code', 'CodeBlock']}
+		            source={cause.description} />
 		    </div>
                 </div>
             );
