@@ -15,9 +15,10 @@ import * as serializeJavascript from 'serialize-javascript'
 import * as webpack from 'webpack'
 import * as theWebpackDevMiddleware from 'webpack-dev-middleware'
 
-import { isLocal } from '@neoncity/common-js'
+import { isLocal, WebFetcher } from '@neoncity/common-js'
 import {
     AuthInfoLevel,
+    InternalWebFetcher,
     newAuthInfoMiddleware,
     newSessionMiddleware,
     SessionLevel } from '@neoncity/common-server-js'
@@ -47,8 +48,9 @@ import { newServerSideRenderingMatchMiddleware } from './ssr-match-middleware'
 
 async function main() {
     const webpackConfig = require('../../webpack.config.js');
-    const identityClient: IdentityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST);
-    const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.CORE_SERVICE_HOST);
+    const webFetcher: WebFetcher = new InternalWebFetcher();
+    const identityClient: IdentityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST, webFetcher);
+    const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.CORE_SERVICE_HOST, webFetcher);
     const clientConfigMarshaller = new (MarshalFrom(ClientConfig))();
     const clientInitialStateMarshaller = new (MarshalFrom(ClientInitialState))();
     const app = express();
@@ -65,7 +67,7 @@ async function main() {
 
     app.disable('x-powered-by');
     app.use(newNamespaceMiddleware(namespace))
-    app.use('/real/auth-flow', newAuthFlowRouter(identityClient));
+    app.use('/real/auth-flow', newAuthFlowRouter(webFetcher, identityClient));
     app.use('/real/client', bundles.getOtherBundlesRouter());
 
     if (!isLocal(config.ENV)) {

@@ -5,6 +5,7 @@ import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import { Router, browserHistory } from 'react-router'
 
+import { WebFetcher } from '@neoncity/common-js'
 import { IdentityClient, newIdentityClient } from '@neoncity/identity-sdk-js'
 import {
     newCorePrivateClient,
@@ -12,6 +13,7 @@ import {
     CorePrivateClient,
     CorePublicClient } from '@neoncity/core-sdk-js'
 
+import { ApiGatewayWebFetcher } from './api-gateway-web-fetcher'
 import { Auth0Service } from './auth0'
 import * as config from '../shared/config'
 import './index.less'
@@ -25,10 +27,10 @@ import { FileStorageService } from './file-storage-service'
 
 const clientInitialStateMarshaller = new (MarshalFrom(ClientInitialState))();
 
-
-const identityClient: IdentityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_EXTERNAL_HOST);
-const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.CORE_SERVICE_EXTERNAL_HOST);
-const corePrivateClient: CorePrivateClient = newCorePrivateClient(config.ENV, config.CORE_SERVICE_EXTERNAL_HOST);
+const apiGatewayWebFetcher: WebFetcher = new ApiGatewayWebFetcher(config.ORIGIN);
+const identityClient: IdentityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_EXTERNAL_HOST, apiGatewayWebFetcher);
+const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.CORE_SERVICE_EXTERNAL_HOST, apiGatewayWebFetcher);
+const corePrivateClient: CorePrivateClient = newCorePrivateClient(config.ENV, config.CORE_SERVICE_EXTERNAL_HOST, apiGatewayWebFetcher);
 const fileStorageClient: FileStorageClient = new FileStorageService(config.FILESTACK_KEY);
 const auth0Client: Auth0Client = new Auth0Service(browserHistory, config.AUTH0_CLIENT_ID, config.AUTH0_DOMAIN, config.AUTH0_CALLBACK_URI);
 

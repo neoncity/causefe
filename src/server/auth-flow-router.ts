@@ -5,7 +5,7 @@ import * as HttpStatus from 'http-status-codes'
 import * as url from 'url'
 import { MarshalFrom, MarshalWith, OptionalOf } from 'raynor'
 
-import { isLocal } from '@neoncity/common-js'
+import { isLocal, WebFetcher } from '@neoncity/common-js'
 import {
     AuthInfoLevel,
     newAuthInfoMiddleware,
@@ -49,7 +49,7 @@ const AUTHORIZE_OPTIONS: RequestInit = {
     }
 };
 
-export function newAuthFlowRouter(identityClient: IdentityClient): express.Router {
+export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: IdentityClient): express.Router {
     const authInfoMarshaller = new (MarshalFrom(AuthInfo))();
     const auth0TokenExchangeResultMarshaller = new (MarshalFrom(Auth0TokenExchangeResult))();
     const auth0AuthorizeRedirectInfoMarshaller = new (MarshalFrom(Auth0AuthorizeRedirectInfo))();
@@ -86,7 +86,7 @@ export function newAuthFlowRouter(identityClient: IdentityClient): express.Route
 
 	let rawResponse: Response;
 	try {
-	    rawResponse = await fetch(`https://${config.AUTH0_DOMAIN}/oauth/token`, options);
+	    rawResponse = await webFetcher.fetch(`https://${config.AUTH0_DOMAIN}/oauth/token`, options);
 	} catch (e) {
 	    console.log(`Auth service error - ${e.toString()}`);
 	    if (isLocal(config.ENV)) {
