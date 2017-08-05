@@ -138,6 +138,7 @@ export function newAuthFlowRouter(identityClient: IdentityClient): express.Route
 	res.cookie(AuthInfo.CookieName, authInfoMarshaller.pack(authInfo), {
 	    expires: (req.session as Session).timeExpires,
 	    httpOnly: true,
+	    domain: config.ORIGIN,
 	    secure: !isLocal(config.ENV)
 	});
 
