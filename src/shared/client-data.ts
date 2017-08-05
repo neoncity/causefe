@@ -15,6 +15,9 @@ export class ClientConfig {
     @MarshalWith(MarshalEnum(Env))
     env: Env;
 
+    @MarshalWith(r.WebUriMarshaller)
+    origin: string;
+
     @MarshalWith(MarshalEnum(Context))
     context: Context;
 
@@ -31,10 +34,10 @@ export class ClientConfig {
     fileStackKey: string;
 
     @MarshalWith(r.StringMarshaller)
-    identityServiceExternalHost: string;
+    identityServiceHost: string;
 
     @MarshalWith(r.StringMarshaller)
-    coreServiceExternalHost: string;
+    coreServiceHost: string;
 
     @MarshalWith(r.StringMarshaller)
     facebookAppId: string;

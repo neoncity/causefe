@@ -28,9 +28,9 @@ import { FileStorageService } from './file-storage-service'
 const clientInitialStateMarshaller = new (MarshalFrom(ClientInitialState))();
 
 const apiGatewayWebFetcher: WebFetcher = new ApiGatewayWebFetcher(config.ORIGIN);
-const identityClient: IdentityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_EXTERNAL_HOST, apiGatewayWebFetcher);
-const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.CORE_SERVICE_EXTERNAL_HOST, apiGatewayWebFetcher);
-const corePrivateClient: CorePrivateClient = newCorePrivateClient(config.ENV, config.CORE_SERVICE_EXTERNAL_HOST, apiGatewayWebFetcher);
+const identityClient: IdentityClient = newIdentityClient(config.ENV, config.ORIGIN, config.IDENTITY_SERVICE_HOST, apiGatewayWebFetcher);
+const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.ORIGIN, config.CORE_SERVICE_HOST, apiGatewayWebFetcher);
+const corePrivateClient: CorePrivateClient = newCorePrivateClient(config.ENV, config.ORIGIN, config.CORE_SERVICE_HOST, apiGatewayWebFetcher);
 const fileStorageClient: FileStorageClient = new FileStorageService(config.FILESTACK_KEY);
 const auth0Client: Auth0Client = new Auth0Service(browserHistory, config.AUTH0_CLIENT_ID, config.AUTH0_DOMAIN, config.AUTH0_CALLBACK_URI);
 

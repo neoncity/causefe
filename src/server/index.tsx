@@ -33,6 +33,7 @@ import {
     newIdentityClient,
     Session } from '@neoncity/identity-sdk-js'
 
+import { newApiGatewayRouter } from './api-gateway-router'
 import { newAuthFlowRouter } from './auth-flow-router'
 import { CompiledBundles, Bundles, WebpackDevBundles } from './bundles'
 import { CauseFeRequest } from './causefe-request'
@@ -48,9 +49,9 @@ import { newServerSideRenderingMatchMiddleware } from './ssr-match-middleware'
 
 async function main() {
     const webpackConfig = require('../../webpack.config.js');
-    const webFetcher: WebFetcher = new InternalWebFetcher();
-    const identityClient: IdentityClient = newIdentityClient(config.ENV, config.IDENTITY_SERVICE_HOST, webFetcher);
-    const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.CORE_SERVICE_HOST, webFetcher);
+    const internalWebFetcher: WebFetcher = new InternalWebFetcher();
+    const identityClient: IdentityClient = newIdentityClient(config.ENV, config.ORIGIN, config.IDENTITY_SERVICE_HOST, internalWebFetcher);
+    const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, config.ORIGIN, config.CORE_SERVICE_HOST, internalWebFetcher);
     const clientConfigMarshaller = new (MarshalFrom(ClientConfig))();
     const clientInitialStateMarshaller = new (MarshalFrom(ClientInitialState))();
     const app = express();
@@ -67,8 +68,9 @@ async function main() {
 
     app.disable('x-powered-by');
     app.use(newNamespaceMiddleware(namespace))
-    app.use('/real/auth-flow', newAuthFlowRouter(webFetcher, identityClient));
+    app.use('/real/auth-flow', newAuthFlowRouter(internalWebFetcher, identityClient));
     app.use('/real/client', bundles.getOtherBundlesRouter());
+    app.use('/real/api-gateway', newApiGatewayRouter(internalWebFetcher));
 
     if (!isLocal(config.ENV)) {
         app.use(compression());
@@ -88,13 +90,14 @@ async function main() {
 
         const clientConfig = {
             env: config.ENV,
+	    origin: config.ORIGIN,
             context: config.CONTEXT,
             auth0ClientId: config.AUTH0_CLIENT_ID,
             auth0Domain: config.AUTH0_DOMAIN,
             auth0CallbackUri: config.AUTH0_CALLBACK_URI,
             fileStackKey: config.FILESTACK_KEY,
-            identityServiceExternalHost: config.IDENTITY_SERVICE_EXTERNAL_HOST,
-            coreServiceExternalHost: config.CORE_SERVICE_EXTERNAL_HOST,
+            identityServiceHost: config.IDENTITY_SERVICE_HOST,
+            coreServiceHost: config.CORE_SERVICE_HOST,
             facebookAppId: config.FACEBOOK_APP_ID,
             logoutRoute: config.LOGOUT_ROUTE,
             session: session,
@@ -143,7 +146,7 @@ async function main() {
     siteInfoRouter.get('/sitemap.xml', wrap(async (_req: CauseFeRequest, res: express.Response) => {
         let allCauseSummaries: CauseSummary[]|null = null;
         try {
-            allCauseSummaries = await corePublicClient.withContext(null, config.ORIGIN).getAllCauseSummaries();
+            allCauseSummaries = await corePublicClient.getAllCauseSummaries();
         } catch (e) {
             console.log(`Cannot retrieve causes server-side - ${e.toString()}`);
             if (isLocal(config.ENV)) {
@@ -170,14 +173,14 @@ async function main() {
     const appRouter = express.Router();
 
     appRouter.use(newAuthInfoMiddleware(AuthInfoLevel.None));
-    appRouter.use(newSessionMiddleware(SessionLevel.None, config.ENV, config.ORIGIN, identityClient));
+    appRouter.use(newSessionMiddleware(SessionLevel.None, config.ENV, identityClient));
     appRouter.use(newEnsureSessionMiddleware(config.ENV, identityClient));
     appRouter.use(newServerSideRenderingMatchMiddleware(config.ENV, routesConfig));
 
     appRouter.get('/', wrap(async (req: CauseFeRequest, res: express.Response) => {
         let causes: PublicCause[]|null = null;
         try {
-            causes = await corePublicClient.withContext(req.authInfo as AuthInfo, config.ORIGIN).getCauses();
+            causes = await corePublicClient.withContext(req.authInfo as AuthInfo).getCauses();
         } catch (e) {
             console.log(`Cannot retrieve causes server-side - ${e.toString()}`);
             if (isLocal(config.ENV)) {
@@ -204,7 +207,7 @@ async function main() {
         let cause: PublicCause|null = null;
         try {
             const causeId = parseInt(req.params['causeId']);
-            cause = await corePublicClient.withContext(req.authInfo as AuthInfo, config.ORIGIN).getCause(causeId);
+            cause = await corePublicClient.withContext(req.authInfo as AuthInfo).getCause(causeId);
         } catch (e) {
             console.log(`Cannot retrieve causes server-side - ${e.toString()}`);
             if (isLocal(config.ENV)) {

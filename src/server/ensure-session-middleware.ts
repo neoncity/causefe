@@ -7,7 +7,6 @@ import { Env, isLocal } from '@neoncity/common-js'
 import { AuthInfo, IdentityClient } from '@neoncity/identity-sdk-js'
 
 import { CauseFeRequest } from './causefe-request'
-import * as config from '../shared/config'
 
 
 export function newEnsureSessionMiddleware(env: Env, identityClient: IdentityClient) {
@@ -16,7 +15,7 @@ export function newEnsureSessionMiddleware(env: Env, identityClient: IdentityCli
     return wrap(async (req: CauseFeRequest, res: express.Response, next: express.NextFunction) => {
         if (req.authInfo == null || req.session == null) {
             try {
-                const [authInfo, session] = await identityClient.withContext(null, config.ORIGIN).getOrCreateSession();
+                const [authInfo, session] = await identityClient.getOrCreateSession();
                 req.authInfo = authInfo;
                 req.session = session;
 

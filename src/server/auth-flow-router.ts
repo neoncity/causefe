@@ -57,7 +57,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
     const authFlowRouter = express.Router();
 
     authFlowRouter.use(newAuthInfoMiddleware(AuthInfoLevel.SessionId));
-    authFlowRouter.use(newSessionMiddleware(SessionLevel.Session, config.ENV, config.ORIGIN, identityClient))
+    authFlowRouter.use(newSessionMiddleware(SessionLevel.Session, config.ENV, identityClient))
 
     authFlowRouter.get('/login', wrap(async (req: CauseFeRequest, res: express.Response) => {
 	let redirectInfo: Auth0AuthorizeRedirectInfo|null = null;
@@ -123,7 +123,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
 	let authInfo = new AuthInfo((req.authInfo as AuthInfo).sessionId, auth0TokenExchangeResult.accessToken);
 
 	try {
-	    authInfo = (await identityClient.withContext(authInfo, config.ORIGIN).getOrCreateUserOnSession(req.session as Session))[0];
+	    authInfo = (await identityClient.withContext(authInfo).getOrCreateUserOnSession(req.session as Session))[0];
 	} catch (e) {
 	    console.log(`Session creation error - ${e.toString()}`);
 	    if (isLocal(config.ENV)) {
@@ -138,7 +138,6 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
 	res.cookie(AuthInfo.CookieName, authInfoMarshaller.pack(authInfo), {
 	    expires: (req.session as Session).timeExpires,
 	    httpOnly: true,
-	    domain: config.ORIGIN,
 	    secure: !isLocal(config.ENV)
 	});
 
@@ -147,7 +146,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
 
     authFlowRouter.get('/logout', wrap(async (req: CauseFeRequest, res: express.Response) => {
 	try {
-	    await identityClient.withContext(req.authInfo as AuthInfo, config.ORIGIN).expireSession(req.session as Session);
+	    await identityClient.withContext(req.authInfo as AuthInfo).expireSession(req.session as Session);
 	} catch (e) {
 	    console.log(`Session creation error - ${e.toString()}`);
 	    if (isLocal(config.ENV)) {

@@ -2,10 +2,6 @@ import * as r from 'raynor'
 import { ExtractError, MarshalFrom, MarshalWith } from 'raynor'
 import * as serializeJavascript from 'serialize-javascript'
 
-import { isLocal } from '@neoncity/common-js'
-
-import * as config from '../shared/config'
-
 
 class AllowedRoutesMarshaller extends r.AbsolutePathMarshaller {
     filter(path: string): string {
@@ -35,10 +31,8 @@ export class PostLoginRedirectInfoMarshaller extends r.BaseStringMarshaller<Post
 
     build(a: string): PostLoginRedirectInfo {
 	try {
-	    console.log(`Debug - ${isLocal(config.ENV)}`);
-	    console.log(`${a} - ${decodeURIComponent(a)} - ${decodeURIComponent(decodeURIComponent(a))}`);
 	    // Don't ask. Auth0 seems to double encode this.
-	    const redirectInfoSer = isLocal(config.ENV) ? decodeURIComponent(a) : decodeURIComponent(decodeURIComponent(a));
+	    const redirectInfoSer = decodeURIComponent(decodeURIComponent(a));
 	    const redirectInfoRaw = JSON.parse(redirectInfoSer);
 	    return PostLoginRedirectInfoMarshaller._objectMarshaller.extract(redirectInfoRaw);
 	} catch (e) {

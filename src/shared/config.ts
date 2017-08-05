@@ -27,8 +27,6 @@ export let ADDRESS:string;
 export let PORT:number;
 export let IDENTITY_SERVICE_HOST:string;
 export let CORE_SERVICE_HOST:string;
-export let IDENTITY_SERVICE_EXTERNAL_HOST:string;
-export let CORE_SERVICE_EXTERNAL_HOST:string;
 export let ORIGIN:string;
 export let LOGOUT_ROUTE:string;
 export let AUTH0_CLIENT_ID: string;
@@ -53,8 +51,6 @@ if (isServer(parseContext(process.env.CONTEXT))) {
     PORT = parseInt(process.env.PORT, 10);
     IDENTITY_SERVICE_HOST = process.env.IDENTITY_SERVICE_HOST;
     CORE_SERVICE_HOST = process.env.CORE_SERVICE_HOST;
-    IDENTITY_SERVICE_EXTERNAL_HOST = process.env.IDENTITY_SERVICE_EXTERNAL_HOST;
-    CORE_SERVICE_EXTERNAL_HOST = process.env.CORE_SERVICE_EXTERNAL_HOST;
     ORIGIN = process.env.ORIGIN;
     LOGOUT_ROUTE = '/real/auth-flow/logout';
 
@@ -120,13 +116,14 @@ if (isServer(parseContext(process.env.CONTEXT))) {
     let auth0Client: Auth0Client|null = null;
     
     ENV = clientConfig.env;
+    ORIGIN = clientConfig.origin;
     CONTEXT = clientConfig.context;
     AUTH0_CLIENT_ID = clientConfig.auth0ClientId;
     AUTH0_DOMAIN = clientConfig.auth0Domain;
     AUTH0_CALLBACK_URI = clientConfig.auth0CallbackUri;
     FILESTACK_KEY = clientConfig.fileStackKey;
-    IDENTITY_SERVICE_EXTERNAL_HOST = clientConfig.identityServiceExternalHost;
-    CORE_SERVICE_EXTERNAL_HOST = clientConfig.coreServiceExternalHost;
+    IDENTITY_SERVICE_HOST = clientConfig.identityServiceHost;
+    CORE_SERVICE_HOST = clientConfig.coreServiceHost;
     FACEBOOK_APP_ID = clientConfig.facebookAppId;
     LOGOUT_ROUTE = clientConfig.logoutRoute;
     SESSION = () => clientConfig.session;

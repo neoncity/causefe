@@ -21,7 +21,7 @@ export class ApiGatewayWebFetcher implements WebFetcher {
     
     async fetch(uri: string, options: RequestInit): Promise<ResponseInterface> {
         const gatewayOptions = (Object as any).assign({}, ApiGatewayWebFetcher._options);
-        gatewayOptions.headers['Content-Type'] = 'application/json';
+	gatewayOptions.headers = {'Content-Type': 'application/json'};
         gatewayOptions.body = JSON.stringify({
             uri: uri,
             options: options

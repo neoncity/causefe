@@ -1,7 +1,10 @@
 import { wrap } from 'async-middleware'
 import * as bodyParser from 'body-parser'
 import * as express from 'express'
+import { MarshalFrom } from 'raynor'
 
+import { AuthInfo } from '@neoncity/identity-sdk-js'
+import { WebFetcher } from '@neoncity/common-js'
 import {
     AuthInfoLevel,
     newAuthInfoMiddleware,
@@ -10,7 +13,9 @@ import {
 import { CauseFeRequest } from './causefe-request'
 
 
-export function newApiGatewayRouter(): express.Router {
+export function newApiGatewayRouter(webFetcher: WebFetcher): express.Router {
+    const authInfoMarshaller = new (MarshalFrom(AuthInfo))();
+    
     const apiGatewayRouter = express.Router();
 
     apiGatewayRouter.use(bodyParser.json());
@@ -18,8 +23,17 @@ export function newApiGatewayRouter(): express.Router {
     apiGatewayRouter.use(newAuthInfoMiddleware(AuthInfoLevel.SessionId));
 
     apiGatewayRouter.post('/', wrap(async (req: CauseFeRequest, res: express.Response) => {
-        console.log(req.body);
-        res.status(404);
+	const newOptions = (Object as any).assign({}, req.body['options']);
+	if (!newOptions.hasOwnProperty('headers')) {
+	    newOptions.headers = {};
+	}
+	newOptions.headers[AuthInfo.HeaderName] = JSON.stringify(authInfoMarshaller.pack(req.authInfo as AuthInfo));
+	const result = await webFetcher.fetch(req.body['uri'], req.body['options']);
+        res.status(result.status);
+	result.headers.forEach((value: string) => {
+	    res.set(value, result.headers.get(value) as string);
+	});
+	res.send(await result.text());
         res.end();
     }));
 
