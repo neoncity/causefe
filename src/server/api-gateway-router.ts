@@ -30,9 +30,9 @@ export function newApiGatewayRouter(webFetcher: WebFetcher): express.Router {
 	newOptions.headers[AuthInfo.HeaderName] = JSON.stringify(authInfoMarshaller.pack(req.authInfo as AuthInfo));
 	const result = await webFetcher.fetch(req.body['uri'], req.body['options']);
         res.status(result.status);
-	result.headers.forEach((value: string) => {
-	    res.set(value, result.headers.get(value) as string);
-	});
+	result.headers.forEach(((value: string, name: string) => {
+	    res.set(name, value);
+	}) as any);
 	res.send(await result.text());
         res.end();
     }));
