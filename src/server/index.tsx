@@ -1,5 +1,5 @@
 import { wrap } from 'async-middleware'
-//import * as compression from 'compression'
+import * as compression from 'compression'
 import { createNamespace } from 'continuation-local-storage'
 import * as express from 'express'
 import * as HttpStatus from 'http-status-codes'
@@ -72,9 +72,9 @@ async function main() {
     app.use('/real/client', bundles.getOtherBundlesRouter());
     app.use('/real/api-gateway', newApiGatewayRouter(internalWebFetcher));
 
-    // if (!isLocal(config.ENV)) {
-    //     app.use(compression());
-    // }
+    if (!isLocal(config.ENV)) {
+        app.use(compression());
+    }
 
     function serverSideRender(session: Session, initialState: ClientInitialState, ssrRouterState: RouterState): string {
         const language = inferLanguage(session);

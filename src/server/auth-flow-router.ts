@@ -61,16 +61,11 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
     authFlowRouter.get('/login', wrap(async (req: CauseFeRequest, res: express.Response) => {
 	let redirectInfo: Auth0AuthorizeRedirectInfo|null = null;
 	try {
-	    console.log(req.query);
-	    console.log(typeof(req.query));
 	    redirectInfo = auth0AuthorizeRedirectInfoMarshaller.extract(req.query);
 	} catch (e) {
 	    console.log(`Auth error - ${e.toString()}`);
-            console.log(e);
-	    console.log(e.stack);	    
 	    if (isLocal(config.ENV)) {
                 console.log(e);
-		console.log(e.stack);
 	    }
 	    
 	    res.status(HttpStatus.INTERNAL_SERVER_ERROR);

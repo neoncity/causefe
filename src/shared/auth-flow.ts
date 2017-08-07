@@ -32,11 +32,8 @@ export class PostLoginRedirectInfoMarshaller extends r.BaseStringMarshaller<Post
     build(a: string): PostLoginRedirectInfo {
 	try {
 	    // Don't ask. Auth0 seems to double encode this.
-	    console.log('a: ' + a.toString());
 	    const redirectInfoSer = decodeURIComponent(decodeURIComponent(a));
-	    console.log('redirectInfoSer: ' + redirectInfoSer.toString());
 	    const redirectInfoRaw = JSON.parse(redirectInfoSer);
-	    console.log('redirectInfoRaw: ' + redirectInfoRaw.toString());
 	    return PostLoginRedirectInfoMarshaller._objectMarshaller.extract(redirectInfoRaw);
 	} catch (e) {
 	    throw new ExtractError(`Could not build redirect info "${e.toString()}"`);
