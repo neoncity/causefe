@@ -64,6 +64,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
 	try {
 	    console.log(req.url);
 	    console.log(url.parse(req.url, true).query);
+	    console.log(typeof(url.parse(req.url, true).query));
 	    redirectInfo = auth0AuthorizeRedirectInfoMarshaller.extract(url.parse(req.url, true).query);
 	} catch (e) {
 	    console.log(`Auth error - ${e.toString()}`);
