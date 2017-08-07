@@ -69,6 +69,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
 	    console.log(`Auth error - ${e.toString()}`);
 	    if (isLocal(config.ENV)) {
                 console.log(e);
+		console.log(e.stack);
 	    }
 	    
 	    res.status(HttpStatus.INTERNAL_SERVER_ERROR);
