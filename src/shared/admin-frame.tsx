@@ -41,7 +41,7 @@ export class AdminFrame extends React.Component<Props, undefined> {
                                 {commonText.adminAccount[config.LANG()]}
                             </Link>
                         </span>
-                    </div>                
+                    </div>
                 </div>
                 <div id="admin-content">
                     {this.props.children}

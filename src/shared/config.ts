@@ -8,10 +8,12 @@ import {
     isLocal,
     isServer,
     parseContext,
-    parseEnv } from '@neoncity/common-js'
+    parseEnv
+} from '@neoncity/common-js'
 import {
     CorePublicClient,
-    CorePrivateClient } from '@neoncity/core-sdk-js'
+    CorePrivateClient
+} from '@neoncity/core-sdk-js'
 import { IdentityClient, Session } from '@neoncity/identity-sdk-js'
 
 import { Auth0Client } from './auth0'
@@ -19,30 +21,30 @@ import { FileStorageClient } from './file-storage'
 import { ClientConfig } from '../shared/client-data'
 
 
-export const CLS_NAMESPACE_NAME:string = 'neoncity.request';
+export const CLS_NAMESPACE_NAME: string = 'neoncity.request';
 
-export let ENV:Env;
-export let CONTEXT:Context;
-export let ADDRESS:string;
-export let PORT:number;
-export let IDENTITY_SERVICE_HOST:string;
-export let CORE_SERVICE_HOST:string;
-export let ORIGIN:string;
-export let LOGOUT_ROUTE:string;
+export let ENV: Env;
+export let CONTEXT: Context;
+export let ADDRESS: string;
+export let PORT: number;
+export let IDENTITY_SERVICE_HOST: string;
+export let CORE_SERVICE_HOST: string;
+export let ORIGIN: string;
+export let LOGOUT_ROUTE: string;
 export let AUTH0_CLIENT_ID: string;
 export let AUTH0_CLIENT_SECRET: string;
 export let AUTH0_DOMAIN: string;
 export let AUTH0_CALLBACK_URI: string;
 export let FILESTACK_KEY: string;
-export let FACEBOOK_APP_ID:string;
-export let SESSION:() => Session;
-export let LANG:() => string;
-export let IDENTITY_CLIENT:() => IdentityClient;
-export let CORE_PUBLIC_CLIENT:() => CorePublicClient;
-export let CORE_PRIVATE_CLIENT:() => CorePrivateClient;
-export let FILE_STORAGE_CLIENT:() => FileStorageClient;
-export let AUTH0_CLIENT:() => Auth0Client;
-export let setServices:(identityClient: IdentityClient, corePublicClient: CorePublicClient, corePrivateClient: CorePrivateClient, fileStorageClient: FileStorageClient, auth0Client: Auth0Client) => void;
+export let FACEBOOK_APP_ID: string;
+export let SESSION: () => Session;
+export let LANG: () => string;
+export let IDENTITY_CLIENT: () => IdentityClient;
+export let CORE_PUBLIC_CLIENT: () => CorePublicClient;
+export let CORE_PRIVATE_CLIENT: () => CorePrivateClient;
+export let FILE_STORAGE_CLIENT: () => FileStorageClient;
+export let AUTH0_CLIENT: () => Auth0Client;
+export let setServices: (identityClient: IdentityClient, corePublicClient: CorePublicClient, corePrivateClient: CorePrivateClient, fileStorageClient: FileStorageClient, auth0Client: Auth0Client) => void;
 
 if (isServer(parseContext(process.env.CONTEXT))) {
     ENV = parseEnv(process.env.ENV);
@@ -102,19 +104,19 @@ if (isServer(parseContext(process.env.CONTEXT))) {
         AUTH0_CALLBACK_URI = process.env.AUTH0_CALLBACK_URI;
         FILESTACK_KEY = process.env.FILESTACK_KEY;
         FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID;
-    }    
+    }
 } else {
     const clientConfigMarshaller = new (MarshalFrom(ClientConfig))();
 
     const clientConfig = clientConfigMarshaller.extract((window as any).__NEONCITY_CLIENT_CONFIG);
     delete (window as any).__NEONCITY_CLIENT_CONFIG;
 
-    let identityClient: IdentityClient|null = null;
-    let corePublicClient: CorePublicClient|null = null;
-    let corePrivateClient: CorePrivateClient|null = null;
-    let fileStorageClient: FileStorageClient|null = null;
-    let auth0Client: Auth0Client|null = null;
-    
+    let identityClient: IdentityClient | null = null;
+    let corePublicClient: CorePublicClient | null = null;
+    let corePrivateClient: CorePrivateClient | null = null;
+    let fileStorageClient: FileStorageClient | null = null;
+    let auth0Client: Auth0Client | null = null;
+
     ENV = clientConfig.env;
     ORIGIN = clientConfig.origin;
     CONTEXT = clientConfig.context;

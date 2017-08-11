@@ -4,7 +4,8 @@ import {
     CauseAnalytics,
     PublicCause,
     PrivateCause,
-    UserActionsOverview } from '@neoncity/core-sdk-js'
+    UserActionsOverview
+} from '@neoncity/core-sdk-js'
 
 
 export enum StatePart {
@@ -57,20 +58,20 @@ const publicCausesInitialState: PublicCausesState = {
 };
 
 
-function publicCauses(state=publicCausesInitialState, action: PublicCausesState): PublicCausesState {
+function publicCauses(state = publicCausesInitialState, action: PublicCausesState): PublicCausesState {
     if (action.part != StatePart.PublicCauses) {
-	return state;
+        return state;
     }
-    
+
     switch (action.type) {
-    case OpState.Preloaded:
-    case OpState.Init:
-    case OpState.Loading:
-    case OpState.Ready:
-    case OpState.Failed:
-	return action;
-    default:
-	return state;
+        case OpState.Preloaded:
+        case OpState.Init:
+        case OpState.Loading:
+        case OpState.Ready:
+        case OpState.Failed:
+            return action;
+        default:
+            return state;
     }
 }
 
@@ -107,20 +108,20 @@ const publicCauseDetailInitialState: PublicCauseDetailState = {
 };
 
 
-function publicCauseDetail(state=publicCauseDetailInitialState, action: PublicCauseDetailState): PublicCauseDetailState {
+function publicCauseDetail(state = publicCauseDetailInitialState, action: PublicCauseDetailState): PublicCauseDetailState {
     if (action.part != StatePart.PublicCauseDetail) {
-	return state;
+        return state;
     }
-    
+
     switch (action.type) {
-    case OpState.Init:
-    case OpState.Preloaded:
-    case OpState.Loading:
-    case OpState.Ready:
-    case OpState.Failed:
-	return action;
-    default:
-	return state;
+        case OpState.Init:
+        case OpState.Preloaded:
+        case OpState.Loading:
+        case OpState.Ready:
+        case OpState.Failed:
+            return action;
+        default:
+            return state;
     }
 }
 
@@ -138,7 +139,7 @@ interface AdminMyCauseReady {
     type: OpState.Ready;
     hasCause: boolean;
     causeIsDeleted: boolean;
-    cause: PrivateCause|null;
+    cause: PrivateCause | null;
 }
 interface AdminMyCauseFailed {
     part: StatePart.AdminMyCause;
@@ -154,19 +155,19 @@ const adminMyCauseInitialState: AdminMyCauseState = {
 };
 
 
-function adminMyCause(state=adminMyCauseInitialState, action: AdminMyCauseState): AdminMyCauseState {
+function adminMyCause(state = adminMyCauseInitialState, action: AdminMyCauseState): AdminMyCauseState {
     if (action.part != StatePart.AdminMyCause) {
-	return state;
+        return state;
     }
-    
+
     switch (action.type) {
-    case OpState.Init:
-    case OpState.Loading:
-    case OpState.Ready:
-    case OpState.Failed:
-	return action;
-    default:
-	return state;
+        case OpState.Init:
+        case OpState.Loading:
+        case OpState.Ready:
+        case OpState.Failed:
+            return action;
+        default:
+            return state;
     }
 }
 
@@ -183,7 +184,7 @@ interface AdminCauseAnalyticsReady {
     part: StatePart.AdminCauseAnalytics;
     type: OpState.Ready;
     hasCause: boolean;
-    causeAnalytics: CauseAnalytics|null;
+    causeAnalytics: CauseAnalytics | null;
 }
 interface AdminCauseAnalyticsFailed {
     part: StatePart.AdminCauseAnalytics;
@@ -199,19 +200,19 @@ const adminCauseAnalyticsInitialState: AdminCauseAnalyticsState = {
 };
 
 
-function adminCauseAnalytics(state=adminCauseAnalyticsInitialState, action: AdminCauseAnalyticsState): AdminCauseAnalyticsState {
+function adminCauseAnalytics(state = adminCauseAnalyticsInitialState, action: AdminCauseAnalyticsState): AdminCauseAnalyticsState {
     if (action.part != StatePart.AdminCauseAnalytics) {
-	return state;
+        return state;
     }
-    
+
     switch (action.type) {
-    case OpState.Init:
-    case OpState.Loading:
-    case OpState.Ready:
-    case OpState.Failed:
-	return action;
-    default:
-	return state;
+        case OpState.Init:
+        case OpState.Loading:
+        case OpState.Ready:
+        case OpState.Failed:
+            return action;
+        default:
+            return state;
     }
 }
 
@@ -243,19 +244,19 @@ const adminMyActionsInitialState: AdminMyActionsState = {
 };
 
 
-function adminMyActions(state=adminMyActionsInitialState, action: AdminMyActionsState): AdminMyActionsState {
+function adminMyActions(state = adminMyActionsInitialState, action: AdminMyActionsState): AdminMyActionsState {
     if (action.part != StatePart.AdminMyActions) {
-	return state;
+        return state;
     }
-    
+
     switch (action.type) {
-    case OpState.Init:
-    case OpState.Loading:
-    case OpState.Ready:
-    case OpState.Failed:
-	return action;
-    default:
-	return state;
+        case OpState.Init:
+        case OpState.Loading:
+        case OpState.Ready:
+        case OpState.Failed:
+            return action;
+        default:
+            return state;
     }
 }
 
@@ -264,7 +265,7 @@ export const reducers = combineReducers({
     publicCauses: publicCauses,
     publicCauseDetail: publicCauseDetail,
     adminMyCause: adminMyCause,
-    adminCauseAnalytics: adminCauseAnalytics,    
+    adminCauseAnalytics: adminCauseAnalytics,
     adminMyActions: adminMyActions
 });
 

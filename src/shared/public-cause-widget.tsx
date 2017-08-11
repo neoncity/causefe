@@ -22,8 +22,8 @@ export class PublicCauseWidget extends React.Component<Props, undefined> {
     render() {
         const daysLeft = moment.utc().diff(moment(this.props.cause.deadline), 'days');
         const percentageRaised = 0.5;
-        
-	return (
+
+        return (
             <div className="public-cause-widget">
                 <Link to={causeLink(this.props.cause)}>
                     <img
@@ -31,12 +31,12 @@ export class PublicCauseWidget extends React.Component<Props, undefined> {
                         src={causePictureUri(this.props.cause)}
                         alt={text.causePicture[config.LANG()]} />
                 </Link>
-                
+
                 <div className="content">
                     <h2 className="title">
                         <Link to={causeLink(this.props.cause)}>{this.props.cause.title}</Link>
                     </h2>
-                
+
                     <p className="status">
                         <span>{commonText.infoOnRaised[config.LANG()](percentageRaised, this.props.cause.goal.amount, this.props.cause.goal.currency)}</span>
                         <span>{commonText.daysLeft[config.LANG()](daysLeft)}</span>
@@ -46,7 +46,7 @@ export class PublicCauseWidget extends React.Component<Props, undefined> {
                         cause={this.props.cause}
                         onNewCause={(_: PublicCause) => { return; }} />
                 </div>
-	    </div>
-	);
+            </div>
+        );
     }
 }

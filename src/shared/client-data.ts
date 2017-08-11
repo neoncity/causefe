@@ -3,7 +3,8 @@ import {
     MarshalEnum,
     MarshalFrom,
     MarshalWith,
-    OptionalOf } from 'raynor'
+    OptionalOf
+} from 'raynor'
 import * as r from 'raynor'
 
 import { PublicCause } from '@neoncity/core-sdk-js'
@@ -55,8 +56,8 @@ export class ClientConfig {
 
 export class ClientInitialState {
     @MarshalWith(OptionalOf(ArrayOf(MarshalFrom(PublicCause))))
-    publicCauses: PublicCause[]|null;
+    publicCauses: PublicCause[] | null;
 
     @MarshalWith(OptionalOf(MarshalFrom(PublicCause)))
-    publicCauseDetail: PublicCause|null;
+    publicCauseDetail: PublicCause | null;
 }

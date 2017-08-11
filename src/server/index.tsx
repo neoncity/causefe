@@ -21,17 +21,20 @@ import {
     InternalWebFetcher,
     newAuthInfoMiddleware,
     newSessionMiddleware,
-    SessionLevel } from '@neoncity/common-server-js'
+    SessionLevel
+} from '@neoncity/common-server-js'
 import {
     CauseSummary,
     CorePublicClient,
     newCorePublicClient,
-    PublicCause } from '@neoncity/core-sdk-js'
+    PublicCause
+} from '@neoncity/core-sdk-js'
 import {
     AuthInfo,
     IdentityClient,
     newIdentityClient,
-    Session } from '@neoncity/identity-sdk-js'
+    Session
+} from '@neoncity/identity-sdk-js'
 
 import { newApiGatewayRouter } from './api-gateway-router'
 import { newAuthFlowRouter } from './auth-flow-router'
@@ -43,7 +46,7 @@ import * as config from '../shared/config'
 import { routesConfig } from '../shared/routes-config'
 import { OpState, reducers, StatePart } from '../shared/store'
 import { ClientConfig, ClientInitialState } from '../shared/client-data'
-import { causeLink,inferLanguage } from '../shared/utils'
+import { causeLink, inferLanguage } from '../shared/utils'
 import { newServerSideRenderingMatchMiddleware } from './ssr-match-middleware'
 
 
@@ -57,12 +60,12 @@ async function main() {
     const app = express();
 
     const bundles: Bundles = isLocal(config.ENV)
-          ? new WebpackDevBundles(theWebpackDevMiddleware(webpack(webpackConfig), {
-              //Different because we're mounting on /real/client to boot webpackConfig.output.publicPath,              
-              publicPath: '/',
-              serverSideRender: false
-          }))
-          : new CompiledBundles();
+        ? new WebpackDevBundles(theWebpackDevMiddleware(webpack(webpackConfig), {
+            //Different because we're mounting on /real/client to boot webpackConfig.output.publicPath,              
+            publicPath: '/',
+            serverSideRender: false
+        }))
+        : new CompiledBundles();
 
     const namespace = createNamespace(config.CLS_NAMESPACE_NAME);
 
@@ -81,16 +84,16 @@ async function main() {
         const store = createStore(reducers);
 
         if (initialState.publicCauses != null) {
-            store.dispatch({part: StatePart.PublicCauses, type: OpState.Preloaded, causes: initialState.publicCauses});
+            store.dispatch({ part: StatePart.PublicCauses, type: OpState.Preloaded, causes: initialState.publicCauses });
         }
 
         if (initialState.publicCauseDetail != null) {
-            store.dispatch({part: StatePart.PublicCauseDetail, type: OpState.Preloaded, cause: initialState.publicCauseDetail});
-        }    
+            store.dispatch({ part: StatePart.PublicCauseDetail, type: OpState.Preloaded, cause: initialState.publicCauseDetail });
+        }
 
         const clientConfig = {
             env: config.ENV,
-	    origin: config.ORIGIN,
+            origin: config.ORIGIN,
             context: config.CONTEXT,
             auth0ClientId: config.AUTH0_CLIENT_ID,
             auth0Domain: config.AUTH0_DOMAIN,
@@ -106,10 +109,10 @@ async function main() {
 
         namespace.set('SESSION', session);
         namespace.set('LANG', language);
-        
+
         const appHtml = ReactDOMServer.renderToString(
             <Provider store={store}>
-                <RouterContext {...(ssrRouterState as any)} />
+                <RouterContext {...(ssrRouterState as any) } />
             </Provider>
         );
 
@@ -121,10 +124,10 @@ async function main() {
             PAGE_LINK_HTML: helmetData.link,
             FACEBOOK_APP_ID: config.FACEBOOK_APP_ID,
             APP_HTML: appHtml,
-            CLIENT_CONFIG: serializeJavascript(clientConfigMarshaller.pack(clientConfig), {isJSON: true}),
-            CLIENT_INITIAL_STATE: serializeJavascript(clientInitialStateMarshaller.pack(initialState), {isJSON: true}),
+            CLIENT_CONFIG: serializeJavascript(clientConfigMarshaller.pack(clientConfig), { isJSON: true }),
+            CLIENT_INITIAL_STATE: serializeJavascript(clientInitialStateMarshaller.pack(initialState), { isJSON: true }),
             WEBPACK_MANIFEST_JS: bundles.getManifestJs(),
-        });    
+        });
     }
 
     const siteInfoRouter = express.Router();
@@ -144,7 +147,7 @@ async function main() {
     });
 
     siteInfoRouter.get('/sitemap.xml', wrap(async (_req: CauseFeRequest, res: express.Response) => {
-        let allCauseSummaries: CauseSummary[]|null = null;
+        let allCauseSummaries: CauseSummary[] | null = null;
         try {
             allCauseSummaries = await corePublicClient.getAllCauseSummaries();
         } catch (e) {
@@ -156,7 +159,7 @@ async function main() {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();
         }
-        
+
         res.type('.xml; charset=utf-8');
         res.write(Mustache.render(bundles.getSitemapXml(), {
             HOME_URI: config.ORIGIN,
@@ -178,7 +181,7 @@ async function main() {
     appRouter.use(newServerSideRenderingMatchMiddleware(config.ENV, routesConfig));
 
     appRouter.get('/', wrap(async (req: CauseFeRequest, res: express.Response) => {
-        let causes: PublicCause[]|null = null;
+        let causes: PublicCause[] | null = null;
         try {
             causes = await corePublicClient.withContext(req.authInfo as AuthInfo).getCauses();
         } catch (e) {
@@ -200,11 +203,11 @@ async function main() {
             req.ssrRouterState
         ));
         res.status(HttpStatus.OK);
-        res.end();      
+        res.end();
     }));
 
     appRouter.get('/c/:causeId(\\d+)/:causeSlug', wrap(async (req: CauseFeRequest, res: express.Response) => {
-        let cause: PublicCause|null = null;
+        let cause: PublicCause | null = null;
         try {
             const causeId = parseInt(req.params['causeId']);
             cause = await corePublicClient.withContext(req.authInfo as AuthInfo).getCause(causeId);
@@ -227,7 +230,7 @@ async function main() {
             req.ssrRouterState
         ));
         res.status(HttpStatus.OK);
-        res.end();      
+        res.end();
     }));
 
     appRouter.get('*', wrap(async (req: CauseFeRequest, res: express.Response) => {
@@ -243,7 +246,7 @@ async function main() {
             req.ssrRouterState
         ));
         res.status(HttpStatus.OK);
-        res.end();      
+        res.end();
     }));
 
     app.use('/', siteInfoRouter);

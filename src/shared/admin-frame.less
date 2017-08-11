@@ -4,14 +4,14 @@
 #admin-frame-body {
     display: flex;
     flex-direction: row;
-    
+
     #admin-sidebar-menu {
-	flex-basis: 10rem;
+        flex-basis: 10rem;
 
         @media all and (max-width: 800px) {
             display: none;
         }
-        
+
         .actions {
             display: flex;
             flex-direction: column;
@@ -27,7 +27,7 @@
                 margin-right: 0.25em;
                 position: relative;
                 top: 0.125em;
-                
+
                 &.my-cause {
                     background-image: url('./static/cause-icon.svg');
                 }
@@ -44,7 +44,7 @@
                     background-image: url('./static/account-icon.svg');
                 }
             }
-            
+
             a {
                 line-height: 2em;
                 margin-bottom: 2em;
@@ -64,7 +64,7 @@
     }
 
     #admin-content {
-	flex-basis: 40rem;
+        flex-basis: 40rem;
 
         @media all and (max-width: 800px) {
             margin-left: 1rem;

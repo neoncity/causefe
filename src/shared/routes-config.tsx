@@ -12,7 +12,8 @@ import {
     CompanyAboutView,
     CompanyTermsView,
     CompanyPrivacyView,
-    CompanyCookiesView } from './company-views'
+    CompanyCookiesView
+} from './company-views'
 import { HomeView } from './home-view'
 import { IdentityFrame } from './identity-frame'
 

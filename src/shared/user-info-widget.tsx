@@ -20,15 +20,15 @@ interface State {
 
 export class UserInfoWidget extends React.Component<Props, State> {
     constructor(props: Props) {
-	super(props);
-	this.state = {
-	    showMenu: false
-	};
+        super(props);
+        this.state = {
+            showMenu: false
+        };
     }
-    
+
     render() {
-	let menu = <span></span>;
-	if (this.state.showMenu) {
+        let menu = <span></span>;
+        if (this.state.showMenu) {
             menu =
                 <div id="overlay-menu">
                     <div className="container1">
@@ -67,7 +67,7 @@ export class UserInfoWidget extends React.Component<Props, State> {
                                     </Link>
                                 </span>
                             </div>
-                            <div>                
+                            <div>
                                 <button
                                     className="menu-open"
                                     onClick={this._handleCloseMenu.bind(this)}>
@@ -82,7 +82,7 @@ export class UserInfoWidget extends React.Component<Props, State> {
                     </div>
                 </div>;
         }
-        
+
         const session = config.SESSION();
         if (session.hasUser()) {
             return (
@@ -114,7 +114,7 @@ export class UserInfoWidget extends React.Component<Props, State> {
 
     private _handleLogoutClick() {
         this.setState(
-            {showMenu: false},
+            { showMenu: false },
             () => location.replace(config.LOGOUT_ROUTE)
         );
     }
@@ -124,10 +124,10 @@ export class UserInfoWidget extends React.Component<Props, State> {
     }
 
     private _handleOpenMenu() {
-        this.setState({showMenu: true});
+        this.setState({ showMenu: true });
     }
 
     private _handleCloseMenu() {
-        this.setState({showMenu: false});
-    }    
+        this.setState({ showMenu: false });
+    }
 }

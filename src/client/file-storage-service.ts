@@ -20,24 +20,24 @@ export class FileStorageService implements FileStorageClient {
                 // This generates an async chunk.
                 require.ensure([], function(require) {
                     const filepicker = require('filepicker-js');
-                        
+
                     (filepicker as any).setKey(_this._key);
                     (filepicker as any).pick({
                         mimetype: 'image/*',
                         services: ['CONVERT', 'COMPUTER', 'FACEBOOK', 'DROPBOX', 'FLICKR'],
                         conversions: ['crop', 'rotate', 'filter'],
                         imageDim: [1600, 900],
-                        cropRatio: 16/9,
+                        cropRatio: 16 / 9,
                         cropForce: true,
                     }, (blob: any) => {
-		        (filepicker as any).convert(blob, {
-			    width: 1600,
-			    height: 900,
-			    fit: 'scale',
-			    format: 'jpg',
-			    compress: true,
-			    quality: 90,
-		        }, (newBlob: any) => {
+                        (filepicker as any).convert(blob, {
+                            width: 1600,
+                            height: 900,
+                            fit: 'scale',
+                            format: 'jpg',
+                            compress: true,
+                            quality: 90,
+                        }, (newBlob: any) => {
                             resolve({
                                 position: position,
                                 uri: newBlob.url,

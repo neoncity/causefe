@@ -12,21 +12,21 @@ export class ApiGatewayWebFetcher implements WebFetcher {
         referrer: 'client',
         credentials: 'include'
     };
-    
+
     private readonly _apiGatewayHost: string;
-    
+
     constructor(apiGatewayHost: string) {
         this._apiGatewayHost = apiGatewayHost;
     }
-    
+
     async fetch(uri: string, options: RequestInit): Promise<ResponseInterface> {
         const gatewayOptions = (Object as any).assign({}, ApiGatewayWebFetcher._options);
-	gatewayOptions.headers = {'Content-Type': 'application/json'};
+        gatewayOptions.headers = { 'Content-Type': 'application/json' };
         gatewayOptions.body = JSON.stringify({
             uri: uri,
             options: options
         });
-        
+
         return await fetch(`${this._apiGatewayHost}/real/api-gateway`, gatewayOptions);
     }
 }

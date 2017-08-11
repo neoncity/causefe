@@ -17,10 +17,10 @@ interface Props {
     isReady: boolean;
     isFailed: boolean;
     hasCause: boolean;
-    causeAnalytics: CauseAnalytics|null;
-    errorMessage: string|null;
+    causeAnalytics: CauseAnalytics | null;
+    errorMessage: string | null;
     onCauseAnalyticsLoading: () => void;
-    onCauseAnalyticsReady: (hasCause: boolean, causeAnalytics: CauseAnalytics|null) => void;
+    onCauseAnalyticsReady: (hasCause: boolean, causeAnalytics: CauseAnalytics | null) => void;
     onCauseAnalyticsFailed: (errorMessage: string) => void;
 }
 
@@ -39,38 +39,38 @@ class _AdminCauseAnalyticsView extends React.Component<Props, undefined> {
                 if (isLocal(config.ENV)) {
                     console.log(e);
                 }
-            
+
                 this.props.onCauseAnalyticsFailed('Could not load cause analytics for user');
             }
         }
     }
-    
+
     render() {
         const helmet =
             <Helmet>
                 <title>{text.pageTitle[config.LANG()]}</title>
                 <meta name="robots" content="noindex,nofollow" />
             </Helmet>;
-                        
-	if (this.props.isLoading) {
-	    return (
-		<div className="loading">
-		   {helmet}
-                   <span className="message">{commonText.loading[config.LANG()]}</span>
-	        </div>
-	    );
-	} else if (this.props.isFailed) {
-	    return (
+
+        if (this.props.isLoading) {
+            return (
+                <div className="loading">
+                    {helmet}
+                    <span className="message">{commonText.loading[config.LANG()]}</span>
+                </div>
+            );
+        } else if (this.props.isFailed) {
+            return (
                 <div className="failed">
                     {helmet}
                     <span className="message">{commonText.loadingFailed[config.LANG()]}</span>
                 </div>
-	    );
-	} else if (!this.props.hasCause) {
+            );
+        } else if (!this.props.hasCause) {
             return <div>{helmet}{text.noCause[config.LANG()]}</div>;
-	} else {
+        } else {
             const causeAnalytics = this.props.causeAnalytics as CauseAnalytics;
-            
+
             return (
                 <div id="admin-cause-analytics-view">
                     {helmet}
@@ -128,9 +128,9 @@ function stateToProps(state: any) {
 
 function dispatchToProps(dispatch: (newState: AdminCauseAnalyticsState) => void) {
     return {
-	onCauseAnalyticsLoading: () => dispatch({part: StatePart.AdminCauseAnalytics, type: OpState.Loading}),
-	onCauseAnalyticsReady: (hasCause: boolean, causeAnalytics: CauseAnalytics|null) => dispatch({part: StatePart.AdminCauseAnalytics, type: OpState.Ready, hasCause: hasCause, causeAnalytics: causeAnalytics}),
-	onCauseAnalyticsFailed: (errorMessage: string) => dispatch({part: StatePart.AdminCauseAnalytics, type: OpState.Failed, errorMessage: errorMessage})
+        onCauseAnalyticsLoading: () => dispatch({ part: StatePart.AdminCauseAnalytics, type: OpState.Loading }),
+        onCauseAnalyticsReady: (hasCause: boolean, causeAnalytics: CauseAnalytics | null) => dispatch({ part: StatePart.AdminCauseAnalytics, type: OpState.Ready, hasCause: hasCause, causeAnalytics: causeAnalytics }),
+        onCauseAnalyticsFailed: (errorMessage: string) => dispatch({ part: StatePart.AdminCauseAnalytics, type: OpState.Failed, errorMessage: errorMessage })
     };
 }
 

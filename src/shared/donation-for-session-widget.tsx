@@ -16,11 +16,11 @@ interface Props {
 
 export class DonationForSessionWidget extends React.Component<Props, null> {
     render() {
-	const donation = this.props.donationForSession;
-	const cause = this.props.donationForSession.forCause;
-	const timeCreated = donation.timeCreated.toUTCString();
+        const donation = this.props.donationForSession;
+        const cause = this.props.donationForSession.forCause;
+        const timeCreated = donation.timeCreated.toUTCString();
 
-	return (
+        return (
             <p className="donation-for-session-widget">
                 <span>{text.donated[config.LANG()](donation.amount, cause.title, timeCreated)}</span>
                 <Link to={causeLink(cause)}>{text.details[config.LANG()]}</Link>

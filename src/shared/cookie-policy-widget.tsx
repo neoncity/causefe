@@ -30,7 +30,7 @@ export class CookiePolicyWidget extends React.Component<Props, State> {
             agreedToCookiePolicy: config.SESSION().agreedToCookiePolicy
         }
     }
-    
+
     render() {
         if (this.state.agreedToCookiePolicy) {
             return <div></div>;
@@ -43,37 +43,37 @@ export class CookiePolicyWidget extends React.Component<Props, State> {
             lastPart = <span>{commonText.loadingFailed[config.LANG()]}</span>;
         } else {
             lastPart =
-		<button
-	            className="action"
-	            onClick={this._handleAgreeToCookiePolicyClick.bind(this)}>
-    		    {text.agree[config.LANG()]}
-	    </button>;
+                <button
+                    className="action"
+                    onClick={this._handleAgreeToCookiePolicyClick.bind(this)}>
+                    {text.agree[config.LANG()]}
+                </button>;
         }
 
         return (
             <div id="cookie-policy-widget">
-		<div className="content">
+                <div className="content">
                     <span>{text.weUseCookies[config.LANG()]}</span>
                     <span>{text.seeOur[config.LANG()]}</span>
                     <a href="/company/cookies">{text.cookies[config.LANG()]}</a>
                     {lastPart}
-	        </div>
+                </div>
             </div>
         );
     }
 
     private async _handleAgreeToCookiePolicyClick(): Promise<void> {
-        this.setState({isLoading: true});
+        this.setState({ isLoading: true });
 
         try {
             await config.IDENTITY_CLIENT().agreeToCookiePolicyForSession(config.SESSION());
-            this.setState({isReady: true, agreedToCookiePolicy: true});
+            this.setState({ isReady: true, agreedToCookiePolicy: true });
         } catch (e) {
             if (isLocal(config.ENV)) {
                 console.log(e);
             }
 
-            this.setState({isFailed: true});
+            this.setState({ isFailed: true });
         }
     }
 }

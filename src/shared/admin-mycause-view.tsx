@@ -8,12 +8,14 @@ import { connect } from 'react-redux'
 import { Currency, StandardCurrencies, CurrencyMarshaller } from '@neoncity/common-js'
 import { isLocal } from '@neoncity/common-js/env'
 import { slugify } from '@neoncity/common-js/slugify'
-import { BankInfo,
-	 CurrencyAmount,
-	 PictureSet,
-	 PrivateCause,
-	 TitleMarshaller,
-	 DescriptionMarshaller} from '@neoncity/core-sdk-js'
+import {
+    BankInfo,
+    CurrencyAmount,
+    PictureSet,
+    PrivateCause,
+    TitleMarshaller,
+    DescriptionMarshaller
+} from '@neoncity/core-sdk-js'
 
 import { BankInfoWidget } from './bank-info-widget'
 import * as config from './config'
@@ -34,10 +36,10 @@ interface Props {
     isFailed: boolean;
     hasCause: boolean;
     causeIsDeleted: boolean;
-    cause: PrivateCause|null;
-    errorMessage: string|null;
+    cause: PrivateCause | null;
+    errorMessage: string | null;
     onPrivateCauseLoading: () => void;
-    onPrivateCauseReady: (hasCause: boolean, causeIsDeleted: boolean, cause: PrivateCause|null) => void;
+    onPrivateCauseReady: (hasCause: boolean, causeIsDeleted: boolean, cause: PrivateCause | null) => void;
     onPrivateCauseFailed: (errorMessage: string) => void;
 }
 
@@ -58,32 +60,32 @@ interface State {
 
 class DeadlineMomentMarshaller implements r.Marshaller<theMoment.Moment> {
     private static readonly _rightNow: theMoment.Moment = moment.utc();
-    
+
     extract(raw: any): theMoment.Moment {
-	if (DeadlineMomentMarshaller._rightNow.isAfter(raw as theMoment.Moment)) {
-	    throw new r.ExtractError('Deadline is in the past');
-	}
-	
-	return raw;
+        if (DeadlineMomentMarshaller._rightNow.isAfter(raw as theMoment.Moment)) {
+            throw new r.ExtractError('Deadline is in the past');
+        }
+
+        return raw;
     }
 
     pack(cooked: theMoment.Moment): any {
-	return cooked;
+        return cooked;
     }
 }
 
 
 class _AdminMyCauseView extends React.Component<Props, State> {
     private static readonly _initialState = {
-	showCreationFormIfNoControls: false,
-	modifiedGeneral: false,
-	title: new UserInput<string, string>('', ''),
-	slug: new UserInput<string, string>('', ''),
-	description: new UserInput<string, string>('', ''),
-	deadline: new UserInput<theMoment.Moment, theMoment.Moment>(moment.utc().add(60, 'days'), moment.utc().add(60, 'days')),
-	goalAmount: new UserInput<string, number>('100', 100),
-	goalCurrency: new UserInput<string, Currency>('RON', StandardCurrencies.RON),
-        bankInfo: new UserInput<BankInfo, BankInfo>({ibans: []}, {ibans: []}),
+        showCreationFormIfNoControls: false,
+        modifiedGeneral: false,
+        title: new UserInput<string, string>('', ''),
+        slug: new UserInput<string, string>('', ''),
+        description: new UserInput<string, string>('', ''),
+        deadline: new UserInput<theMoment.Moment, theMoment.Moment>(moment.utc().add(60, 'days'), moment.utc().add(60, 'days')),
+        goalAmount: new UserInput<string, number>('100', 100),
+        goalCurrency: new UserInput<string, Currency>('RON', StandardCurrencies.RON),
+        bankInfo: new UserInput<BankInfo, BankInfo>({ ibans: [] }, { ibans: [] }),
         pictureSet: new UserInput<PictureSet, PictureSet>(new PictureSet(), new PictureSet())
     };
 
@@ -93,18 +95,18 @@ class _AdminMyCauseView extends React.Component<Props, State> {
     private readonly _deadlineMaster: UserInputMaster<theMoment.Moment, theMoment.Moment>;
     private readonly _goalAmountMaster: UserInputMaster<string, number>;
     private readonly _goalCurrencyMaster: UserInputMaster<string, Currency>;
-    
+
     constructor(props: Props, context: any) {
-	super(props, context);
-	this.state = (Object as any).assign({}, _AdminMyCauseView._initialState);
-	this._titleMaster = new UserInputMaster<string, string>(new TitleMarshaller());
-	this._slugMaster = new UserInputMaster<string, string>(new r.SlugMarshaller());
-	this._descriptionMaster = new UserInputMaster<string, string>(new DescriptionMarshaller());
-	this._deadlineMaster = new UserInputMaster<theMoment.Moment, theMoment.Moment>(new DeadlineMomentMarshaller());
-	this._goalAmountMaster = new UserInputMaster<string, number>(new r.PositiveIntegerFromStringMarshaller());
-	this._goalCurrencyMaster = new UserInputMaster<string, Currency>(new CurrencyMarshaller());
+        super(props, context);
+        this.state = (Object as any).assign({}, _AdminMyCauseView._initialState);
+        this._titleMaster = new UserInputMaster<string, string>(new TitleMarshaller());
+        this._slugMaster = new UserInputMaster<string, string>(new r.SlugMarshaller());
+        this._descriptionMaster = new UserInputMaster<string, string>(new DescriptionMarshaller());
+        this._deadlineMaster = new UserInputMaster<theMoment.Moment, theMoment.Moment>(new DeadlineMomentMarshaller());
+        this._goalAmountMaster = new UserInputMaster<string, number>(new r.PositiveIntegerFromStringMarshaller());
+        this._goalCurrencyMaster = new UserInputMaster<string, Currency>(new CurrencyMarshaller());
     }
-    
+
     async componentDidMount() {
         this.props.onPrivateCauseLoading();
 
@@ -114,45 +116,45 @@ class _AdminMyCauseView extends React.Component<Props, State> {
         } catch (e) {
             if (e.name == 'NoCauseForUserError') {
                 this.props.onPrivateCauseReady(false, false, null);
-	    } else if (e.name == 'CauseDeletedForUserError') {
+            } else if (e.name == 'CauseDeletedForUserError') {
                 this.props.onPrivateCauseReady(true, true, null);
             } else {
                 if (isLocal(config.ENV)) {
                     console.log(e);
                 }
-            
+
                 this.props.onPrivateCauseFailed('Could not load cause for user');
             }
         }
     }
 
     componentWillReceiveProps(newProps: Props) {
-	if (newProps.isReady) {
-	    this.setState(this._fullStateFromProps(newProps));
-	}
+        if (newProps.isReady) {
+            this.setState(this._fullStateFromProps(newProps));
+        }
     }
 
     componentWillMount() {
-	if (this.props.isReady) {
-	    this.setState(this._fullStateFromProps(this.props));
-	}
+        if (this.props.isReady) {
+            this.setState(this._fullStateFromProps(this.props));
+        }
     }
-    
+
     render() {
         const helmet =
             <Helmet>
                 <title>{text.pageTitle[config.LANG()]}</title>
                 <meta name="robots" content="noindex,nofollow" />
-             </Helmet>;
-        
-	const allValid = !(this.state.title.isInvalid()
-			   || this.state.slug.isInvalid()
-			   || this.state.description.isInvalid()
-			   || this.state.deadline.isInvalid()
-			   || this.state.goalAmount.isInvalid()
-			   || this.state.goalCurrency.isInvalid()
-			   || this.state.bankInfo.isInvalid()
-			   || this.state.pictureSet.isInvalid());
+            </Helmet>;
+
+        const allValid = !(this.state.title.isInvalid()
+            || this.state.slug.isInvalid()
+            || this.state.description.isInvalid()
+            || this.state.deadline.isInvalid()
+            || this.state.goalAmount.isInvalid()
+            || this.state.goalCurrency.isInvalid()
+            || this.state.bankInfo.isInvalid()
+            || this.state.pictureSet.isInvalid());
 
         let titleModifiersRegion = <span></span>;
         if (this.state.title.isInvalid()) {
@@ -180,14 +182,14 @@ class _AdminMyCauseView extends React.Component<Props, State> {
         }
 
         let deadlineModifiersRegion = <span></span>;
-	if (this.state.deadline.isInvalid()) {
-	    deadlineModifiersRegion = <span className="modifiers warning">{text.invalidDeadlineValue[config.LANG()]}</span>;
-	} else if (this.state.deadline.isModified()) {
-	    deadlineModifiersRegion = <span className="modifiers modified">{text.modified[config.LANG()]}</span>;
-	} else if (!this.props.hasCause) {
+        if (this.state.deadline.isInvalid()) {
+            deadlineModifiersRegion = <span className="modifiers warning">{text.invalidDeadlineValue[config.LANG()]}</span>;
+        } else if (this.state.deadline.isModified()) {
+            deadlineModifiersRegion = <span className="modifiers modified">{text.modified[config.LANG()]}</span>;
+        } else if (!this.props.hasCause) {
             deadlineModifiersRegion = <span className="modifiers mandatory">{text.mandatory[config.LANG()]}</span>;
         }
-        
+
         let goalAmountModifiersRegion = <span></span>;
         if (this.state.goalAmount.isInvalid()) {
             goalAmountModifiersRegion = <span className="modifiers warning">{text.invalidGoalAmountValue[config.LANG()]}</span>;
@@ -218,7 +220,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                 </select>
                 <p className="currency-change-warning">{text.cantChangeCurrency[config.LANG()]}</p>
             </div>;
-	
+
         const editForm = (
             <form className="edit-form">
                 <div className="form-line">
@@ -251,15 +253,15 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                         <label htmlFor="admin-mycause-description">{text.description[config.LANG()]}</label>
                         {descriptionModifiersRegion}
                     </div>
-		    <div className="markdown-editor-container">
-		        <ReactMarkdownEditor
-	                    value={this.state.description.getUserInput()}
-	                    options={{
-			        autofocus: false,
-				spellChecker: false
-			    }}
-			    onChange={this._handleDescriptionChange.bind(this)} />
-		    </div>
+                    <div className="markdown-editor-container">
+                        <ReactMarkdownEditor
+                            value={this.state.description.getUserInput()}
+                            options={{
+                                autofocus: false,
+                                spellChecker: false
+                            }}
+                            onChange={this._handleDescriptionChange.bind(this)} />
+                    </div>
                 </div>
                 <div className="form-line">
                     <div className="form-line-info">
@@ -288,8 +290,8 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                     <BankInfoWidget
                         bankInfo={this.state.bankInfo}
                         onBankInfoChange={this._handleBankInfoChange.bind(this)} />
-		</div>
-		<div className="form-line">
+                </div>
+                <div className="form-line">
                     <ImageGalleryEditorWidget
                         pictureSet={this.state.pictureSet}
                         selectPicture={pos => config.FILE_STORAGE_CLIENT().selectImageWithWidget(pos)}
@@ -297,24 +299,24 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                 </div>
             </form>
         );
-	
-	if (this.props.isLoading) {
-	    return (
-		<div className="loading">
-		   {helmet}
-                   <span className="message">{commonText.loading[config.LANG()]}</span>
-	        </div>
-	    );
-	} else if (this.props.isFailed) {
-	    return (
+
+        if (this.props.isLoading) {
+            return (
+                <div className="loading">
+                    {helmet}
+                    <span className="message">{commonText.loading[config.LANG()]}</span>
+                </div>
+            );
+        } else if (this.props.isFailed) {
+            return (
                 <div className="failed">
                     {helmet}
                     <span className="message">{commonText.loadingFailed[config.LANG()]}</span>
                 </div>
-	    );
-	} else if (!this.props.hasCause) {
-	    if (!this.state.showCreationFormIfNoControls) {
-		return (
+            );
+        } else if (!this.props.hasCause) {
+            if (!this.state.showCreationFormIfNoControls) {
+                return (
                     <div id="admin-mycause-view">
                         {helmet}
                         <p className="no-cause">
@@ -324,13 +326,13 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                             <button
                                 className="action"
                                 onClick={this._handleShowCreationForm.bind(this)}>
-                            {text.createCause[config.LANG()]}
+                                {text.createCause[config.LANG()]}
                             </button>
                         </p>
                     </div>
                 );
-	    } else {
-		return (
+            } else {
+                return (
                     <div id="admin-mycause-view">
                         {helmet}
                         {editForm}
@@ -349,103 +351,103 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                             </button>
                         </div>
                     </div>
-		);
+                );
             }
-	} else if (this.props.causeIsDeleted) {
-	    return <div>{helmet}{text.causeDeleted[config.LANG()]}</div>;
+        } else if (this.props.causeIsDeleted) {
+            return <div>{helmet}{text.causeDeleted[config.LANG()]}</div>;
         } else {
             // const cause = this.props.cause as PrivateCause;
-            
+
             return (
                 <div id="admin-mycause-view">
                     {helmet}
                     {editForm}
                     <div className="update-controls">
-                         <button
-                             className="action"
-                             disabled={!this.state.modifiedGeneral}
-                             onClick={this._handleResetGeneral.bind(this)}>
-                             {text.reset[config.LANG()]}
-                         </button>
-                         <button
-                             className="action"
-                             disabled={!this.state.modifiedGeneral || !allValid}
-                             onClick={this._handleUpdate.bind(this)}>
-                             {text.update[config.LANG()]}
-                         </button>
+                        <button
+                            className="action"
+                            disabled={!this.state.modifiedGeneral}
+                            onClick={this._handleResetGeneral.bind(this)}>
+                            {text.reset[config.LANG()]}
+                        </button>
+                        <button
+                            className="action"
+                            disabled={!this.state.modifiedGeneral || !allValid}
+                            onClick={this._handleUpdate.bind(this)}>
+                            {text.update[config.LANG()]}
+                        </button>
                     </div>
-		    <div className="delete-controls">
+                    <div className="delete-controls">
                         <button
                             className="action"
                             onClick={this._handleDelete.bind(this)}>
                             <span className="warning-icon" />
                             <span className="text">{text.deleteCause[config.LANG()]}</span>
                         </button>
-		    </div>
+                    </div>
                 </div>
-	    );
+            );
         }
     }
 
     private _fullStateFromProps(props: Props): State {
-	if (!props.hasCause || props.causeIsDeleted) {
-	    return (Object as any).assign({}, _AdminMyCauseView._initialState);
-	}
+        if (!props.hasCause || props.causeIsDeleted) {
+            return (Object as any).assign({}, _AdminMyCauseView._initialState);
+        }
 
-	const cause = props.cause as PrivateCause;
-	    
-	return {
-	    showCreationFormIfNoControls: false,
-	    modifiedGeneral: false,
-	    title: new UserInput<string, string>(cause.title, cause.title),
-	    slug: new UserInput<string, string>(cause.slug, cause.slug),
-	    description: new UserInput<string, string>(cause.description, cause.description),
-	    deadline: new UserInput<theMoment.Moment, theMoment.Moment>(moment(cause.deadline), moment(cause.deadline)),
-	    goalAmount: new UserInput<string, number>(cause.goal.amount.toString(), cause.goal.amount),
-	    goalCurrency: new UserInput<string, Currency>(cause.goal.currency.toString(), cause.goal.currency),
-	    bankInfo: new UserInput<BankInfo, BankInfo>(cause.bankInfo, cause.bankInfo),
-	    pictureSet: new UserInput<PictureSet, PictureSet>(cause.pictureSet, cause.pictureSet)
-	};
+        const cause = props.cause as PrivateCause;
+
+        return {
+            showCreationFormIfNoControls: false,
+            modifiedGeneral: false,
+            title: new UserInput<string, string>(cause.title, cause.title),
+            slug: new UserInput<string, string>(cause.slug, cause.slug),
+            description: new UserInput<string, string>(cause.description, cause.description),
+            deadline: new UserInput<theMoment.Moment, theMoment.Moment>(moment(cause.deadline), moment(cause.deadline)),
+            goalAmount: new UserInput<string, number>(cause.goal.amount.toString(), cause.goal.amount),
+            goalCurrency: new UserInput<string, Currency>(cause.goal.currency.toString(), cause.goal.currency),
+            bankInfo: new UserInput<BankInfo, BankInfo>(cause.bankInfo, cause.bankInfo),
+            pictureSet: new UserInput<PictureSet, PictureSet>(cause.pictureSet, cause.pictureSet)
+        };
     }
 
     private _handleShowCreationForm() {
-	this.setState({showCreationFormIfNoControls: true});
+        this.setState({ showCreationFormIfNoControls: true });
     }
 
     private _handleTitleChange(e: React.FormEvent<HTMLInputElement>) {
-	this.setState({
-	    modifiedGeneral: true,
-	    title: this._titleMaster.transform(e.currentTarget.value, this.state.title.getValue()),
-	    slug: this._slugMaster.transform(slugify(e.currentTarget.value), this.state.slug.getValue())
-	});
+        this.setState({
+            modifiedGeneral: true,
+            title: this._titleMaster.transform(e.currentTarget.value, this.state.title.getValue()),
+            slug: this._slugMaster.transform(slugify(e.currentTarget.value), this.state.slug.getValue())
+        });
     }
 
     private _handleDescriptionChange(newDescription: string) {
-	this.setState({
-	    modifiedGeneral: true,
-	    description: this._descriptionMaster.transform(newDescription, this.state.description.getValue())
-	});
+        this.setState({
+            modifiedGeneral: true,
+            description: this._descriptionMaster.transform(newDescription, this.state.description.getValue())
+        });
     }
 
     private _handleDeadlineChange(newDeadline: theMoment.Moment) {
-	this.setState({
-	    modifiedGeneral: true,
-	    deadline: this._deadlineMaster.transform(newDeadline, this.state.deadline.getValue())
-	});
+        this.setState({
+            modifiedGeneral: true,
+            deadline: this._deadlineMaster.transform(newDeadline, this.state.deadline.getValue())
+        });
     }
 
     private _handleGoalAmountChange(e: React.FormEvent<HTMLInputElement>) {
-	this.setState({
-	    modifiedGeneral: true,
-	    goalAmount: this._goalAmountMaster.transform(e.currentTarget.value, this.state.goalAmount.getValue())
-	});
+        this.setState({
+            modifiedGeneral: true,
+            goalAmount: this._goalAmountMaster.transform(e.currentTarget.value, this.state.goalAmount.getValue())
+        });
     }
 
     private _handleGoalCurrencyChange(e: React.FormEvent<HTMLInputElement>) {
-	this.setState({
-	    modifiedGeneral: true,
-	    goalCurrency: this._goalCurrencyMaster.transform(e.currentTarget.value, this.state.goalCurrency.getValue())
-	});
+        this.setState({
+            modifiedGeneral: true,
+            goalCurrency: this._goalCurrencyMaster.transform(e.currentTarget.value, this.state.goalCurrency.getValue())
+        });
     }
 
     private _handleBankInfoChange(newBankInfo: UserInput<BankInfo, BankInfo>) {
@@ -467,94 +469,94 @@ class _AdminMyCauseView extends React.Component<Props, State> {
     }
 
     private async _handleCreate() {
-	this.props.onPrivateCauseLoading();
+        this.props.onPrivateCauseLoading();
 
-	try {
-	    const goal: CurrencyAmount = new CurrencyAmount();
-	    goal.amount = this.state.goalAmount.getValue();
-	    goal.currency = this.state.goalCurrency.getValue();
-	    
-	    const privateCause = await config.CORE_PRIVATE_CLIENT().createCause(
+        try {
+            const goal: CurrencyAmount = new CurrencyAmount();
+            goal.amount = this.state.goalAmount.getValue();
+            goal.currency = this.state.goalCurrency.getValue();
+
+            const privateCause = await config.CORE_PRIVATE_CLIENT().createCause(
                 config.SESSION(),
-		this.state.title.getValue(),
-		this.state.description.getValue(),
-		this.state.pictureSet.getValue(),
-		this.state.deadline.getValue().toDate(),
-		goal,
-		this.state.bankInfo.getValue());
-	    this.props.onPrivateCauseReady(true, false, privateCause);
-	} catch (e) {
+                this.state.title.getValue(),
+                this.state.description.getValue(),
+                this.state.pictureSet.getValue(),
+                this.state.deadline.getValue().toDate(),
+                goal,
+                this.state.bankInfo.getValue());
+            this.props.onPrivateCauseReady(true, false, privateCause);
+        } catch (e) {
             if (isLocal(config.ENV)) {
                 console.log(e);
             }
-            
-	    this.props.onPrivateCauseFailed('Could not create cause for user');
-	}
+
+            this.props.onPrivateCauseFailed('Could not create cause for user');
+        }
     }
 
     private async _handleUpdate() {
-	this.props.onPrivateCauseLoading();
+        this.props.onPrivateCauseLoading();
 
-	try {
-	    const goal: CurrencyAmount = new CurrencyAmount();
-	    goal.amount = this.state.goalAmount.getValue();
-	    goal.currency = (this.props.cause as PrivateCause).goal.currency;
-	    
-	    const privateCause = await config.CORE_PRIVATE_CLIENT().updateCause(
+        try {
+            const goal: CurrencyAmount = new CurrencyAmount();
+            goal.amount = this.state.goalAmount.getValue();
+            goal.currency = (this.props.cause as PrivateCause).goal.currency;
+
+            const privateCause = await config.CORE_PRIVATE_CLIENT().updateCause(
                 config.SESSION(),
-		{
-		    title: this.state.title.getValue(),
-		    description: this.state.description.getValue(),
-		    pictureSet: this.state.pictureSet.getValue(),
-		    deadline: this.state.deadline.getValue().toDate(),
-		    goal: goal,
-		    bankInfo: this.state.bankInfo.getValue()
-		});
-	    this.props.onPrivateCauseReady(true, false, privateCause);
-	} catch (e) {
+                {
+                    title: this.state.title.getValue(),
+                    description: this.state.description.getValue(),
+                    pictureSet: this.state.pictureSet.getValue(),
+                    deadline: this.state.deadline.getValue().toDate(),
+                    goal: goal,
+                    bankInfo: this.state.bankInfo.getValue()
+                });
+            this.props.onPrivateCauseReady(true, false, privateCause);
+        } catch (e) {
             if (isLocal(config.ENV)) {
                 console.log(e);
             }
-            
-	    this.props.onPrivateCauseFailed('Could not update cause for user');
-	}	
+
+            this.props.onPrivateCauseFailed('Could not update cause for user');
+        }
     }
 
     private async _handleDelete() {
-	this.props.onPrivateCauseLoading();
+        this.props.onPrivateCauseLoading();
 
-	try {
-	    await config.CORE_PRIVATE_CLIENT().deleteCause(config.SESSION());
-	    this.props.onPrivateCauseReady(true, true, null);
-	} catch (e) {
-	    if (isLocal(config.ENV)) {
+        try {
+            await config.CORE_PRIVATE_CLIENT().deleteCause(config.SESSION());
+            this.props.onPrivateCauseReady(true, true, null);
+        } catch (e) {
+            if (isLocal(config.ENV)) {
                 console.log(e);
             }
-            
-	    this.props.onPrivateCauseFailed('Could not delete cause for user');
-	}	
+
+            this.props.onPrivateCauseFailed('Could not delete cause for user');
+        }
     }
 }
 
 
 function stateToProps(state: any) {
     return {
-	isLoading: state.adminMyCause.type == OpState.Init || state.adminMyCause.type == OpState.Loading,
-	isReady: state.adminMyCause.type == OpState.Ready,
-	isFailed: state.adminMyCause.type == OpState.Failed,
+        isLoading: state.adminMyCause.type == OpState.Init || state.adminMyCause.type == OpState.Loading,
+        isReady: state.adminMyCause.type == OpState.Ready,
+        isFailed: state.adminMyCause.type == OpState.Failed,
         hasCause: state.adminMyCause.type == OpState.Ready ? state.adminMyCause.hasCause : false,
-	causeIsDeleted: state.adminMyCause.type == OpState.Ready ? state.adminMyCause.causeIsDeleted : false,
+        causeIsDeleted: state.adminMyCause.type == OpState.Ready ? state.adminMyCause.causeIsDeleted : false,
         cause: state.adminMyCause.type == OpState.Ready ? state.adminMyCause.cause : null,
-	errorMessage: state.adminMyCause.type == OpState.Failed ? state.adminMyCause.errorMessage : null
+        errorMessage: state.adminMyCause.type == OpState.Failed ? state.adminMyCause.errorMessage : null
     };
 }
 
 
 function dispatchToProps(dispatch: (newState: AdminMyCauseState) => void) {
     return {
-	onPrivateCauseLoading: () => dispatch({part: StatePart.AdminMyCause, type: OpState.Loading}),
-	onPrivateCauseReady: (hasCause: boolean, causeIsDeleted: boolean, cause: PrivateCause) => dispatch({part: StatePart.AdminMyCause, type: OpState.Ready, hasCause, causeIsDeleted, cause}),
-	onPrivateCauseFailed: (errorMessage: string) => dispatch({part: StatePart.AdminMyCause, type: OpState.Failed, errorMessage: errorMessage})
+        onPrivateCauseLoading: () => dispatch({ part: StatePart.AdminMyCause, type: OpState.Loading }),
+        onPrivateCauseReady: (hasCause: boolean, causeIsDeleted: boolean, cause: PrivateCause) => dispatch({ part: StatePart.AdminMyCause, type: OpState.Ready, hasCause, causeIsDeleted, cause }),
+        onPrivateCauseFailed: (errorMessage: string) => dispatch({ part: StatePart.AdminMyCause, type: OpState.Failed, errorMessage: errorMessage })
     };
 }
 

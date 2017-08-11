@@ -3,7 +3,7 @@ import { MessageWith0Arg } from './messages'
 
 export const about: MessageWith0Arg = {
     en: `
-This is the _about_ page    
+This is the _about_ page
     `,
     ro: `
 Aceasta este pagina despre _companie_

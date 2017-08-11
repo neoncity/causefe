@@ -16,11 +16,11 @@ interface Props {
 
 export class ShareForSessionWidget extends React.Component<Props, null> {
     render() {
-	const share = this.props.shareForSession;
-	const cause = this.props.shareForSession.forCause;
-	const timeCreated = share.timeCreated.toUTCString();
-	
-	return (
+        const share = this.props.shareForSession;
+        const cause = this.props.shareForSession.forCause;
+        const timeCreated = share.timeCreated.toUTCString();
+
+        return (
             <p>
                 <span>{text.shared[config.LANG()](cause.title, timeCreated)}</span>
                 <Link to={causeLink(cause)}>{text.details[config.LANG()]}}</Link>

@@ -12,16 +12,16 @@ interface Props {
 
 export class IdentityFrame extends React.Component<Props, undefined> {
     componentDidMount() {
-	if (!config.SESSION().hasUser()) {
+        if (!config.SESSION().hasUser()) {
             config.AUTH0_CLIENT().showLock(false);
-	}
+        }
     }
-    
+
     render() {
         if (!config.SESSION().hasUser()) {
-	    return <div>{text.shouldBeLoggedIn[config.LANG()]}</div>;
-	} else {
-	    return <div>{this.props.children}</div>;
-	}
+            return <div>{text.shouldBeLoggedIn[config.LANG()]}</div>;
+        } else {
+            return <div>{this.props.children}</div>;
+        }
     }
 }

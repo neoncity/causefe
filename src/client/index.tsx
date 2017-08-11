@@ -11,7 +11,8 @@ import {
     newCorePrivateClient,
     newCorePublicClient,
     CorePrivateClient,
-    CorePublicClient } from '@neoncity/core-sdk-js'
+    CorePublicClient
+} from '@neoncity/core-sdk-js'
 
 import { ApiGatewayWebFetcher } from './api-gateway-web-fetcher'
 import { Auth0Service } from './auth0'

@@ -25,38 +25,38 @@ export class CompanyAboutView extends React.Component<Props, undefined> {
 
 export class CompanyTermsView extends React.Component<Props, undefined> {
     render() {
-       return (
-           <div>
-               <ReactMarkdown
-                   escapeHtml={true}
-                   source={text.terms[config.LANG()]} />
-           </div>
-       );
+        return (
+            <div>
+                <ReactMarkdown
+                    escapeHtml={true}
+                    source={text.terms[config.LANG()]} />
+            </div>
+        );
     }
 }
 
 
 export class CompanyPrivacyView extends React.Component<Props, undefined> {
     render() {
-       return (
-           <div>
-               <ReactMarkdown
-                   escapeHtml={true}
-                   source={text.privacy[config.LANG()]} />
-           </div>
-       );
+        return (
+            <div>
+                <ReactMarkdown
+                    escapeHtml={true}
+                    source={text.privacy[config.LANG()]} />
+            </div>
+        );
     }
 }
 
 
 export class CompanyCookiesView extends React.Component<Props, undefined> {
     render() {
-       return (
-           <div>
-               <ReactMarkdown
-                   escapeHtml={true}
-                   source={text.cookies[config.LANG()]} />
-           </div>
-       );
+        return (
+            <div>
+                <ReactMarkdown
+                    escapeHtml={true}
+                    source={text.cookies[config.LANG()]} />
+            </div>
+        );
     }
 }

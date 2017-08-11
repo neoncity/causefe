@@ -30,8 +30,8 @@ interface Props {
     isReady: boolean;
     isFailed: boolean;
     params: Params;
-    cause: PublicCause|null;
-    errorMessage: string|null;
+    cause: PublicCause | null;
+    errorMessage: string | null;
     onPublicCauseDetailDonePreload: () => void;
     onPublicCauseDetailLoading: () => void;
     onPublicCauseDetailReady: (cause: PublicCause) => void;
@@ -44,8 +44,8 @@ class _CauseView extends React.Component<Props, undefined> {
         if (this.props.isPreloaded) {
             return;
         }
-        
-	this.props.onPublicCauseDetailLoading();
+
+        this.props.onPublicCauseDetailLoading();
 
         try {
             const causeId = parseInt(this.props.params.causeId);
@@ -60,30 +60,30 @@ class _CauseView extends React.Component<Props, undefined> {
             if (isLocal(config.ENV)) {
                 console.log(e);
             }
-            
+
             this.props.onPublicCauseDetailFailed('Could not load public cause detail');
         }
     }
 
     async componentWillUnmount() {
         this.props.onPublicCauseDetailDonePreload();
-    }    
-    
+    }
+
     render() {
         const cause = this.props.cause as PublicCause;
-        
+
         const pageTitle: string = this.props.isReady || this.props.isPreloaded
-              ? text.pageTitle[config.LANG()](cause.title)
-              : text.pageTitleDefault[config.LANG()];
+            ? text.pageTitle[config.LANG()](cause.title)
+            : text.pageTitleDefault[config.LANG()];
 
         const pageDescription: string = this.props.isReady || this.props.isPreloaded
-              ? text.pageDescription[config.LANG()](cause.description)
-              : text.pageDescriptionDefault[config.LANG()];
+            ? text.pageDescription[config.LANG()](cause.description)
+            : text.pageDescriptionDefault[config.LANG()];
 
         const realCauseLink: string = this.props.isReady || this.props.isPreloaded
-              ? `${config.ORIGIN}${causeLink(cause)}`
-              : config.ORIGIN;
-        
+            ? `${config.ORIGIN}${causeLink(cause)}`
+            : config.ORIGIN;
+
         const helmet =
             <Helmet>
                 <title>{pageTitle}</title>
@@ -103,41 +103,41 @@ class _CauseView extends React.Component<Props, undefined> {
                 <meta property="og:image" content={causePictureUri(cause)} />
                 <link rel="canonical" href={realCauseLink} />
             </Helmet>;
-        
-	if (this.props.isLoading) {
-	    return (
-		<div className="loading">
-		   {helmet}
-                   <span className="message">{commonText.loading[config.LANG()]}</span>
-	        </div>
-	    );
-	} else if (this.props.isFailed) {
-	    return (
+
+        if (this.props.isLoading) {
+            return (
+                <div className="loading">
+                    {helmet}
+                    <span className="message">{commonText.loading[config.LANG()]}</span>
+                </div>
+            );
+        } else if (this.props.isFailed) {
+            return (
                 <div className="failed">
                     {helmet}
                     <span className="message">{commonText.loadingFailed[config.LANG()]}</span>
                 </div>
-	    );
-	} else {
-	    const cause = this.props.cause as PublicCause;
+            );
+        } else {
+            const cause = this.props.cause as PublicCause;
 
             const daysLeft = moment.utc().diff(moment(cause.deadline), 'days');
             const percentageRaised = 0.5;
-	    
+
             return (
                 <div id="cause-view">
                     {helmet}
 
-		    <div id="cause-view-head-region">
+                    <div id="cause-view-head-region">
 
-		        <div id="cause-view-gallery">
-  		            <img
+                        <div id="cause-view-gallery">
+                            <img
                                 className="cause-picture"
                                 src={causePictureUri(cause)}
                                 alt={text.causePicture[config.LANG()]} />
-		        </div>
+                        </div>
 
-		        <div id="cause-view-controls">
+                        <div id="cause-view-controls">
                             <div className="content">
                                 <h2>{cause.title}</h2>
 
@@ -150,16 +150,16 @@ class _CauseView extends React.Component<Props, undefined> {
                                     cause={cause}
                                     onNewCause={(_: PublicCause) => { return; }} />
                             </div>
-		        </div>
+                        </div>
 
-		    </div>
+                    </div>
 
-		    <div id="cause-view-description">
-		        <ReactMarkdown
-		            escapeHtml={true}
-			    disallowedTypes={['Image', 'Code', 'CodeBlock']}
-		            source={cause.description} />
-		    </div>
+                    <div id="cause-view-description">
+                        <ReactMarkdown
+                            escapeHtml={true}
+                            disallowedTypes={['Image', 'Code', 'CodeBlock']}
+                            source={cause.description} />
+                    </div>
                 </div>
             );
         }
@@ -170,21 +170,21 @@ class _CauseView extends React.Component<Props, undefined> {
 function stateToProps(state: any) {
     return {
         isPreloaded: state.publicCauseDetail.type == OpState.Preloaded,
-	isLoading: state.publicCauseDetail.type == OpState.Init || state.publicCauseDetail.type == OpState.Loading,
-	isReady: state.publicCauseDetail.type == OpState.Ready,
-	isFailed: state.publicCauseDetail.type == OpState.Failed,
-	cause: (state.publicCauseDetail.type == OpState.Ready || state.publicCauseDetail.type == OpState.Preloaded) ? state.publicCauseDetail.cause : null,
-	errorMessage: state.publicCauseDetail.type == OpState.Failed ? state.publicCauseDetail.errorMessage : null,
+        isLoading: state.publicCauseDetail.type == OpState.Init || state.publicCauseDetail.type == OpState.Loading,
+        isReady: state.publicCauseDetail.type == OpState.Ready,
+        isFailed: state.publicCauseDetail.type == OpState.Failed,
+        cause: (state.publicCauseDetail.type == OpState.Ready || state.publicCauseDetail.type == OpState.Preloaded) ? state.publicCauseDetail.cause : null,
+        errorMessage: state.publicCauseDetail.type == OpState.Failed ? state.publicCauseDetail.errorMessage : null,
     };
 }
 
 
 function dispatchToProps(dispatch: (newState: PublicCauseDetailState) => void) {
     return {
-        onPublicCauseDetailDonePreload: () => dispatch({part: StatePart.PublicCauseDetail, type: OpState.Init}),
-	onPublicCauseDetailLoading: () => dispatch({part: StatePart.PublicCauseDetail, type: OpState.Loading}),
-	onPublicCauseDetailReady: (cause: PublicCause) => dispatch({part: StatePart.PublicCauseDetail, type: OpState.Ready, cause: cause}),
-	onPublicCauseDetailFailed: (errorMessage: string) => dispatch({part: StatePart.PublicCauseDetail, type: OpState.Failed, errorMessage: errorMessage})
+        onPublicCauseDetailDonePreload: () => dispatch({ part: StatePart.PublicCauseDetail, type: OpState.Init }),
+        onPublicCauseDetailLoading: () => dispatch({ part: StatePart.PublicCauseDetail, type: OpState.Loading }),
+        onPublicCauseDetailReady: (cause: PublicCause) => dispatch({ part: StatePart.PublicCauseDetail, type: OpState.Ready, cause: cause }),
+        onPublicCauseDetailFailed: (errorMessage: string) => dispatch({ part: StatePart.PublicCauseDetail, type: OpState.Failed, errorMessage: errorMessage })
     };
 }
 

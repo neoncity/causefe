@@ -1,9 +1,9 @@
 .half-column {
     @media all and (min-width: 800px) {
-	width: 23.49rem;
+        width: 23.49rem;
     }
     @media all and (max-width: 800px) {
-	width: 100%;
+        width: 100%;
     }
 }
 
@@ -13,29 +13,29 @@
 
 .column-container {
     @media all and (min-width: 800px) {
-	div:nth-child(2n+1) {
-	    margin-right: 1em;
-	}	
+        div:nth-child(2n+1) {
+            margin-right: 1em;
+        }
     }
 }
 
 .modifiersBlock() {
     .modifiers {
-	font-size: 13px;
-	padding-left: 0.5rem;
-	
-	&.modified {
+        font-size: 13px;
+        padding-left: 0.5rem;
+
+        &.modified {
             color: green;
-	}
+        }
 
-	&.warning {
+        &.warning {
             color: orange;
-	}
+        }
 
-	&.mandatory {
+        &.mandatory {
             color: firebrick;
             font-weight: 600;
-	}
+        }
     }
 }
 
@@ -44,8 +44,8 @@
     margin-bottom: 0.5rem;
 
     .form-line-info {
-	display: flex;
-	
+        display: flex;
+
         label {
             font-size: 13px;
             font-weight: 600;
@@ -55,4 +55,3 @@
         .modifiersBlock();
     }
 }
-

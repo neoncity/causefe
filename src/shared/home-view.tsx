@@ -18,8 +18,8 @@ interface HomeViewProps {
     isLoading: boolean;
     isReady: boolean;
     isFailed: boolean;
-    causes: PublicCause[]|null;
-    errorMessage: string|null;
+    causes: PublicCause[] | null;
+    errorMessage: string | null;
     onPublicCausesDonePreload: () => void;
     onPublicCausesLoading: () => void;
     onPublicCausesReady: (causes: PublicCause[]) => void;
@@ -32,25 +32,25 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
         if (this.props.isPreloaded) {
             return;
         }
-        
-	this.props.onPublicCausesLoading();
 
-	try {
-	    const causes = await config.CORE_PUBLIC_CLIENT().getCauses();
-	    this.props.onPublicCausesReady(causes);
-	} catch (e) {
+        this.props.onPublicCausesLoading();
+
+        try {
+            const causes = await config.CORE_PUBLIC_CLIENT().getCauses();
+            this.props.onPublicCausesReady(causes);
+        } catch (e) {
             if (isLocal(config.ENV)) {
                 console.log(e);
             }
-            
-	    this.props.onPublicCausesFailed('Could not load public causes');
-	}
+
+            this.props.onPublicCausesFailed('Could not load public causes');
+        }
     }
 
     async componentWillUnmount() {
         this.props.onPublicCausesDonePreload();
     }
-    
+
     render() {
         const helmet =
             <Helmet>
@@ -69,28 +69,28 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
                 <meta property="og:site_name" content={commonText.siteName[config.LANG()]} />
                 <link rel="canonical" href={config.ORIGIN} />
             </Helmet>;
-        
-	if (this.props.isLoading) {
-	    return (
-		<div className="loading">
-		   {helmet}
-                   <span className="message">{commonText.loading[config.LANG()]}</span>
-	        </div>
-	    );
-	} else if (this.props.isFailed) {
-	    return (
+
+        if (this.props.isLoading) {
+            return (
+                <div className="loading">
+                    {helmet}
+                    <span className="message">{commonText.loading[config.LANG()]}</span>
+                </div>
+            );
+        } else if (this.props.isFailed) {
+            return (
                 <div className="failed">
                     {helmet}
                     <span className="message">{commonText.loadingFailed[config.LANG()]}</span>
                 </div>
-	    );
-	} else {
-	    const causes = (this.props.causes as PublicCause[]).map(
-	        c => <PublicCauseWidget key={c.id} cause={c} />
-	    );
-	    
-	    return <div id="home-view">{helmet}{causes}</div>;
-	}
+            );
+        } else {
+            const causes = (this.props.causes as PublicCause[]).map(
+                c => <PublicCauseWidget key={c.id} cause={c} />
+            );
+
+            return <div id="home-view">{helmet}{causes}</div>;
+        }
     }
 }
 
@@ -98,21 +98,21 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
 function stateToProps(state: any) {
     return {
         isPreloaded: state.publicCauses.type == OpState.Preloaded,
-	isLoading: state.publicCauses.type == OpState.Init || state.publicCauses.type == OpState.Loading,
-	isReady: state.publicCauses.type == OpState.Ready,
-	isFailed: state.publicCauses.type == OpState.Failed,
-	causes: (state.publicCauses.type == OpState.Ready || state.publicCauses.type == OpState.Preloaded) ? state.publicCauses.causes : null,
-	errorMessage: state.publicCauses.type == OpState.Failed ? state.publicCauses.errorMessage : null,
+        isLoading: state.publicCauses.type == OpState.Init || state.publicCauses.type == OpState.Loading,
+        isReady: state.publicCauses.type == OpState.Ready,
+        isFailed: state.publicCauses.type == OpState.Failed,
+        causes: (state.publicCauses.type == OpState.Ready || state.publicCauses.type == OpState.Preloaded) ? state.publicCauses.causes : null,
+        errorMessage: state.publicCauses.type == OpState.Failed ? state.publicCauses.errorMessage : null,
     };
 }
 
 
 function dispatchToProps(dispatch: (newState: PublicCausesState) => void) {
     return {
-        onPublicCausesDonePreload: () => dispatch({part: StatePart.PublicCauses, type: OpState.Init}),
-	onPublicCausesLoading: () => dispatch({part: StatePart.PublicCauses, type: OpState.Loading}),
-	onPublicCausesReady: (causes: PublicCause[]) => dispatch({part: StatePart.PublicCauses, type: OpState.Ready, causes: causes}),
-	onPublicCausesFailed: (errorMessage: string) => dispatch({part: StatePart.PublicCauses, type: OpState.Failed, errorMessage: errorMessage})
+        onPublicCausesDonePreload: () => dispatch({ part: StatePart.PublicCauses, type: OpState.Init }),
+        onPublicCausesLoading: () => dispatch({ part: StatePart.PublicCauses, type: OpState.Loading }),
+        onPublicCausesReady: (causes: PublicCause[]) => dispatch({ part: StatePart.PublicCauses, type: OpState.Ready, causes: causes }),
+        onPublicCausesFailed: (errorMessage: string) => dispatch({ part: StatePart.PublicCauses, type: OpState.Failed, errorMessage: errorMessage })
     };
 }
 

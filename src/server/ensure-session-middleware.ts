@@ -11,7 +11,7 @@ import { CauseFeRequest } from './causefe-request'
 
 export function newEnsureSessionMiddleware(env: Env, identityClient: IdentityClient) {
     const authInfoMarshaller = new (MarshalFrom(AuthInfo))();
-    
+
     return wrap(async (req: CauseFeRequest, res: express.Response, next: express.NextFunction) => {
         if (req.authInfo == null || req.session == null) {
             try {
@@ -29,7 +29,7 @@ export function newEnsureSessionMiddleware(env: Env, identityClient: IdentityCli
                 if (isLocal(env)) {
                     console.log(e);
                 }
-                
+
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR);
                 res.end();
                 return;
