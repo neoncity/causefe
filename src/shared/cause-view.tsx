@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 import { browserHistory } from 'react-router'
 
 import { PublicCause } from '@neoncity/core-sdk-js'
-import { isLocal } from '@neoncity/common-js'
 
 import { CauseActionsWidget } from './cause-actions-widget'
 import * as config from './config'
@@ -57,9 +56,7 @@ class _CauseView extends React.Component<Props, undefined> {
             // /c/$id/$secondSlug
             browserHistory.replace(causeLink(cause));
         } catch (e) {
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
+            console.log(e);
 
             this.props.onPublicCauseDetailFailed('Could not load public cause detail');
         }

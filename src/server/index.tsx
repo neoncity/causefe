@@ -152,9 +152,7 @@ async function main() {
             allCauseSummaries = await corePublicClient.getAllCauseSummaries();
         } catch (e) {
             console.log(`Cannot retrieve causes server-side - ${e.toString()}`);
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
+            console.log(e);
 
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();
@@ -178,7 +176,7 @@ async function main() {
     appRouter.use(newAuthInfoMiddleware(AuthInfoLevel.None));
     appRouter.use(newSessionMiddleware(SessionLevel.None, config.ENV, identityClient));
     appRouter.use(newEnsureSessionMiddleware(config.ENV, identityClient));
-    appRouter.use(newServerSideRenderingMatchMiddleware(config.ENV, routesConfig));
+    appRouter.use(newServerSideRenderingMatchMiddleware(routesConfig));
 
     appRouter.get('/', wrap(async (req: CauseFeRequest, res: express.Response) => {
         let causes: PublicCause[] | null = null;
@@ -186,9 +184,7 @@ async function main() {
             causes = await corePublicClient.withContext(req.authInfo as AuthInfo).getCauses();
         } catch (e) {
             console.log(`Cannot retrieve causes server-side - ${e.toString()}`);
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
+            console.log(e);
         }
 
         const initialState = {
@@ -213,9 +209,7 @@ async function main() {
             cause = await corePublicClient.withContext(req.authInfo as AuthInfo).getCause(causeId);
         } catch (e) {
             console.log(`Cannot retrieve causes server-side - ${e.toString()}`);
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
+            console.log(e);
         }
 
         const initialState = {

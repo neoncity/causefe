@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 
 import { PublicCause } from '@neoncity/core-sdk-js'
-import { isLocal } from '@neoncity/common-js'
 
 import * as config from './config'
 import { PublicCauseWidget } from './public-cause-widget'
@@ -39,9 +38,7 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
             const causes = await config.CORE_PUBLIC_CLIENT().getCauses();
             this.props.onPublicCausesReady(causes);
         } catch (e) {
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
+            console.log(e);
 
             this.props.onPublicCausesFailed('Could not load public causes');
         }

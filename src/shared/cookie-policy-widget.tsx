@@ -1,7 +1,5 @@
 import * as React from 'react'
 
-import { isLocal } from '@neoncity/common-js/env'
-
 import * as config from './config'
 
 import * as commonText from './common.text'
@@ -69,9 +67,7 @@ export class CookiePolicyWidget extends React.Component<Props, State> {
             await config.IDENTITY_CLIENT().agreeToCookiePolicyForSession(config.SESSION());
             this.setState({ isReady: true, agreedToCookiePolicy: true });
         } catch (e) {
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
+            console.log(e);
 
             this.setState({ isFailed: true });
         }

@@ -66,9 +66,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
             redirectInfo = auth0AuthorizeRedirectInfoMarshaller.extract(req.query);
         } catch (e) {
             console.log(`Auth error - ${e.toString()}`);
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
+            console.log(e);
 
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();
@@ -90,9 +88,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
             rawResponse = await webFetcher.fetch(`https://${config.AUTH0_DOMAIN}/oauth/token`, options);
         } catch (e) {
             console.log(`Auth service error - ${e.toString()}`);
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
+            console.log(e);
 
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();
@@ -106,9 +102,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
                 auth0TokenExchangeResult = auth0TokenExchangeResultMarshaller.extract(jsonResponse);
             } catch (e) {
                 console.log(`Deserialization error - ${e.toString()}`);
-                if (isLocal(config.ENV)) {
-                    console.log(e);
-                }
+                console.log(e);
 
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR);
                 res.end();
@@ -127,9 +121,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
             authInfo = (await identityClient.withContext(authInfo).getOrCreateUserOnSession(req.session as Session))[0];
         } catch (e) {
             console.log(`Session creation error - ${e.toString()}`);
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
+            console.log(e);
 
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();
@@ -150,9 +142,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
             await identityClient.withContext(req.authInfo as AuthInfo).expireSession(req.session as Session);
         } catch (e) {
             console.log(`Session creation error - ${e.toString()}`);
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
+            console.log(e);
 
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();

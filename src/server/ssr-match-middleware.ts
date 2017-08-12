@@ -3,19 +3,15 @@ import { Location } from 'history'
 import * as HttpStatus from 'http-status-codes'
 import { match, RouterState } from 'react-router'
 
-import { Env, isLocal } from '@neoncity/common-js'
-
 import { CauseFeRequest } from './causefe-request'
 
 
-export function newServerSideRenderingMatchMiddleware(env: Env, routesConfig: any) {
+export function newServerSideRenderingMatchMiddleware(routesConfig: any) {
     return (req: CauseFeRequest, res: express.Response, next: express.NextFunction) => {
         match({ routes: routesConfig, location: req.url }, (err: Error, redirect: Location, routerState: RouterState) => {
             if (err) {
                 console.log(`Some sort of error during matching - ${err.toString()}`);
-                if (isLocal(env)) {
-                    console.log(err);
-                }
+                console.log(err);
 
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR);
                 res.end();

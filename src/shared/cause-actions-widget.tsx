@@ -2,7 +2,6 @@ import * as classNames from 'classnames'
 import * as React from 'react'
 import * as r from 'raynor'
 
-import { isLocal } from '@neoncity/common-js'
 import { CurrencyAmount, PublicCause } from '@neoncity/core-sdk-js'
 
 import * as config from './config'
@@ -140,9 +139,7 @@ export class CauseActionsWidget extends React.Component<Props, State> {
             this.setState({ donationState: OpState.Ready });
             setInterval(() => this.setState({ donationState: OpState.Init }), CauseActionsWidget._ACTION_RESET_TIMEOUT);
         } catch (e) {
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
+            console.log(e);
 
             this.setState({ donationState: OpState.Failed });
         }
@@ -179,9 +176,7 @@ export class CauseActionsWidget extends React.Component<Props, State> {
                 this.setState({ shareState: OpState.Ready });
                 setInterval(() => this.setState({ donationState: OpState.Init }), CauseActionsWidget._ACTION_RESET_TIMEOUT);
             } catch (e) {
-                if (isLocal(config.ENV)) {
-                    console.log(e);
-                }
+                console.log(e);
 
                 this.setState({ shareState: OpState.Failed });
             }

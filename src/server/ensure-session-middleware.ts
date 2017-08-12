@@ -26,9 +26,7 @@ export function newEnsureSessionMiddleware(env: Env, identityClient: IdentityCli
                 });
             } catch (e) {
                 console.log(`Session creation error - ${e.toString()}`);
-                if (isLocal(env)) {
-                    console.log(e);
-                }
+                console.log(e);
 
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR);
                 res.end();

@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 
 import { UserActionsOverview } from '@neoncity/core-sdk-js'
-import { isLocal } from '@neoncity/common-js'
 
 import * as config from './config'
 import { DonationForSessionWidget } from './donation-for-session-widget'
@@ -34,9 +33,7 @@ class _AdminMyActionsView extends React.Component<Props, undefined> {
             const userActionsOverview = await config.CORE_PRIVATE_CLIENT().getUserActionsOverview();
             this.props.onUserActionsOverviewReady(userActionsOverview);
         } catch (e) {
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
+            console.log(e);
 
             this.props.onUserActionsOverviewFailed('Could not load user actions overview');
         }

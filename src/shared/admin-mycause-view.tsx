@@ -6,7 +6,6 @@ import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 
 import { Currency, StandardCurrencies, CurrencyMarshaller } from '@neoncity/common-js'
-import { isLocal } from '@neoncity/common-js/env'
 import { slugify } from '@neoncity/common-js/slugify'
 import {
     BankInfo,
@@ -119,9 +118,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
             } else if (e.name == 'CauseDeletedForUserError') {
                 this.props.onPrivateCauseReady(true, true, null);
             } else {
-                if (isLocal(config.ENV)) {
-                    console.log(e);
-                }
+                console.log(e);
 
                 this.props.onPrivateCauseFailed('Could not load cause for user');
             }
@@ -486,9 +483,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                 this.state.bankInfo.getValue());
             this.props.onPrivateCauseReady(true, false, privateCause);
         } catch (e) {
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
+            console.log(e);
 
             this.props.onPrivateCauseFailed('Could not create cause for user');
         }
@@ -514,9 +509,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                 });
             this.props.onPrivateCauseReady(true, false, privateCause);
         } catch (e) {
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
+            console.log(e);
 
             this.props.onPrivateCauseFailed('Could not update cause for user');
         }
@@ -529,9 +522,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
             await config.CORE_PRIVATE_CLIENT().deleteCause(config.SESSION());
             this.props.onPrivateCauseReady(true, true, null);
         } catch (e) {
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
+            console.log(e);
 
             this.props.onPrivateCauseFailed('Could not delete cause for user');
         }

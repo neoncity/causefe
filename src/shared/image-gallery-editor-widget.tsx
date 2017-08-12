@@ -1,7 +1,6 @@
 import { MarshalFrom } from 'raynor'
 import * as React from 'react'
 
-import { isLocal } from '@neoncity/common-js/env'
 import { Picture, PictureSet } from '@neoncity/core-sdk-js'
 
 import * as config from './config'
@@ -132,9 +131,7 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
                 return;
             }
 
-            if (isLocal(config.ENV)) {
-                console.log(e);
-            }
+            console.log(e);
 
             this.setState({
                 hasSelectPictureError: true,
