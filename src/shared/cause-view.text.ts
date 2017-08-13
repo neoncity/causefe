@@ -1,6 +1,11 @@
 import { MessageWith0Arg, MessageWith1Arg } from './messages'
 
 
+export const by: MessageWith1Arg = {
+    en: (name: string) => `Started by ${name}`,
+    ro: (name: string) => `Pornit de ${name}`
+};
+
 export const causePicture: MessageWith0Arg = {
     en: "Cause picture",
     ro: "Poza cauzei"

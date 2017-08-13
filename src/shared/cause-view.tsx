@@ -136,7 +136,17 @@ class _CauseView extends React.Component<Props, undefined> {
 
                         <div id="cause-view-controls">
                             <div className="content">
-                                <h2>{cause.title}</h2>
+                                <h2 className="title">
+                                    <span>{cause.title}</span>
+                                    <img
+                                        className="owner-picture"
+                                        src={cause.user.pictureUri}
+                                        alt={cause.user.name} />
+                                </h2>
+
+                                <p className="owner">
+                                    <span>{text.by[config.LANG()](cause.user.name)}</span>
+                                </p>
 
                                 <p className="status">
                                     <span>{commonText.infoOnRaised[config.LANG()](percentageRaised, cause.goal.amount, cause.goal.currency)}</span>
@@ -157,7 +167,7 @@ class _CauseView extends React.Component<Props, undefined> {
                             disallowedTypes={['Image', 'Code', 'CodeBlock']}
                             source={cause.description} />
                     </div>
-                </div>
+                </div >
             );
         }
     }
