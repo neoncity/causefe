@@ -40,6 +40,11 @@ export class PublicCauseWidget extends React.Component<Props, undefined> {
                     <p className="status">
                         <span>{commonText.infoOnRaised[config.LANG()](percentageRaised, this.props.cause.goal.amount, this.props.cause.goal.currency)}</span>
                         <span>{commonText.daysLeft[config.LANG()](daysLeft)}</span>
+
+                        <img
+                            className="owner-picture"
+                            src={this.props.cause.user.pictureUri}
+                            alt={this.props.cause.user.name} />
                     </p>
 
                     <CauseActionsWidget
