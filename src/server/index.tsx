@@ -61,7 +61,7 @@ async function main() {
 
     const bundles: Bundles = isLocal(config.ENV)
         ? new WebpackDevBundles(theWebpackDevMiddleware(webpack(webpackConfig), {
-            //Different because we're mounting on /real/client to boot webpackConfig.output.publicPath,              
+            //Different because we're mounting on /real/client to boot webpackConfig.output.publicPath,
             publicPath: '/',
             serverSideRender: false
         }))
@@ -174,7 +174,7 @@ async function main() {
     const appRouter = express.Router();
 
     appRouter.use(newAuthInfoMiddleware(AuthInfoLevel.None));
-    appRouter.use(newSessionMiddleware(SessionLevel.None, config.ENV, identityClient));
+    appRouter.use(newSessionMiddleware(SessionLevel.None, identityClient));
     appRouter.use(newEnsureSessionMiddleware(config.ENV, identityClient));
     appRouter.use(newServerSideRenderingMatchMiddleware(routesConfig));
 

@@ -58,7 +58,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
     const authFlowRouter = express.Router();
 
     authFlowRouter.use(newAuthInfoMiddleware(AuthInfoLevel.SessionId));
-    authFlowRouter.use(newSessionMiddleware(SessionLevel.Session, config.ENV, identityClient))
+    authFlowRouter.use(newSessionMiddleware(SessionLevel.Session, identityClient))
 
     authFlowRouter.get('/login', wrap(async (req: CauseFeRequest, res: express.Response) => {
         let redirectInfo: Auth0AuthorizeRedirectInfo | null = null;
@@ -121,7 +121,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
             authInfo = (await identityClient.withContext(authInfo).getOrCreateUserOnSession(req.session as Session))[0];
         } catch (e) {
             console.log(`Session creation error - ${e.toString()}`);
-            console.log(e);
+            console.log(e.stacktrace);
 
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();
@@ -141,7 +141,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
         try {
             await identityClient.withContext(req.authInfo as AuthInfo).expireSession(req.session as Session);
         } catch (e) {
-            console.log(`Session creation error - ${e.toString()}`);
+            console.log(`Session expiration error - ${e.toString()}`);
             console.log(e);
 
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
