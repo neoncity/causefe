@@ -15,41 +15,43 @@ const moment = require('moment')
 
 interface Props {
     cause: PublicCause;
+    onNewCause: (publicCause: PublicCause) => void;
 }
 
 
 export class PublicCauseWidget extends React.Component<Props, undefined> {
     render() {
-        const daysLeft = moment.utc().diff(moment(this.props.cause.deadline), 'days');
-        const percentageRaised = 0.5;
+        const cause: PublicCause = this.props.cause;
+        const daysLeft = moment.utc().diff(moment(cause.deadline), 'days');
+        const percentageRaised = cause.quickAnalytics.amountDonated.amount / cause.goal.amount;
 
         return (
             <div className="public-cause-widget">
-                <Link to={causeLink(this.props.cause)}>
+                <Link to={causeLink(cause)}>
                     <img
                         className="cause-picture"
-                        src={causePictureUri(this.props.cause)}
+                        src={causePictureUri(cause)}
                         alt={text.causePicture[config.LANG()]} />
                 </Link>
 
                 <div className="content">
                     <h2 className="title">
-                        <Link to={causeLink(this.props.cause)}>{this.props.cause.title}</Link>
+                        <Link to={causeLink(cause)}>{cause.title}</Link>
                     </h2>
 
                     <p className="status">
-                        <span>{commonText.infoOnRaised[config.LANG()](percentageRaised, this.props.cause.goal.amount, this.props.cause.goal.currency)}</span>
+                        <span>{commonText.infoOnRaised[config.LANG()](percentageRaised, cause.goal.amount, cause.goal.currency)}</span>
                         <span>{commonText.daysLeft[config.LANG()](daysLeft)}</span>
 
                         <img
                             className="owner-picture"
-                            src={this.props.cause.user.pictureUri}
-                            alt={this.props.cause.user.name} />
+                            src={cause.user.pictureUri}
+                            alt={cause.user.name} />
                     </p>
 
                     <CauseActionsWidget
-                        cause={this.props.cause}
-                        onNewCause={(_: PublicCause) => { return; }} />
+                        cause={cause}
+                        onNewCause={(publicCause: PublicCause) => this.props.onNewCause(publicCause)} />
                 </div>
             </div>
         );

@@ -135,9 +135,9 @@ export class CauseActionsWidget extends React.Component<Props, State> {
             currencyAmount.amount = this.state.donationAmount.getValue();
             currencyAmount.currency = this.props.cause.goal.currency;
 
-            await config.CORE_PUBLIC_CLIENT().createDonation(config.SESSION(), this.props.cause.id, currencyAmount);
-            this.setState({ donationState: OpState.Ready });
-            setInterval(() => this.setState({ donationState: OpState.Init }), CauseActionsWidget._ACTION_RESET_TIMEOUT);
+            const donation = await config.CORE_PUBLIC_CLIENT().createDonation(config.SESSION(), this.props.cause.id, currencyAmount);
+            this.setState({ donationState: OpState.Ready }, () => this.props.onNewCause(donation.forCause));
+            setTimeout(() => this.setState({ donationState: OpState.Init }), CauseActionsWidget._ACTION_RESET_TIMEOUT);
         } catch (e) {
             console.log(e);
 
@@ -172,9 +172,9 @@ export class CauseActionsWidget extends React.Component<Props, State> {
             }
 
             try {
-                await config.CORE_PUBLIC_CLIENT().createShare(config.SESSION(), this.props.cause.id, response.post_id as string);
-                this.setState({ shareState: OpState.Ready });
-                setInterval(() => this.setState({ donationState: OpState.Init }), CauseActionsWidget._ACTION_RESET_TIMEOUT);
+                const share = await config.CORE_PUBLIC_CLIENT().createShare(config.SESSION(), this.props.cause.id, response.post_id as string);
+                this.setState({ shareState: OpState.Ready }, () => this.props.onNewCause(share.forCause));
+                setTimeout(() => this.setState({ donationState: OpState.Init }), CauseActionsWidget._ACTION_RESET_TIMEOUT);
             } catch (e) {
                 console.log(e);
 

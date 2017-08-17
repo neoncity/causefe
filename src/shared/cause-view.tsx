@@ -119,7 +119,7 @@ class _CauseView extends React.Component<Props, undefined> {
             const cause = this.props.cause as PublicCause;
 
             const daysLeft = moment.utc().diff(moment(cause.deadline), 'days');
-            const percentageRaised = 0.5;
+            const percentageRaised = cause.quickAnalytics.amountDonated.amount / cause.goal.amount;
 
             return (
                 <div id="cause-view">
@@ -155,7 +155,7 @@ class _CauseView extends React.Component<Props, undefined> {
 
                                 <CauseActionsWidget
                                     cause={cause}
-                                    onNewCause={(_: PublicCause) => { return; }} />
+                                    onNewCause={(publicCause: PublicCause) => this.props.onPublicCauseDetailReady(publicCause)} />
                             </div>
                         </div>
 

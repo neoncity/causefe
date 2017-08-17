@@ -22,7 +22,8 @@ export enum OpState {
     Preloaded = 1,
     Loading = 2,
     Ready = 3,
-    Failed = 4
+    PartialUpdate = 4,
+    Failed = 5
 }
 
 
@@ -44,13 +45,18 @@ interface PublicCausesReady {
     type: OpState.Ready;
     causes: PublicCause[];
 }
+interface PublicCausesUpdateOneCause {
+    part: StatePart.PublicCauses;
+    type: OpState.PartialUpdate;
+    causeToUpdate: PublicCause;
+}
 interface PublicCausesFailed {
     part: StatePart.PublicCauses;
     type: OpState.Failed;
     errorMessage: string;
 }
 
-export type PublicCausesState = PublicCausesInit | PublicCausesPreloaded | PublicCausesLoading | PublicCausesReady | PublicCausesFailed;
+export type PublicCausesState = PublicCausesInit | PublicCausesPreloaded | PublicCausesLoading | PublicCausesReady | PublicCausesUpdateOneCause | PublicCausesFailed;
 
 const publicCausesInitialState: PublicCausesState = {
     part: StatePart.PublicCauses,
@@ -70,6 +76,19 @@ function publicCauses(state = publicCausesInitialState, action: PublicCausesStat
         case OpState.Ready:
         case OpState.Failed:
             return action;
+        case OpState.PartialUpdate:
+            if (state.type != OpState.Ready)
+                throw new Error("Updated from invalid state");
+            const newCauses = (state as PublicCausesReady).causes.slice(0);
+            for (let i = 0; i < newCauses.length; i++)
+                if (newCauses[i].id == action.causeToUpdate.id)
+                    newCauses[i] = action.causeToUpdate;
+
+            return {
+                part: StatePart.PublicCauses,
+                type: OpState.Ready,
+                causes: newCauses
+            } as PublicCausesReady;
         default:
             return state;
     }

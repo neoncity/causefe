@@ -22,6 +22,7 @@ interface HomeViewProps {
     onPublicCausesDonePreload: () => void;
     onPublicCausesLoading: () => void;
     onPublicCausesReady: (causes: PublicCause[]) => void;
+    onPublicCausesUpdateOneCause: (cause: PublicCause) => void;
     onPublicCausesFailed: (errorMessage: string) => void;
 }
 
@@ -83,7 +84,7 @@ class _HomeView extends React.Component<HomeViewProps, undefined> {
             );
         } else {
             const causes = (this.props.causes as PublicCause[]).map(
-                c => <PublicCauseWidget key={c.id} cause={c} />
+                c => <PublicCauseWidget key={c.id} cause={c} onNewCause={(publicCause: PublicCause) => this.props.onPublicCausesUpdateOneCause(publicCause)} />
             );
 
             return <div id="home-view">{helmet}{causes}</div>;
@@ -109,6 +110,7 @@ function dispatchToProps(dispatch: (newState: PublicCausesState) => void) {
         onPublicCausesDonePreload: () => dispatch({ part: StatePart.PublicCauses, type: OpState.Init }),
         onPublicCausesLoading: () => dispatch({ part: StatePart.PublicCauses, type: OpState.Loading }),
         onPublicCausesReady: (causes: PublicCause[]) => dispatch({ part: StatePart.PublicCauses, type: OpState.Ready, causes: causes }),
+        onPublicCausesUpdateOneCause: (cause: PublicCause) => dispatch({ part: StatePart.PublicCauses, type: OpState.PartialUpdate, causeToUpdate: cause }),
         onPublicCausesFailed: (errorMessage: string) => dispatch({ part: StatePart.PublicCauses, type: OpState.Failed, errorMessage: errorMessage })
     };
 }
