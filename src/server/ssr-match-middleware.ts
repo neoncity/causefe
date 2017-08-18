@@ -10,9 +10,7 @@ export function newServerSideRenderingMatchMiddleware(routesConfig: any) {
     return (req: CauseFeRequest, res: express.Response, next: express.NextFunction) => {
         match({ routes: routesConfig, location: req.url }, (err: Error, redirect: Location, routerState: RouterState) => {
             if (err) {
-                console.log(`Some sort of error during matching - ${err.toString()}`);
-                console.log(err);
-
+                req.log.error(err);
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR);
                 res.end();
                 return;

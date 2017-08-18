@@ -23,6 +23,7 @@ import { ClientConfig } from '../shared/client-data'
 
 export const CLS_NAMESPACE_NAME: string = 'neoncity.request';
 
+export const NAME: string = 'causefe';
 export let ENV: Env;
 export let CONTEXT: Context;
 export let ADDRESS: string;

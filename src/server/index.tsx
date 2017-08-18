@@ -20,6 +20,7 @@ import {
     AuthInfoLevel,
     InternalWebFetcher,
     newAuthInfoMiddleware,
+    newLoggingMiddleware,
     newSessionMiddleware,
     SessionLevel
 } from '@neoncity/common-server-js'
@@ -71,6 +72,7 @@ async function main() {
 
     app.disable('x-powered-by');
     app.use(newNamespaceMiddleware(namespace))
+    app.use(newLoggingMiddleware(config.NAME));
     app.use('/real/auth-flow', newAuthFlowRouter(internalWebFetcher, identityClient));
     app.use('/real/client', bundles.getOtherBundlesRouter());
     app.use('/real/api-gateway', newApiGatewayRouter(internalWebFetcher));
@@ -146,14 +148,12 @@ async function main() {
         res.end();
     });
 
-    siteInfoRouter.get('/sitemap.xml', wrap(async (_req: CauseFeRequest, res: express.Response) => {
+    siteInfoRouter.get('/sitemap.xml', wrap(async (req: CauseFeRequest, res: express.Response) => {
         let allCauseSummaries: CauseSummary[] | null = null;
         try {
             allCauseSummaries = await corePublicClient.getAllCauseSummaries();
         } catch (e) {
-            console.log(`Cannot retrieve causes server-side - ${e.toString()}`);
-            console.log(e);
-
+            req.log.error(e);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();
         }
@@ -183,8 +183,7 @@ async function main() {
         try {
             causes = await corePublicClient.withContext(req.authInfo as AuthInfo).getCauses();
         } catch (e) {
-            console.log(`Cannot retrieve causes server-side - ${e.toString()}`);
-            console.log(e);
+            req.log.error(e);
         }
 
         const initialState = {
@@ -208,8 +207,7 @@ async function main() {
             const causeId = parseInt(req.params['causeId']);
             cause = await corePublicClient.withContext(req.authInfo as AuthInfo).getCause(causeId);
         } catch (e) {
-            console.log(`Cannot retrieve causes server-side - ${e.toString()}`);
-            console.log(e);
+            req.log.error(`Cannot retrieve causes server-side - ${e.toString()}`);
         }
 
         const initialState = {

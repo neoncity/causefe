@@ -65,10 +65,8 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
         try {
             redirectInfo = auth0AuthorizeRedirectInfoMarshaller.extract(req.query);
         } catch (e) {
-            console.log(`Auth error - ${e.toString()}`);
-            console.log(e);
-
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+            req.log.warn('Auth error');
+            res.status(HttpStatus.BAD_REQUEST);
             res.end();
             return;
         }
@@ -87,9 +85,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
         try {
             rawResponse = await webFetcher.fetch(`https://${config.AUTH0_DOMAIN}/oauth/token`, options);
         } catch (e) {
-            console.log(`Auth service error - ${e.toString()}`);
-            console.log(e);
-
+            req.log.error(e);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();
             return;
@@ -101,15 +97,13 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
                 const jsonResponse = await rawResponse.json();
                 auth0TokenExchangeResult = auth0TokenExchangeResultMarshaller.extract(jsonResponse);
             } catch (e) {
-                console.log(`Deserialization error - ${e.toString()}`);
-                console.log(e);
-
+                req.log.error(e, 'Deserialization error');
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR);
                 res.end();
                 return;
             }
         } else {
-            console.log('Auth error');
+            req.log.warn(`Auth error - bad code ${rawResponse.status}`);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();
             return;
@@ -120,9 +114,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
         try {
             authInfo = (await identityClient.withContext(authInfo).getOrCreateUserOnSession(req.session as Session))[0];
         } catch (e) {
-            console.log(`Session creation error - ${e.toString()}`);
-            console.log(e.stacktrace);
-
+            req.log.error(e);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();
             return;
@@ -141,9 +133,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
         try {
             await identityClient.withContext(req.authInfo as AuthInfo).expireSession(req.session as Session);
         } catch (e) {
-            console.log(`Session expiration error - ${e.toString()}`);
-            console.log(e);
-
+            req.log.error(e);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();
             return;
