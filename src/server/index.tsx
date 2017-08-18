@@ -72,7 +72,7 @@ async function main() {
 
     app.disable('x-powered-by');
     app.use(newNamespaceMiddleware(namespace))
-    app.use(newLoggingMiddleware(config.NAME));
+    app.use(newLoggingMiddleware(config.NAME, config.ENV, config.LOGGLY_TOKEN, config.LOGGLY_SUBDOMAIN));
     app.use('/real/auth-flow', newAuthFlowRouter(internalWebFetcher, identityClient));
     app.use('/real/client', bundles.getOtherBundlesRouter());
     app.use('/real/api-gateway', newApiGatewayRouter(internalWebFetcher));

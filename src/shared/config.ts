@@ -36,6 +36,8 @@ export let AUTH0_CLIENT_ID: string;
 export let AUTH0_CLIENT_SECRET: string;
 export let AUTH0_DOMAIN: string;
 export let AUTH0_CALLBACK_URI: string;
+export let LOGGLY_TOKEN: string|null;
+export let LOGGLY_SUBDOMAIN: string|null;
 export let FILESTACK_KEY: string;
 export let FACEBOOK_APP_ID: string;
 export let SESSION: () => Session;
@@ -106,6 +108,17 @@ if (isServer(parseContext(process.env.CONTEXT))) {
         FILESTACK_KEY = process.env.FILESTACK_KEY;
         FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID;
     }
+
+    if (ENV == Env.Local || ENV == Env.Test)
+    {
+        LOGGLY_TOKEN = null;
+        LOGGLY_SUBDOMAIN = null;
+    }
+    else
+    {
+        LOGGLY_TOKEN = process.env.LOGGLY_TOKEN;
+        LOGGLY_SUBDOMAIN = process.env.LOGGLY_SUBDOMAIN;
+    }
 } else {
     const clientConfigMarshaller = new (MarshalFrom(ClientConfig))();
 
@@ -124,6 +137,8 @@ if (isServer(parseContext(process.env.CONTEXT))) {
     AUTH0_CLIENT_ID = clientConfig.auth0ClientId;
     AUTH0_DOMAIN = clientConfig.auth0Domain;
     AUTH0_CALLBACK_URI = clientConfig.auth0CallbackUri;
+    LOGGLY_TOKEN = null;
+    LOGGLY_SUBDOMAIN = null;
     FILESTACK_KEY = clientConfig.fileStackKey;
     IDENTITY_SERVICE_HOST = clientConfig.identityServiceHost;
     CORE_SERVICE_HOST = clientConfig.coreServiceHost;

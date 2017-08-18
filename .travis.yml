@@ -17,6 +17,8 @@ env:
   - AUTH0_CLIENT_SECRET=null
   - AUTH0_DOMAIN=null
   - AUTH0_CALLBACK_URI=null
+  - LOGGLY_TOKEN=null
+  - LOGGLY_SUBDOMAIN=null
   - FILESTACK_KEY=null
   - FACEBOOK_APP_ID=null
   # GEMFURY_API_KEY=???
