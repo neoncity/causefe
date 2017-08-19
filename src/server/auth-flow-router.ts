@@ -121,7 +121,6 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
         }
 
         res.cookie(AuthInfo.CookieName, authInfoMarshaller.pack(authInfo), {
-            expires: (req.session as Session).timeExpires,
             httpOnly: true,
             secure: !isLocal(config.ENV)
         });

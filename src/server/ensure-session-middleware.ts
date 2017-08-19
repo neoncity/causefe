@@ -20,7 +20,6 @@ export function newEnsureSessionMiddleware(env: Env, identityClient: IdentityCli
                 req.session = session;
 
                 res.cookie(AuthInfo.CookieName, authInfoMarshaller.pack(authInfo), {
-                    expires: session.timeExpires,
                     httpOnly: true,
                     secure: !isLocal(env)
                 });
