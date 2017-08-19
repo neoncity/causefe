@@ -1,6 +1,6 @@
 {
   "name": "@neoncity/causefe",
-  "version": "3.7.0",
+  "version": "3.8.0",
   "description": "The main frontend, where causes are managed and viewed.",
   "author": "NeonCity team",
   "scripts": {
@@ -30,7 +30,7 @@
   "dependencies": {
     "@neoncity/common-js": "~1",
     "@neoncity/common-server-js": "~4",
-    "@neoncity/core-sdk-js": "~8",
+    "@neoncity/core-sdk-js": "~9",
     "@neoncity/identity-sdk-js": "~7",
     "async-middleware": "=1.0.2",
     "auth0-lock": "=10.11.0",

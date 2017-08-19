@@ -153,26 +153,9 @@ export class CauseActionsWidget extends React.Component<Props, State> {
         FB.ui({
             method: 'share',
             href: href
-        }, async (response: facebook.ShareDialogResponse) => {
-            console.log(response);
-            if (typeof response === 'undefined') {
-                // User closed dialog without sharing.
-                this.setState({ shareState: OpState.Failed });
-                return;
-            }
-
-            if (response.hasOwnProperty('error_message')) {
-                this.setState({ shareState: OpState.Failed });
-                return;
-            }
-
-            if (!response.hasOwnProperty('post_id')) {
-                this.setState({ shareState: OpState.Failed });
-                return;
-            }
-
+        }, async (_response: any) => {
             try {
-                const share = await config.CORE_PUBLIC_CLIENT().createShare(config.SESSION(), this.props.cause.id, response.post_id as string);
+                const share = await config.CORE_PUBLIC_CLIENT().createShare(config.SESSION(), this.props.cause.id);
                 this.setState({ shareState: OpState.Ready }, () => this.props.onNewCause(share.forCause));
                 setTimeout(() => this.setState({ donationState: OpState.Init }), CauseActionsWidget._ACTION_RESET_TIMEOUT);
             } catch (e) {
