@@ -23,7 +23,7 @@ export class ShareForSessionWidget extends React.Component<Props, null> {
         return (
             <p>
                 <span>{text.shared[config.LANG()](cause.title, timeCreated)}</span>
-                <Link to={causeLink(cause)}>{text.details[config.LANG()]}}</Link>
+                <Link to={causeLink(cause)}>{text.details[config.LANG()]}</Link>
             </p>
         );
     }
