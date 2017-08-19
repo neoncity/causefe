@@ -157,7 +157,7 @@ export class CauseActionsWidget extends React.Component<Props, State> {
             try {
                 const share = await config.CORE_PUBLIC_CLIENT().createShare(config.SESSION(), this.props.cause.id);
                 this.setState({ shareState: OpState.Ready }, () => this.props.onNewCause(share.forCause));
-                setTimeout(() => this.setState({ donationState: OpState.Init }), CauseActionsWidget._ACTION_RESET_TIMEOUT);
+                setTimeout(() => this.setState({ shareState: OpState.Init }), CauseActionsWidget._ACTION_RESET_TIMEOUT);
             } catch (e) {
                 console.log(e);
 
