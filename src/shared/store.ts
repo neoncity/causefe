@@ -77,7 +77,7 @@ function publicCauses(state = publicCausesInitialState, action: PublicCausesStat
         case OpState.Failed:
             return action;
         case OpState.PartialUpdate:
-            if (state.type != OpState.Ready)
+            if (state.type != OpState.Preloaded && state.type != OpState.Ready)
                 throw new Error("Updated from invalid state");
             const newCauses = (state as PublicCausesReady).causes.slice(0);
             for (let i = 0; i < newCauses.length; i++)
