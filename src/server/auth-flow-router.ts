@@ -124,7 +124,8 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
         res.cookie(AuthInfo.CookieName, authInfoMarshaller.pack(authInfo), {
             httpOnly: true,
             secure: !isLocal(config.ENV),
-            expires: moment.utc().add('days', 10000).toDate()
+            expires: moment.utc().add('days', 10000).toDate(),
+            sameSite: 'lax'
         });
 
         res.redirect(redirectInfo.state.path);

@@ -23,7 +23,8 @@ export function newEnsureSessionMiddleware(env: Env, identityClient: IdentityCli
                 res.cookie(AuthInfo.CookieName, authInfoMarshaller.pack(authInfo), {
                     httpOnly: true,
                     secure: !isLocal(env),
-                    expires: moment.utc().add('days', 10000).toDate()
+                    expires: moment.utc().add('days', 10000).toDate(),
+                    sameSite: 'lax'
                 });
             } catch (e) {
                 req.log.error(e);
