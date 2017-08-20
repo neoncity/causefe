@@ -2,6 +2,7 @@ import { wrap } from 'async-middleware'
 import * as express from 'express'
 import 'isomorphic-fetch'
 import * as HttpStatus from 'http-status-codes'
+import * as moment from 'moment'
 import { MarshalFrom, MarshalWith, OptionalOf } from 'raynor'
 
 import { isLocal, WebFetcher } from '@neoncity/common-js'
@@ -122,7 +123,8 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
 
         res.cookie(AuthInfo.CookieName, authInfoMarshaller.pack(authInfo), {
             httpOnly: true,
-            secure: !isLocal(config.ENV)
+            secure: !isLocal(config.ENV),
+            expires: moment.utc().add('days', 10000).toDate()
         });
 
         res.redirect(redirectInfo.state.path);

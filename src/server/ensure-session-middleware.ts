@@ -1,6 +1,7 @@
 import { wrap } from 'async-middleware'
 import * as express from 'express'
 import * as HttpStatus from 'http-status-codes'
+import * as moment from 'moment'
 import { MarshalFrom } from 'raynor'
 
 import { Env, isLocal } from '@neoncity/common-js'
@@ -21,7 +22,8 @@ export function newEnsureSessionMiddleware(env: Env, identityClient: IdentityCli
 
                 res.cookie(AuthInfo.CookieName, authInfoMarshaller.pack(authInfo), {
                     httpOnly: true,
-                    secure: !isLocal(env)
+                    secure: !isLocal(env),
+                    expires: moment.utc().add('days', 10000).toDate()
                 });
             } catch (e) {
                 req.log.error(e);
