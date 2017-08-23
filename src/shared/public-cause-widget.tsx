@@ -19,7 +19,7 @@ interface Props {
 }
 
 
-export class PublicCauseWidget extends React.Component<Props, undefined> {
+export class PublicCauseWidget extends React.Component<Props, {}> {
     render() {
         const cause: PublicCause = this.props.cause;
         const daysLeft = moment.utc().diff(moment(cause.deadline), 'days');

@@ -291,7 +291,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                 <div className="form-line">
                     <ImageGalleryEditorWidget
                         pictureSet={this.state.pictureSet}
-                        selectPicture={pos => config.FILE_STORAGE_CLIENT().selectImageWithWidget(pos)}
+                        selectPicture={(pos: number) => config.FILE_STORAGE_CLIENT().selectImageWithWidget(pos)}
                         onPictureSetChange={this._handlePictureSetChange.bind(this)} />
                 </div>
             </form>

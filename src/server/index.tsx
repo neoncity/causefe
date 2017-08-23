@@ -20,6 +20,7 @@ import {
     AuthInfoLevel,
     InternalWebFetcher,
     newAuthInfoMiddleware,
+    newErrorsMiddleware,
     newLoggingMiddleware,
     newSessionMiddleware,
     SessionLevel
@@ -73,6 +74,7 @@ async function main() {
     app.disable('x-powered-by');
     app.use(newNamespaceMiddleware(namespace))
     app.use(newLoggingMiddleware(config.NAME, config.ENV, config.LOGGLY_TOKEN, config.LOGGLY_SUBDOMAIN));
+    app.use(newErrorsMiddleware(config.NAME, config.ENV, config.ROLLBAR_SERVER_TOKEN));
     app.use('/real/auth-flow', newAuthFlowRouter(internalWebFetcher, identityClient));
     app.use('/real/client', bundles.getOtherBundlesRouter());
     app.use('/real/api-gateway', newApiGatewayRouter(internalWebFetcher));
@@ -100,6 +102,7 @@ async function main() {
             auth0ClientId: config.AUTH0_CLIENT_ID,
             auth0Domain: config.AUTH0_DOMAIN,
             auth0CallbackUri: config.AUTH0_CALLBACK_URI,
+            rollbarClientToken: config.ROLLBAR_CLIENT_TOKEN,
             fileStackKey: config.FILESTACK_KEY,
             identityServiceHost: config.IDENTITY_SERVICE_HOST,
             coreServiceHost: config.CORE_SERVICE_HOST,
@@ -154,6 +157,7 @@ async function main() {
             allCauseSummaries = await corePublicClient.getAllCauseSummaries();
         } catch (e) {
             req.log.error(e);
+            req.errorLog.error(e);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();
         }
@@ -183,7 +187,8 @@ async function main() {
         try {
             causes = await corePublicClient.withContext(req.authInfo as AuthInfo).getCauses();
         } catch (e) {
-            req.log.error(e);
+            req.log.warn(e);
+            req.errorLog.warn(e);
         }
 
         const initialState = {
@@ -207,7 +212,8 @@ async function main() {
             const causeId = parseInt(req.params['causeId']);
             cause = await corePublicClient.withContext(req.authInfo as AuthInfo).getCause(causeId);
         } catch (e) {
-            req.log.error(`Cannot retrieve causes server-side - ${e.toString()}`);
+            req.log.warn(e);
+            req.errorLog.warn(e);
         }
 
         const initialState = {

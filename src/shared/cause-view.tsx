@@ -38,7 +38,7 @@ interface Props {
 }
 
 
-class _CauseView extends React.Component<Props, undefined> {
+class _CauseView extends React.Component<Props, {}> {
     async componentDidMount() {
         if (this.props.isPreloaded) {
             return;

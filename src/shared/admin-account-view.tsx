@@ -10,7 +10,7 @@ interface Props {
 }
 
 
-export class AdminAccountView extends React.Component<Props, undefined> {
+export class AdminAccountView extends React.Component<Props, {}> {
     render() {
         return (
             <div id="admin-account-view">

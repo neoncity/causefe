@@ -10,7 +10,7 @@ interface Props {
 }
 
 
-export class IdentityFrame extends React.Component<Props, undefined> {
+export class IdentityFrame extends React.Component<Props, {}> {
     componentDidMount() {
         if (!config.SESSION().hasUser()) {
             config.AUTH0_CLIENT().showLock(false);

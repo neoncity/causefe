@@ -27,7 +27,7 @@ interface HomeViewProps {
 }
 
 
-class _HomeView extends React.Component<HomeViewProps, undefined> {
+class _HomeView extends React.Component<HomeViewProps, {}> {
     async componentDidMount() {
         if (this.props.isPreloaded) {
             return;

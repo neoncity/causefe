@@ -1,6 +1,5 @@
 import { wrap } from 'async-middleware'
 import * as express from 'express'
-import 'isomorphic-fetch'
 import * as HttpStatus from 'http-status-codes'
 import * as moment from 'moment'
 import { MarshalFrom, MarshalWith, OptionalOf } from 'raynor'
@@ -40,7 +39,7 @@ export class Auth0TokenExchangeResult {
 }
 
 
-const AUTHORIZE_OPTIONS: RequestInit = {
+const AUTHORIZE_OPTIONS = {
     method: 'POST',
     mode: 'cors',
     cache: 'no-cache',
@@ -66,7 +65,8 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
         try {
             redirectInfo = auth0AuthorizeRedirectInfoMarshaller.extract(req.query);
         } catch (e) {
-            req.log.warn('Auth error');
+            req.log.error('Auth error');
+            req.errorLog.error(e);
             res.status(HttpStatus.BAD_REQUEST);
             res.end();
             return;
@@ -87,6 +87,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
             rawResponse = await webFetcher.fetch(`https://${config.AUTH0_DOMAIN}/oauth/token`, options);
         } catch (e) {
             req.log.error(e);
+            req.errorLog.error(e);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();
             return;
@@ -99,12 +100,14 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
                 auth0TokenExchangeResult = auth0TokenExchangeResultMarshaller.extract(jsonResponse);
             } catch (e) {
                 req.log.error(e, 'Deserialization error');
+                req.errorLog.error(e);
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR);
                 res.end();
                 return;
             }
         } else {
-            req.log.warn(`Auth error - bad code ${rawResponse.status}`);
+            req.log.error(`Auth error - bad code ${rawResponse.status}`);
+            req.errorLog.error(`Auth error - bad code ${rawResponse.status}`);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();
             return;
@@ -116,6 +119,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
             authInfo = (await identityClient.withContext(authInfo).getOrCreateUserOnSession(req.session as Session))[0];
         } catch (e) {
             req.log.error(e);
+            req.errorLog.error(e);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();
             return;
@@ -136,6 +140,7 @@ export function newAuthFlowRouter(webFetcher: WebFetcher, identityClient: Identi
             await identityClient.withContext(req.authInfo as AuthInfo).expireSession(req.session as Session);
         } catch (e) {
             req.log.error(e);
+            req.errorLog.error(e);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR);
             res.end();
             return;

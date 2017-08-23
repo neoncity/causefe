@@ -6,6 +6,7 @@ import {
     Context,
     Env,
     isLocal,
+    isOnServer,
     isServer,
     parseContext,
     parseEnv
@@ -36,8 +37,10 @@ export let AUTH0_CLIENT_ID: string;
 export let AUTH0_CLIENT_SECRET: string;
 export let AUTH0_DOMAIN: string;
 export let AUTH0_CALLBACK_URI: string;
-export let LOGGLY_TOKEN: string|null;
-export let LOGGLY_SUBDOMAIN: string|null;
+export let LOGGLY_TOKEN: string | null;
+export let LOGGLY_SUBDOMAIN: string | null;
+export let ROLLBAR_SERVER_TOKEN: string | null;
+export let ROLLBAR_CLIENT_TOKEN: string | null;
 export let FILESTACK_KEY: string;
 export let FACEBOOK_APP_ID: string;
 export let SESSION: () => Session;
@@ -109,15 +112,17 @@ if (isServer(parseContext(process.env.CONTEXT))) {
         FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID;
     }
 
-    if (ENV == Env.Local || ENV == Env.Test)
-    {
-        LOGGLY_TOKEN = null;
-        LOGGLY_SUBDOMAIN = null;
-    }
-    else
-    {
+    if (isOnServer(ENV)) {
         LOGGLY_TOKEN = process.env.LOGGLY_TOKEN;
         LOGGLY_SUBDOMAIN = process.env.LOGGLY_SUBDOMAIN;
+        ROLLBAR_SERVER_TOKEN = process.env.ROLLBAR_SERVER_TOKEN;
+        ROLLBAR_CLIENT_TOKEN = process.env.ROLLBAR_CLIENT_TOKEN;
+    }
+    else {
+        LOGGLY_TOKEN = null;
+        LOGGLY_SUBDOMAIN = null;
+        ROLLBAR_SERVER_TOKEN = null;
+        ROLLBAR_CLIENT_TOKEN = null;
     }
 } else {
     const clientConfigMarshaller = new (MarshalFrom(ClientConfig))();
@@ -139,6 +144,8 @@ if (isServer(parseContext(process.env.CONTEXT))) {
     AUTH0_CALLBACK_URI = clientConfig.auth0CallbackUri;
     LOGGLY_TOKEN = null;
     LOGGLY_SUBDOMAIN = null;
+    ROLLBAR_SERVER_TOKEN = null;
+    ROLLBAR_CLIENT_TOKEN = clientConfig.rollbarClientToken;
     FILESTACK_KEY = clientConfig.fileStackKey;
     IDENTITY_SERVICE_HOST = clientConfig.identityServiceHost;
     CORE_SERVICE_HOST = clientConfig.coreServiceHost;

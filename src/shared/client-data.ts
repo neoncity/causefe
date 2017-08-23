@@ -31,6 +31,9 @@ export class ClientConfig {
     @MarshalWith(r.WebUriMarshaller)
     auth0CallbackUri: string;
 
+    @MarshalWith(OptionalOf(r.StringMarshaller))
+    rollbarClientToken: string | null;
+
     @MarshalWith(r.StringMarshaller)
     fileStackKey: string;
 

@@ -14,7 +14,7 @@ interface Props {
 }
 
 
-export class DonationForSessionWidget extends React.Component<Props, null> {
+export class DonationForSessionWidget extends React.Component<Props, {}> {
     render() {
         const donation = this.props.donationForSession;
         const cause = this.props.donationForSession.forCause;

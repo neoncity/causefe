@@ -25,7 +25,7 @@ interface Props {
 }
 
 
-class _AdminCauseAnalyticsView extends React.Component<Props, undefined> {
+class _AdminCauseAnalyticsView extends React.Component<Props, {}> {
     async componentDidMount() {
         this.props.onCauseAnalyticsLoading();
 

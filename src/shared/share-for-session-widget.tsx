@@ -14,7 +14,7 @@ interface Props {
 }
 
 
-export class ShareForSessionWidget extends React.Component<Props, null> {
+export class ShareForSessionWidget extends React.Component<Props, {}> {
     render() {
         const share = this.props.shareForSession;
         const cause = this.props.shareForSession.forCause;

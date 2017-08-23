@@ -14,7 +14,7 @@ interface Props {
 }
 
 
-export class AppFrame extends React.Component<Props, undefined> {
+export class AppFrame extends React.Component<Props, {}> {
     render() {
         // Bit of a hack. If there's no user, the global navigation to admin and console is done through a regular <a> tag
         // which will trigger a page load event. This is not so bad, as the login flow is beefy as it is, but it does add

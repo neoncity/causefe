@@ -11,7 +11,7 @@ interface Props {
 }
 
 
-export class AdminFrame extends React.Component<Props, undefined> {
+export class AdminFrame extends React.Component<Props, {}> {
     render() {
         return (
             <div id="admin-frame-body">

@@ -25,7 +25,7 @@ interface Props {
 }
 
 
-class _AdminMyActionsView extends React.Component<Props, undefined> {
+class _AdminMyActionsView extends React.Component<Props, {}> {
     async componentDidMount() {
         this.props.onUserActionsOverviewLoading();
 
