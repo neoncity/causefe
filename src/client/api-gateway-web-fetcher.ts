@@ -1,10 +1,8 @@
-import 'isomorphic-fetch'
-
 import { WebFetcher } from '@neoncity/common-js'
 
 
 export class ApiGatewayWebFetcher implements WebFetcher {
-    private static readonly _options: RequestInit = {
+    private static readonly _options: any = {
         method: 'POST',
         mode: 'cors',
         cache: 'no-cache',
@@ -19,7 +17,7 @@ export class ApiGatewayWebFetcher implements WebFetcher {
         this._apiGatewayHost = apiGatewayHost;
     }
 
-    async fetch(uri: string, options: RequestInit): Promise<ResponseInterface> {
+    async fetch(uri: string, options: any): Promise<Response> {
         const gatewayOptions = (Object as any).assign({}, ApiGatewayWebFetcher._options);
         gatewayOptions.headers = { 'Content-Type': 'application/json' };
         gatewayOptions.body = JSON.stringify({

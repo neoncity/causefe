@@ -16,7 +16,7 @@ import {
 
 import { ApiGatewayWebFetcher } from './api-gateway-web-fetcher'
 import { Auth0Service } from './auth0'
-import * as config from '../shared/config'
+import * as config from './config1'
 import './index.less'
 import { routesConfig } from '../shared/routes-config'
 import { OpState, reducers, StatePart } from '../shared/store'

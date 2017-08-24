@@ -9,7 +9,7 @@
         "strictNullChecks": true,
         "sourceMap": true,
         "outDir": "./out/",
-	"jsx": "react",
+	      "jsx": "react",
         "experimentalDecorators": true
     },
     "include": [

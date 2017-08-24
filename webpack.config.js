@@ -38,11 +38,11 @@ const prodPlugins = [
 module.exports = {
     target: 'web',
     entry: {
-	client: './src/client/index.tsx'
+	      client: './src/client/index.tsx'
     },
     output: {
         path: path.resolve(__dirname, 'out', 'client'),
-	publicPath: '/real/client/',
+	      publicPath: '/real/client/',
         filename: '[name].js'
     },
     module: {
@@ -58,40 +58,40 @@ module.exports = {
                 silent: true
             }
         }, {
-	    test: /\.(less|css)$/,
-	    include: [
-		path.resolve(__dirname, 'src', 'client'),
-		path.resolve(__dirname, 'src', 'shared'),
-		path.resolve(__dirname, 'node_modules', 'react-datepicker')
-	    ],
+	          test: /\.(less|css)$/,
+	          include: [
+		            path.resolve(__dirname, 'src', 'client'),
+		            path.resolve(__dirname, 'src', 'shared'),
+		            path.resolve(__dirname, 'node_modules', 'react-datepicker')
+	          ],
             loader: ExtractTextPlugin.extract({
                 fallback: 'style-loader',
                 use: ['css-loader', 'less-loader'],
                 publicPath: '/real/client/'
             })
-	}, {
-	    test: /\.svg$/,
-	    include: [path.resolve(__dirname, 'src', 'shared', 'static')],
-	    loader: 'url-loader',
-	    options: {
-		limit: 8192,
-		prefix: 'img'
-	    }
-	}, {
-	    test: /\.html$/,
-	    include: [path.resolve(__dirname, 'src', 'shared', 'static')],
+	      }, {
+	          test: /\.svg$/,
+	          include: [path.resolve(__dirname, 'src', 'shared', 'static')],
+	          loader: 'url-loader',
+	          options: {
+		            limit: 8192,
+		            prefix: 'img'
+	          }
+	      }, {
+	          test: /\.html$/,
+	          include: [path.resolve(__dirname, 'src', 'shared', 'static')],
             loader: 'file-loader',
             options: {
                 name: '[name].[ext]'
             }
-	}, {
-	    test: /favicon.ico$/,
-	    include: [path.resolve(__dirname, 'src', 'shared', 'static')],
+	      }, {
+	          test: /favicon.ico$/,
+	          include: [path.resolve(__dirname, 'src', 'shared', 'static')],
             loader: 'file-loader',
             options: {
                 name: '[name].[ext]'
             }
-	}]
+	      }]
     },
     plugins: [
         new webpack.DefinePlugin({
@@ -100,6 +100,13 @@ module.exports = {
         }),
         // As we add more languages, we'll select more locales here.
         new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en|ro/),
+        // All imports of the config file are to ./shared/config.ts. When compiling things for the
+        // client, we need to replace this with ./client/config.ts. Historically it didn't use
+        // to be the case and we had the same config. However this turned out to be problematic
+        // with newer versions of typescript.
+        new webpack.NormalModuleReplacementPlugin(/^[.][/]config$/, function(result) {
+            result.request = '../client/config1';
+        }),
         // fs is needed in src/shared/config.ts on the server-side in the LOCAl env
         // to load some value from a secrets.json file. Naturally, fs doesn't exist
         // on the client side, so we need to fake it.
@@ -109,15 +116,15 @@ module.exports = {
         // Ditto for continuation-local-storage.
         new webpack.NormalModuleReplacementPlugin(/^continuation-local-storage$/, function(result) {
             result.request = './mock-continuation-local-storage';
-        }),        
-	new CopyPlugin([
-	    {from: './src/shared/static/index.html'},
-	    {from: './src/shared/static/favicon.ico'},
-	    {from: './src/shared/static/humans.txt'},
-	    {from: './src/shared/static/robots.txt'},
-	    {from: './src/shared/static/sitemap.xml'}
-	]),
-	new ExtractTextPlugin('client.css'),
+        }),
+	      new CopyPlugin([
+	          {from: './src/shared/static/index.html'},
+	          {from: './src/shared/static/favicon.ico'},
+	          {from: './src/shared/static/humans.txt'},
+	          {from: './src/shared/static/robots.txt'},
+	          {from: './src/shared/static/sitemap.xml'}
+	      ]),
+	      new ExtractTextPlugin('client.css'),
         new webpack.NoEmitOnErrorsPlugin(),
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor',
