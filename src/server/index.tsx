@@ -26,7 +26,7 @@ import {
     SessionLevel
 } from '@neoncity/common-server-js'
 import {
-    CauseSummary,
+    //CauseSummary,
     CorePublicClient,
     newCorePublicClient,
     PublicCause
@@ -48,7 +48,7 @@ import * as config from '../shared/config'
 import { routesConfig } from '../shared/routes-config'
 import { OpState, reducers, StatePart } from '../shared/store'
 import { ClientConfig, ClientInitialState } from '../shared/client-data'
-import { causeLink, inferLanguage } from '../shared/utils'
+import { /*causeLink, */inferLanguage } from '../shared/utils'
 import { newServerSideRenderingMatchMiddleware } from './ssr-match-middleware'
 
 
@@ -152,7 +152,7 @@ async function main() {
     });
 
     siteInfoRouter.get('/sitemap.xml', wrap(async (req: CauseFeRequest, res: express.Response) => {
-        let allCauseSummaries: CauseSummary[] | null = null;
+        //let allCauseSummaries: CauseSummary[] | null = null;
         try {
             throw new Error('An error in the sitemap');
             //allCauseSummaries = await corePublicClient.getAllCauseSummaries();
