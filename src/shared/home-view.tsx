@@ -40,6 +40,7 @@ class _HomeView extends React.Component<HomeViewProps, {}> {
             this.props.onPublicCausesReady(causes);
         } catch (e) {
             console.log(e);
+            config.ROLLBAR_CLIENT().error(e);
 
             this.props.onPublicCausesFailed('Could not load public causes');
         }

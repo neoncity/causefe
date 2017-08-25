@@ -119,6 +119,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
                 this.props.onPrivateCauseReady(true, true, null);
             } else {
                 console.log(e);
+                config.ROLLBAR_CLIENT().error(e);
 
                 this.props.onPrivateCauseFailed('Could not load cause for user');
             }
@@ -145,13 +146,13 @@ class _AdminMyCauseView extends React.Component<Props, State> {
             </Helmet>;
 
         const allValid = !(this.state.title.isInvalid()
-            || this.state.slug.isInvalid()
-            || this.state.description.isInvalid()
-            || this.state.deadline.isInvalid()
-            || this.state.goalAmount.isInvalid()
-            || this.state.goalCurrency.isInvalid()
-            || this.state.bankInfo.isInvalid()
-            || this.state.pictureSet.isInvalid());
+                        || this.state.slug.isInvalid()
+                        || this.state.description.isInvalid()
+                        || this.state.deadline.isInvalid()
+                        || this.state.goalAmount.isInvalid()
+                        || this.state.goalCurrency.isInvalid()
+                        || this.state.bankInfo.isInvalid()
+                        || this.state.pictureSet.isInvalid());
 
         let titleModifiersRegion = <span></span>;
         if (this.state.title.isInvalid()) {
@@ -484,6 +485,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
             this.props.onPrivateCauseReady(true, false, privateCause);
         } catch (e) {
             console.log(e);
+            config.ROLLBAR_CLIENT().error(e);
 
             this.props.onPrivateCauseFailed('Could not create cause for user');
         }
@@ -510,6 +512,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
             this.props.onPrivateCauseReady(true, false, privateCause);
         } catch (e) {
             console.log(e);
+            config.ROLLBAR_CLIENT().error(e);
 
             this.props.onPrivateCauseFailed('Could not update cause for user');
         }
@@ -523,6 +526,7 @@ class _AdminMyCauseView extends React.Component<Props, State> {
             this.props.onPrivateCauseReady(true, true, null);
         } catch (e) {
             console.log(e);
+            config.ROLLBAR_CLIENT().error(e);
 
             this.props.onPrivateCauseFailed('Could not delete cause for user');
         }

@@ -140,6 +140,7 @@ export class CauseActionsWidget extends React.Component<Props, State> {
             setTimeout(() => this.setState({ donationState: OpState.Init }), CauseActionsWidget._ACTION_RESET_TIMEOUT);
         } catch (e) {
             console.log(e);
+            config.ROLLBAR_CLIENT().error(e);
 
             this.setState({ donationState: OpState.Failed });
         }
@@ -160,6 +161,7 @@ export class CauseActionsWidget extends React.Component<Props, State> {
                 setTimeout(() => this.setState({ shareState: OpState.Init }), CauseActionsWidget._ACTION_RESET_TIMEOUT);
             } catch (e) {
                 console.log(e);
+                config.ROLLBAR_CLIENT().error(e);
 
                 this.setState({ shareState: OpState.Failed });
             }

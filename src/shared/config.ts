@@ -1,5 +1,6 @@
 import { getNamespace } from 'continuation-local-storage'
 import { readFileSync } from 'fs'
+import * as Rollbar from 'rollbar'
 
 import {
     Context,
@@ -47,7 +48,8 @@ export let CORE_PUBLIC_CLIENT: () => CorePublicClient;
 export let CORE_PRIVATE_CLIENT: () => CorePrivateClient;
 export let FILE_STORAGE_CLIENT: () => FileStorageClient;
 export let AUTH0_CLIENT: () => Auth0Client;
-export let setServices: (identityClient: IdentityClient, corePublicClient: CorePublicClient, corePrivateClient: CorePrivateClient, fileStorageClient: FileStorageClient, auth0Client: Auth0Client) => void;
+export let ROLLBAR_CLIENT: () => Rollbar;
+export let setServices: (identityClient: IdentityClient, corePublicClient: CorePublicClient, corePrivateClient: CorePrivateClient, fileStorageClient: FileStorageClient, auth0Client: Auth0Client, rollbarClient: Rollbar) => void;
 
 ENV = parseEnv(process.env.ENV);
 CONTEXT = parseContext(process.env.CONTEXT);
@@ -86,7 +88,11 @@ AUTH0_CLIENT = () => {
     throw new Error('Should not be invoked');
 };
 
-setServices = (_identityClient: IdentityClient, _corePublicClient: CorePublicClient, _corePrivateClient: CorePrivateClient, _fileStorageClient: FileStorageClient, _auth0Client: Auth0Client) => {
+ROLLBAR_CLIENT = () => {
+    throw new Error('Should not be invoked');
+}
+
+setServices = (_identityClient: IdentityClient, _corePublicClient: CorePublicClient, _corePrivateClient: CorePrivateClient, _fileStorageClient: FileStorageClient, _auth0Client: Auth0Client, _rollbarClient: Rollbar) => {
     throw new Error('Should not be invoked');
 };
 

@@ -3,8 +3,6 @@ import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 
 import { CauseAnalytics } from '@neoncity/core-sdk-js'
-import { isLocal } from '@neoncity/common-js'
-
 import * as config from './config'
 import { AdminCauseAnalyticsState, OpState, StatePart } from '../shared/store'
 
@@ -36,9 +34,8 @@ class _AdminCauseAnalyticsView extends React.Component<Props, {}> {
             if (e.name == 'NoCauseForUserError') {
                 this.props.onCauseAnalyticsReady(false, null);
             } else {
-                if (isLocal(config.ENV)) {
-                    console.log(e);
-                }
+                console.log(e);
+                config.ROLLBAR_CLIENT().error(e);
 
                 this.props.onCauseAnalyticsFailed('Could not load cause analytics for user');
             }

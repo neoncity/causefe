@@ -34,6 +34,7 @@ class _AdminMyActionsView extends React.Component<Props, {}> {
             this.props.onUserActionsOverviewReady(userActionsOverview);
         } catch (e) {
             console.log(e);
+            config.ROLLBAR_CLIENT().error(e);
 
             this.props.onUserActionsOverviewFailed('Could not load user actions overview');
         }

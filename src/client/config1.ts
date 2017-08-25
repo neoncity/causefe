@@ -1,4 +1,5 @@
 import { MarshalFrom } from 'raynor'
+import * as Rollbar from 'rollbar'
 
 import { Context, Env } from '@neoncity/common-js'
 import {
@@ -40,7 +41,8 @@ export let CORE_PUBLIC_CLIENT: () => CorePublicClient;
 export let CORE_PRIVATE_CLIENT: () => CorePrivateClient;
 export let FILE_STORAGE_CLIENT: () => FileStorageClient;
 export let AUTH0_CLIENT: () => Auth0Client;
-export let setServices: (identityClient: IdentityClient, corePublicClient: CorePublicClient, corePrivateClient: CorePrivateClient, fileStorageClient: FileStorageClient, auth0Client: Auth0Client) => void;
+export let ROLLBAR_CLIENT: () => Rollbar;
+export let setServices: (identityClient: IdentityClient, corePublicClient: CorePublicClient, corePrivateClient: CorePrivateClient, fileStorageClient: FileStorageClient, auth0Client: Auth0Client, rollbar: Rollbar) => void;
 
 
 const clientConfigMarshaller = new (MarshalFrom(ClientConfig))();
@@ -53,6 +55,7 @@ let corePublicClient: CorePublicClient | null = null;
 let corePrivateClient: CorePrivateClient | null = null;
 let fileStorageClient: FileStorageClient | null = null;
 let auth0Client: Auth0Client | null = null;
+let rollbarClient: Rollbar | null = null;
 
 ENV = clientConfig.env;
 ORIGIN = clientConfig.origin;
@@ -112,10 +115,19 @@ AUTH0_CLIENT = () => {
     return auth0Client;
 };
 
-setServices = (newIdentityClient: IdentityClient, newCorePublicClient: CorePublicClient, newCorePrivateClient: CorePrivateClient, newFileStorageClient: FileStorageClient, newAuth0Client: Auth0Client) => {
+ROLLBAR_CLIENT = () => {
+    if (rollbarClient == null) {
+        throw new Error('Rollbar client not provided');
+    }
+
+    return rollbarClient;
+};
+
+setServices = (newIdentityClient: IdentityClient, newCorePublicClient: CorePublicClient, newCorePrivateClient: CorePrivateClient, newFileStorageClient: FileStorageClient, newAuth0Client: Auth0Client, newRollbarClient: Rollbar) => {
     identityClient = newIdentityClient;
     corePublicClient = newCorePublicClient;
     corePrivateClient = newCorePrivateClient;
     fileStorageClient = newFileStorageClient;
     auth0Client = newAuth0Client;
+    rollbarClient = newRollbarClient;
 };

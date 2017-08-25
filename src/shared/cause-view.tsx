@@ -57,6 +57,7 @@ class _CauseView extends React.Component<Props, {}> {
             browserHistory.replace(causeLink(cause));
         } catch (e) {
             console.log(e);
+            config.ROLLBAR_CLIENT().error(e);
 
             this.props.onPublicCauseDetailFailed('Could not load public cause detail');
         }
@@ -70,16 +71,16 @@ class _CauseView extends React.Component<Props, {}> {
         const cause = this.props.cause as PublicCause;
 
         const pageTitle: string = this.props.isReady || this.props.isPreloaded
-            ? text.pageTitle[config.LANG()](cause.title)
-            : text.pageTitleDefault[config.LANG()];
+                                ? text.pageTitle[config.LANG()](cause.title)
+                                : text.pageTitleDefault[config.LANG()];
 
         const pageDescription: string = this.props.isReady || this.props.isPreloaded
-            ? text.pageDescription[config.LANG()](cause.description)
-            : text.pageDescriptionDefault[config.LANG()];
+                                      ? text.pageDescription[config.LANG()](cause.description)
+                                      : text.pageDescriptionDefault[config.LANG()];
 
         const realCauseLink: string = this.props.isReady || this.props.isPreloaded
-            ? `${config.ORIGIN}${causeLink(cause)}`
-            : config.ORIGIN;
+                                    ? `${config.ORIGIN}${causeLink(cause)}`
+                                    : config.ORIGIN;
 
         const helmet =
             <Helmet>

@@ -68,6 +68,7 @@ export class CookiePolicyWidget extends React.Component<Props, State> {
             this.setState({ isReady: true, agreedToCookiePolicy: true });
         } catch (e) {
             console.log(e);
+            config.ROLLBAR_CLIENT().error(e);
 
             this.setState({ isFailed: true });
         }

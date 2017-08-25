@@ -132,6 +132,7 @@ export class ImageGalleryEditorWidget extends React.Component<Props, State> {
             }
 
             console.log(e);
+            config.ROLLBAR_CLIENT().error(e);
 
             this.setState({
                 hasSelectPictureError: true,

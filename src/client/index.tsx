@@ -4,8 +4,9 @@ import * as ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import { Router, browserHistory } from 'react-router'
+import * as Rollbar from 'rollbar'
 
-import { WebFetcher } from '@neoncity/common-js'
+import { WebFetcher, isOnServer, envToString } from '@neoncity/common-js'
 import { IdentityClient, newIdentityClient } from '@neoncity/identity-sdk-js'
 import {
     newCorePrivateClient,
@@ -34,8 +35,21 @@ const corePublicClient: CorePublicClient = newCorePublicClient(config.ENV, confi
 const corePrivateClient: CorePrivateClient = newCorePrivateClient(config.ENV, config.ORIGIN, config.CORE_SERVICE_HOST, apiGatewayWebFetcher);
 const fileStorageClient: FileStorageClient = new FileStorageService(config.FILESTACK_KEY);
 const auth0Client: Auth0Client = new Auth0Service(browserHistory, config.AUTH0_CLIENT_ID, config.AUTH0_DOMAIN, config.AUTH0_CALLBACK_URI);
+const rollbar = new Rollbar({
+    accessToken: isOnServer(config.ENV) ? (config.ROLLBAR_CLIENT_TOKEN as string) : 'FAKE_TOKEN_WONT_BE_USED_IN_LOCAL_OR_TEST',
+    logLevel: 'warning',
+    reportLevel: 'warning',
+    captureUncaught: true,
+    captureUnhandledRejections: true,
+    enabled: isOnServer(config.ENV),
+    payload: {
+        // TODO: fill in the person field!
+        serviceName: name,
+        environment: envToString(config.ENV)
+    }
+});
 
-config.setServices(identityClient, corePublicClient, corePrivateClient, fileStorageClient, auth0Client);
+config.setServices(identityClient, corePublicClient, corePrivateClient, fileStorageClient, auth0Client, rollbar);
 
 const clientInitialState = clientInitialStateMarshaller.extract((window as any).__NEONCITY_CLIENT_INITIAL_STATE);
 delete (window as any).__NEONCITY_INITIAL_STATE;
